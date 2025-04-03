@@ -24,11 +24,12 @@ body {
 }
 
 .section-container {
-  @apply max-w-full container 2xl:px-78 mx-auto xl:px-24 px-4 text-black;
+  @apply max-w-[1980px] mx-auto 2xl:px-[312px] xl:px-24 px-4 text-black;
 }
 
+
 .section-container-add-products {
-  @apply max-w-screen-lg container mx-auto lg:px-14 px-4 text-black;
+  @apply max-w-screen-lg  mx-auto lg:px-14 px-4 text-black;
 }
 
 @layer components {
