@@ -24,8 +24,9 @@ body {
 }
 
 .section-container {
-  @apply max-w-screen container 2xl:px-78 mx-auto xl:px-24 px-4 text-black;
+  @apply w-[1920px] h-[1080px] mx-auto xl:px-24 px-4 text-black;
 }
+
 
 .section-container-add-products {
   @apply max-w-screen-lg container mx-auto lg:px-14 px-4 text-black;
