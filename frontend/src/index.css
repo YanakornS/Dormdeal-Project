@@ -1,0 +1,77 @@
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@300&display=swap");
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --font-family: "Kanit", serif;
+  --color-vivid: #0096ff;
+  --color-secondary: #9b9b9b;
+  --color-card: #f6f6f6;
+  --color-black: #000000;
+  --color-white: #ffffff;
+
+  --text-xs: 14px;
+  --text-sm: 16px;
+  --text-base: 18px;
+  --text-lg: 22px;
+  --text-xl: 24px;
+}
+
+body {
+  font-family: var(--font-family), sans-serif;
+  color: var(--color-black);
+  background-color: var(--color-white);
+}
+
+.section-container {
+  @apply max-w-screen container 2xl:px-78 mx-auto xl:px-24 px-4 text-black;
+}
+
+.section-container-add-products {
+  @apply max-w-screen-lg container mx-auto lg:px-14 px-4 text-black;
+}
+
+@layer components {
+  .btn-sign {
+    @apply rounded-xl border border-vivid py-2 px-4 text-center text-sm transition-all text-vivid hover:text-white hover:bg-vivid hover:border-vivid cursor-pointer;
+  }
+
+  .btn-choices {
+    @apply rounded-xl border border-vivid w-56 p-2 text-center transition-all text-vivid hover:text-white hover:bg-vivid hover:border-vivid cursor-pointer;
+  }
+
+  .categories-card {
+    @apply flex justify-between bg-card shadow-lg rounded-xl px-4 py-2 transition-all hover:shadow-xl hover:scale-105 cursor-pointer overflow-hidden text-base font-semibold text-gray-900 truncate text-wrap text-start;
+  }
+
+  .products-card {
+    @apply flex flex-auto flex-col gap-2 p-4 text-sm h-32 rounded-b-md;
+  }
+
+  .btn-profile {
+    @apply rounded-xl border bg-vivid py-2 px-4 text-center text-sm transition-all text-white cursor-pointer;
+  }
+
+  .btn-report {
+    @apply rounded-xl border bg-vivid py-2 px-4 text-center text-sm transition-all text-white cursor-pointer;
+  }
+
+  .btn-checkpost {
+    @apply rounded-xl border border-vivid py-2 px-4 text-center text-sm transition-all text-vivid hover:text-white hover:bg-vivid hover:border-vivid cursor-pointer;
+  }
+
+
+  @layer base {
+    /* h1{
+      @apply ...  
+    }  
+  
+    p{
+      @apply ...
+    } */
+  }
+}
+
+.bg-white {
+  background-color: var(--color-white);
+}
