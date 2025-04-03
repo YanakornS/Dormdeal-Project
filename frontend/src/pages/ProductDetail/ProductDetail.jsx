@@ -66,7 +66,7 @@ const ProductDetail = () => {
     };
     fetchPost();
   }, [id]);
-  
+
   return (
     <div className="section-container sm:mt-7 mt-6 px-6 py-14">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -174,25 +174,33 @@ const ProductDetail = () => {
         index={currentIndex}
       />
 
-
-<div className="mt-22">
+  {/* สินค้าที่คล้ายกัน */}
+  <div className="mt-22">
   <h2 className="text-xl font-semibold mb-4">สินค้าที่คล้ายกัน</h2>
-  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-    {relatedProducts.slice(0, 5).map((product) => (
-      <div
-        key={product._id}
-        onClick={() => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
-          navigate(`/postproductdetail/${product._id}`);
-        }}
-        className="cursor-pointer"
-      >
-        <ProductCard product={product} />
-      </div>
-    ))}
-  </div>
-</div>
+  
+  {/* ตรวจสอบว่ามีสินค้าที่คล้ายกันหรือไม่ */}
+  {relatedProducts.length > 0 ? (
+    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+      {relatedProducts.slice(0, 5).map((product) => (
+        <div
+          key={product._id}
+          onClick={() => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+            navigate(`/postproductdetail/${product._id}`);
+          }}
+          className="cursor-pointer"
+        >
+          <ProductCard product={product} />
+        </div>
+      ))}
     </div>
+  ) : (
+    <p className="text-gray-500 text-lg ">ไม่พบสินค้าที่คล้ายกัน</p> // แสดงข้อความเมื่อไม่มีสินค้าที่คล้ายกัน
+  )}
+</div>
+
+</div>
+  
   );
 };
 
