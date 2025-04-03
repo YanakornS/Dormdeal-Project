@@ -24,7 +24,7 @@ body {
 }
 
 .section-container {
-  @apply max-w-screen container 2xl:px-78 mx-auto xl:px-24 px-4 text-black;
+  @apply max-w-screen container 2xl:px-78 mx-auto xl:px-24  text-black;
 }
 
 .section-container-add-products {
