@@ -16,8 +16,15 @@ const getAllPostsProduct = async () => {
 };
 
 const getPostById = async (id) => {
-  return await api.get(`${API_URL}/${id}`);
-}
+  const response = await api.get(`${API_URL}/${id}`);
+  return response.data || null;  // ใช้ response.data โดยตรง
+};
+
+
+
+// const getPostById = async (id) => {
+//   return await api.get(`${API_URL}/${id}`);
+// }
 
 const PostService = {
   createPostProduct,
