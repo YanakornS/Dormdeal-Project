@@ -24,7 +24,7 @@ body {
 }
 
 .section-container {
-  @apply w-[1920px] h-[1080px] mx-auto xl:px-24 px-4 text-black;
+  @apply max-w-[1920px] min-h-[1080px] w-full h-auto mx-auto xl:px-24 px-4 text-black;
 }
 
 
