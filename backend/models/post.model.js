@@ -44,6 +44,11 @@ const PostSchema = new Schema({
     enum: ["pending_review", "approved", "needs_revision", "rejected"],
     default: "pending_review",
   },
+  modNote: {
+    type: String,
+    default: null,
+    select: false ,
+  }
 },{
   timestamps: true,
 });

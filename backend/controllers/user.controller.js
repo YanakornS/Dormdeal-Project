@@ -23,6 +23,7 @@ exports.sign = async (req, res) => {
   const userInfo = {
     token: token,
     email: user.email,
+    _id: user._id,
     role: user.role,
     displayName: user.displayName,
     photoURL: user.photoURL,
@@ -34,9 +35,9 @@ exports.sign = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const { email, displayName, photoURL } = req.body;
-    if (!email) {
-      return res.status(400).json({ message: "Email and displayName are required" });
+    const { email, displayName, photoURL} = req.body;
+    if (!email ) {
+      return res.status(400).json({ message: "Email are required" });
     }
 
     // ตรวจสอบว่าผู้ใช้มีอยู่แล้วหรือไม่

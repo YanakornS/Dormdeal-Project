@@ -71,7 +71,7 @@ exports.createPost = async (req, res) => {
 exports.getAllPosts = async (req, res) => {
   try {
     // ค้นหาข้อมูลโพสต์ทั้งหมดจากฐานข้อมูล MongoDB
-    const posts = await PostModel.find()
+    const posts = await PostModel.find({ status: "approved" })
       // ใช้ populate เพื่อดึงข้อมูลจากคอลเลกชันที่เชื่อมโยง (ในที่นี้คือข้อมูลเจ้าของโพสต์)
       .populate("category", ["name"])
       .populate("owner", ["displayName"])
@@ -150,6 +150,7 @@ exports.deletePostByOwner = async (req, res) => {
   }
 };
 
+
 //getPostByOwner
 exports.getPostByOwner = async (req, res) => {
   const { id } = req.params;
@@ -166,7 +167,6 @@ exports.getPostByOwner = async (req, res) => {
       });
       return;
     }
-
     // ส่งข้อมูลโพสต์ทั้งหมดที่พบกลับไปยัง client
     res.json(postDoc);
   } catch (error) {
@@ -224,46 +224,96 @@ exports.updatePost = async (req, res) => {
 };
 
 // getAllPostByMod
-exports.getAllPostsByMod = async (req, res) => {
-  try {
-    const posts = await PostModel.find()
-      .populate("category", ["name"])
-      .populate("owner", ["displayName"])
-      .sort({
-        postPaymentType: -1,
-        createdAt: 1,
-      });
+// exports.getAllPostsByMod = async (req, res) => {
+//   try {
+//     const posts = await PostModel.find()
+//       .populate("category", ["name"])
+//       .populate("owner", ["displayName"])
+//       .sort({
+//         postPaymentType: -1,
+//         createdAt: 1,
+//       });
 
-    res.json(posts);
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send({
-      message: "An error occurred while fetching posts",
-    });
-  }
-};
+//     res.json(posts);
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(500).send({
+//       message: "An error occurred while fetching posts",
+//     });
+//   }
+// };
 
-exports.deletePostByMod = async (req, res) => {
-  const { id } = req.params;
+// exports.deletePostByMod = async (req, res) => {
+//   const { id } = req.params;
 
-  try {
-    const postDoc = await PostModel.findById(id);
+//   try {
+//     const postDoc = await PostModel.findById(id);
 
-    if (!postDoc) {
-      return res.status(404).send({
-        message: "Post not found",
-      });
-    }
+//     if (!postDoc) {
+//       return res.status(404).send({
+//         message: "Post not found",
+//       });
+//     }
 
-    await PostModel.findByIdAndDelete(id);
+//     await PostModel.findByIdAndDelete(id);
 
-    res.status(200).send({
-      message: "Post deleted successfully",
-    });
-  } catch (error) {
-    console.error(error.message);
-    res.status(500).send({
-      message: error.message || "An error occurred while deleting the post",
-    });
-  }
-};
+//     res.status(200).send({
+//       message: "Post deleted successfully",
+//     });
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(500).send({
+//       message: error.message || "An error occurred while deleting the post",
+//     });
+//   }
+// };
+
+
+// approve or reject post by mod
+// exports.reviewPost = async (req, res) => {
+//   const { id } = req.params;
+//   const { action, message } = req.body; 
+
+//   try {
+//     const postDoc = await PostModel.findById(id);
+//     const validActions = ["approved", "rejected", "needs_revision"];
+
+//     if (!postDoc) {
+//       return res.status(404).json({ message: "Post not found." });
+//     }
+
+//     if (!validActions.includes(action)) {
+//       return res.status(400).json({ message: "Invalid action." });
+//     }
+
+//     postDoc.status = action;  
+//     if (action === "needs_revision") {
+//       if (!message || message.trim() === "") {
+//         return res.status(400).json({ message: "Revision message is required." });
+//       }
+//       postDoc.modNote = message; 
+//     } else {
+//       postDoc.modNote = null; 
+//     }
+
+//     await postDoc.save();
+//       // const responsePost = postDoc.toObject();
+//       // if (responsePost.status !== "needs_revision") {
+//       //   delete responsePost.modNote;
+//       // }
+//     res.json({
+//       message: `Post status updated to '${action}'.`,
+//       // post: responsePost,
+//       post: postDoc,
+//     });
+    
+//   } catch (error) {
+//     console.error(error.message);
+//     res.status(500).json({
+//       message: "An error occurred while reviewing the post.",
+//       error: error.message,
+//     });
+//   }
+// };
+
+

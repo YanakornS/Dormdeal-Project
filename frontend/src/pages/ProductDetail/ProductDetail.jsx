@@ -5,6 +5,8 @@ import Swal from "sweetalert2";
 import { AiOutlineMessage } from "react-icons/ai";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import ProductCard from "../../components/ProductCard";
+
 
 import { FaRegHeart, FaHeart, FaBold } from "react-icons/fa6";
 import { PiWarningCircle } from "react-icons/pi";
@@ -14,6 +16,8 @@ const ProductDetail = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const { id } = useParams();
+  const [relatedProducts, setRelatedProducts] = useState([]);  // เพิ่มตัวแปรนี้
+
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("th-TH", {
@@ -23,13 +27,35 @@ const ProductDetail = () => {
       maximumFractionDigits: 0,
     }).format(price);
   };
-
   useEffect(() => {
     const fetchPost = async () => {
       try {
         const response = await PostService.getPostById(id);
-        if (response.status === 200) {
-          setPostProductDetail(response.data);
+        if (response) {
+          setPostProductDetail(response);
+  
+          const relatedResponse = await PostService.getAllPostsProduct();
+  
+          // ตรวจสอบค่าของ category และ _id ใน response
+          console.log("Current Product Category:", response.category);
+          console.log("Current Product ID:", response._id);
+  
+          // ตรวจสอบข้อมูลสินค้าที่ได้รับจาก relatedResponse
+          console.log("All Products:", relatedResponse.data);
+  
+          // ตรวจสอบการเปรียบเทียบ category ว่าเป็น string หรือ object
+          const categoryId = response.category?._id || response.category; // ถ้า category เป็น object ให้เข้าถึง _id
+  
+          const related = relatedResponse.data.filter(
+            (product) => {
+              const productCategory = product.category?._id || product.category; // ถ้า category ของสินค้าที่กรองเป็น object ให้ใช้ _id
+              return String(productCategory) === String(categoryId) && String(product._id) !== String(response._id);
+            }
+          );
+  
+          console.log("Filtered Related Products:", related);  // ตรวจสอบข้อมูลที่กรองออกมา
+  
+          setRelatedProducts(related);
         }
       } catch (error) {
         Swal.fire({
@@ -41,7 +67,7 @@ const ProductDetail = () => {
     };
     fetchPost();
   }, [id]);
-
+  
   return (
     <div className="section-container sm:mt-7 mt-6 px-6 py-14">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -148,7 +174,28 @@ const ProductDetail = () => {
         styles={{ container: { backgroundColor: "rgba(0, 0, 0, 0.2)" } }}
         index={currentIndex}
       />
-    </div>
+
+<div className="mt-22">
+  <h2 className="text-xl font-semibold mb-4">สินค้าที่คล้ายกัน</h2>
+  <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+    {relatedProducts.slice(0, 5).map((product) => (
+      <div
+        key={product._id}
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+          navigate(`/postproductdetail/${product._id}`);
+        }}
+        className="cursor-pointer"
+      >
+        <ProductCard product={product} />
+      </div>
+    ))}
+  </div>
+</div>
+
+</div>
+
+
   );
 };
 

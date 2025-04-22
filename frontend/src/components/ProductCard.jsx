@@ -1,4 +1,5 @@
 const ProductCard = ({ product }) => {
+  
   const formatPrice = (price) => {
     return new Intl.NumberFormat("th-TH", {
       style: "currency",

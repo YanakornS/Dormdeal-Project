@@ -10,7 +10,7 @@ router.post(
   // authJwt.verifyToken,
   upload,
   uploadToFirebase,
-  // authJwt.isMod,
+  // authJwt.isMod, 
   categoryController.addCategory
 );
 

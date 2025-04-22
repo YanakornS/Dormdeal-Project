@@ -7,8 +7,10 @@ import AddProduct from "../pages/PostProduct/Index";
 import Home from "../pages/Home/Index";
 import ShoppingPost from "../pages/ShoppiongPost/Index";
 import ProductDetail from "../pages/ProductDetail/ProductDetail";
-
+import ManagePosts from "../pages/UserPages/ManagePosts/Index";
 import ManagePostsByMod from "../pages/ModPages/ManagePostsByMod";
+import ManagePostStatus from "../pages/UserPages/ManagePostStatus";
+import ApprovePosts from "../pages/ModPages/ApprovePosts/ApprovePosts";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +33,14 @@ const router = createBrowserRouter([
         path: "/post",
         element: <AddProduct />,
       },
+      {
+        path: "/ManagePost/:id",
+        element: <ManagePosts />,
+      },
+      {
+        path: "/ManagePostStatus",
+        element: <ManagePostStatus />,
+      },
     ],
   },
   {
@@ -40,6 +50,10 @@ const router = createBrowserRouter([
       {
         path: "",
         element: <ManagePostsByMod />,
+      },
+      {
+        path: "approveposts/:id", 
+        element: <ApprovePosts />,
       },
     ],
   },

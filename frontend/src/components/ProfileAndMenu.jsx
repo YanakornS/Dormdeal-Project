@@ -12,15 +12,16 @@ import { LuPlus } from "react-icons/lu";
 
 const ProfileAndMenu = () => {
   const { user, logout, getUser } = useContext(AuthContext);
+  
 
   const handleGoToPost = () => {
     navigate("/post", { state: { breadcrumb: ["หน้าแรก"] } });
   };
 
   const userInfo = getUser();
-  console.log("User Object:", user);
-  console.log("User Role:", user?.role);
-  console.log("User Info:", userInfo);
+   console.log("User Object:", user);
+   console.log("User Role:", user?.role);
+   console.log("User Info:", userInfo);  
   const handleLogout = () => {
     logout();
   };
@@ -89,7 +90,8 @@ const ProfileAndMenu = () => {
               <a href="/ManagePostStatus">จัดการโพสต์ประกาศ</a>
             </li>
             <li>
-              <a href="/ManagePost">โพสต์ประกาศของฉัน</a>
+            <a href={`/ManagePost/${userInfo._id}`}>โพสต์ประกาศของฉัน</a>
+
             </li>
             <li>
               <a href="/">รายการสินค้าที่สนใจ</a>

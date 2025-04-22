@@ -10,14 +10,16 @@ router.post("/", authJwt.verifyToken, uploads, uploadsToFirebase, postController
 //http://localhost:5000/api/v1/post
 router.get("", postController.getAllPosts);
 
-//http://localhost:5000/api/v1/post/mod/getallposts
-router.get("/mod/getallposts", authJwt.verifyToken, postController.getAllPostsByMod);
+// //http://localhost:5000/api/v1/post/mod/getallposts
+// router.get("/mod/getallposts", authJwt.verifyToken, postController.getAllPostsByMod);
+
+//http://localhost:5000/api/v1/post/owner/id
+router.get("/owner/:id", postController.getPostByOwner);
 
 //http://localhost:5000/api/v1/post/id
 router.get("/:id", postController.getPostById);
 
-//http://localhost:5000/api/v1/post/owner/id
-router.get("/owner/:id", postController.getPostByOwner);
+
 
 //http://localhost:5000/api/v1/post/id
 router.put("/:id", authJwt.verifyToken, uploads, uploadsToFirebase, postController.updatePost);

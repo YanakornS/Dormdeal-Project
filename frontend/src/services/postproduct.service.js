@@ -15,14 +15,26 @@ const getAllPostsProduct = async () => {
   return await api.get(API_URL);
 };
 
-const getPostById = async (id) => {
-  return await api.get(`${API_URL}/${id}`);
+const getPostByOwner = async (id) => {
+  return await api.get(`${API_URL}/owner/${id}`);
 }
+
+
+const getPostById = async (id) => {
+  const response = await api.get(`${API_URL}/${id}`);
+  
+  return response.data || null;  // ใช้ response.data โดยตรง
+};
+
+
+
 
 const PostService = {
   createPostProduct,
   getAllPostsProduct,
-  getPostById
+  getPostById,
+  getPostByOwner,
+  
 };
 
 export default PostService;
