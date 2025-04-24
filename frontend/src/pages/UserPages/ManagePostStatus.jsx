@@ -38,7 +38,7 @@ const ManagePostStatus = () => {
       try {
         const response = await PostService.getPostByOwner(userInfo._id);
 
-        setPosts(response.data); // อัปเดต state
+        setPosts(response.data); 
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -76,7 +76,10 @@ const ManagePostStatus = () => {
             <p className="text-gray-500">ไม่มีโพสต์ในหมวดนี้</p>
           ) : (
             filteredPosts.map((post) => (
-              <PostReviewCard key={post._id} post={post} />
+              <PostReviewCard post={post} onDelete={() => {
+                setPosts((prev) => prev.filter((p) => p._id !== post._id));
+              }} />
+              
             ))
           )}
         </div>

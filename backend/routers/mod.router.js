@@ -15,4 +15,6 @@ router.patch("/review/:id", authJwt.verifyToken,authJwt.isMod, modController.rev
 //http://localhost:5000/api/v1/mod/id
 router.delete("/:id", authJwt.verifyToken, modController.deletePostByMod);
 
+router.get("/owner/:id", modController.getPostByOwner); // ✅ ดึง post ทั้งหมดของ user
+
 module.exports = router;

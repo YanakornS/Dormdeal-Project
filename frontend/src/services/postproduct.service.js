@@ -26,7 +26,9 @@ const getPostById = async (id) => {
   return response.data || null;  // ใช้ response.data โดยตรง
 };
 
-
+const deletePostByOwner = async (id) => {
+  return await api.delete(`${API_URL}/${id}`);
+};
 
 
 const PostService = {
@@ -34,6 +36,7 @@ const PostService = {
   getAllPostsProduct,
   getPostById,
   getPostByOwner,
+  deletePostByOwner,
   
 };
 

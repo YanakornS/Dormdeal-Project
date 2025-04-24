@@ -4,16 +4,13 @@ exports.getAllPostsByMod = async (req, res) => {
   try {
 
     // กรองก่อนว่ามีแค่ pemding_review
-    const posts = await PostModel.find({
-      status: { $in: ["pending_review", "needs_revision", "rejected", "sold-out"] }
-    })
+    const posts = await PostModel.find({ status: "pending_review" })
       .populate("category", ["name"])
       .populate("owner", ["displayName"])
       .sort({
         postPaymentType: -1,
         createdAt: 1,
       });
-    
 
     res.json(posts);
   } catch (error) {

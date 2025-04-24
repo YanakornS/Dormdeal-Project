@@ -164,7 +164,7 @@ const handleApproveStatus = async (status) => {
         timer: 1500,
         showConfirmButton: false,
       }).then(() => {
-        navigate("/managepostsbymod", { replace: true });
+        navigate("/mod", { replace: true });
       });
     }
   } catch (error) {
