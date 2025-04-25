@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import notAllowed from "../../assets/Icon/warning.png";
+
 import { useNavigate } from "react-router";
+
+import notAllowed from "/Icons/warning.png";
 
 const NotAllowed = () => {
   const [counter, setCounter] = useState(10);
