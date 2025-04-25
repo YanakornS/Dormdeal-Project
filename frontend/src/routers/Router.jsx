@@ -11,6 +11,9 @@ import ManagePosts from "../pages/UserPages/ManagePosts/Index";
 import ManagePostsByMod from "../pages/ModPages/ManagePostsByMod";
 import ManagePostStatus from "../pages/UserPages/ManagePostStatus";
 import ApprovePosts from "../pages/ModPages/ApprovePosts/ApprovePosts";
+import AdminRoute from "../pages/ProtectPage/AdminRouter";
+import NotAllowed from "../pages/ProtectPage/NotAllowed";
+
 
 const router = createBrowserRouter([
   {
@@ -41,11 +44,15 @@ const router = createBrowserRouter([
         path: "/ManagePostStatus",
         element: <ManagePostStatus />,
       },
+      {
+        path: "/notallowed",
+        element: <NotAllowed />,
+      }
     ],
   },
   {
     path: "/mod",
-    element: <ModLayout />,
+    element: <AdminRoute> <ModLayout /> </AdminRoute>,
     children: [
       {
         path: "",
