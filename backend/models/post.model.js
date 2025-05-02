@@ -47,7 +47,7 @@ const PostSchema = new Schema({
   modNote: {
     type: String,
     default: null,
-    select: false ,
+  
   }
 },{
   timestamps: true,

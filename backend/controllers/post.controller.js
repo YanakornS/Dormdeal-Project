@@ -1,6 +1,6 @@
 const PostModel = require("../models/post.model");
 const MainCategory = require("../models/maincategory.model");
-
+const UserModel = require("../models/user.model");
 //createPost
 exports.createPost = async (req, res) => {
   if (!req.files) {
@@ -22,7 +22,7 @@ exports.createPost = async (req, res) => {
     !postType ||
     !productName ||
     !category ||
-    !subcategory ||
+    !subcategory || 
     !price ||
     !description ||
     !condition ||
@@ -31,6 +31,14 @@ exports.createPost = async (req, res) => {
     return res.status(400).json({ message: "All Fields is requires" });
   }
   try {
+    const userDoc = await UserModel.findById(owner);
+    if(!userDoc){
+      return res.status(404).json({ message: "User not found" });
+    }
+    if(userDoc.userStatus !== "normal"){
+      return res.status(403).json({ message: "User is banned or outof " });
+    }
+
     const categoryDoc = await MainCategory.findById(category);
     const subCategoryDoc = await MainCategory.findById(category);
 

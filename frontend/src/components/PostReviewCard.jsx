@@ -9,7 +9,6 @@ import { useState } from "react";
 const PostReviewCard = ({ post, onDelete = () => {} }) => {
   const isRevision = post.status === "needs_revision";
 
-
   const handleDeletePost = async (id) => {
     const result = await Swal.fire({
       title: "คุณแน่ใจหรือไม่?",
@@ -28,16 +27,20 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
         if (typeof onDelete === "function") {
           onDelete();
         }
-
       } catch (err) {
-        Swal.fire("เกิดข้อผิดพลาด", err.response?.data?.message || err.message, "error");
+        Swal.fire(
+          "เกิดข้อผิดพลาด",
+          err.response?.data?.message || err.message,
+          "error"
+        );
       }
     }
   };
+  console.log("status:", post.status);
+  console.log("modNote:", post.modNote);
 
   return (
     <div className="relative flex items-center justify-between w-full max-w-4xl bg-white rounded-xl p-4 shadow-sm">
-    
       {/* 🔥 Badge โฆษณา */}
       {post.postPaymentType === "Paid" && (
         <div className="absolute top-3 left-4">
@@ -61,16 +64,26 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
           <p className="text-base font-bold text-black mt-2">
             ฿ {post.price?.toLocaleString()}
           </p>
+          <div>
+            {post.status === "rejected" && post.modNote && (
+              <p className="text-sm text-red-500 mt-1">
+                {post.modNote}
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
       {/* ปุ่มลบ + แก้ไข (เฉพาะ status: needs_revision) */}
       {isRevision && (
         <div className="flex items-center gap-2">
-          <button  onClick={() => handleDeletePost(post._id)} className="btn btn-outline btn-sm px-3 rounded-lg text-black-600">
+          <button
+            onClick={() => handleDeletePost(post._id)}
+            className="btn btn-outline btn-sm px-3 rounded-lg text-black-600"
+          >
             <FaTrashAlt />
           </button>
-          <button  className="btn border-vivid rounded-lg btn-sm px-8 text-vivid">
+          <button className="btn border-vivid rounded-lg btn-sm px-8 text-vivid">
             แก้ไข
           </button>
         </div>

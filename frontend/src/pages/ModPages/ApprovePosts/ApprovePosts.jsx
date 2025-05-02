@@ -69,34 +69,41 @@ const getStatusText = (status) => {
 // ฟังก์ชันเปลี่ยนสถานะโพสต์
 const handleApproveStatus = async (status) => {
   try {
+    let payloadrejected = { action: status };
     //  ถ้าสถานะคือ rejected ➜ ลบโพสต์
     if (status === "rejected") {
       const confirm = await Swal.fire({
-        title: "ยืนยันการลบโพสต์?",
-        text: "คุณแน่ใจหรือไม่ว่าต้องการลบโพสต์นี้ออกจากระบบ",
+        title: "ยืนยันการไม่อนุมัติโพสต์?",
+        text: "โพสต์นี้จะถูกปฏิเสธและจะถูกลบออกจากรายการ",
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "ลบโพสต์",
+        confirmButtonText: "ยืนยัน",
         cancelButtonText: "ยกเลิก",
       });
-
+    
       if (!confirm.isConfirmed) return;
-
-      const response = await ModPostService.deletePostProductByMod(id);
+    
+      const payload = {
+        action: "rejected",
+        message: "ขออภัย โพสต์ประกาศของคุณไม่ผ่านการตรวจสอบครับ",
+      };
+    
+      const response = await ModPostService.reviewPostByMod(id, payload);
       if (response.status === 200) {
         Swal.fire({
-          title: "ลบสำเร็จ",
-          text: "โพสต์นี้ถูกลบออกจากระบบแล้ว",
+          title: "ดำเนินการสำเร็จ",
+          text: "โพสต์ถูกปฏิเสธเรียบร้อยแล้ว",
           icon: "success",
           timer: 1500,
           showConfirmButton: false,
         }).then(() => {
-          window.history.back();
+          navigate("/mod", { replace: true });
         });
       }
-
+    
       return;
     }
+    
 
     // ถ้าเป็น approved หรือ needs_revision ➜ อัปเดตสถานะ
     let payload = { action: status };
