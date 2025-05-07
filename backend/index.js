@@ -13,6 +13,8 @@ const modRouter = require("./routers/mod.router")
 const maincategoryRouter = require("./routers/maincategory.router")
 const subcategoryRouter = require("./routers/subcategory.router")
 
+const wishlistRouter = require("./routers/wishlist.router");
+
 try {
   mongoose.connect(DB_URL);
   console.log("Connect to mongo DB Successfully");
@@ -32,6 +34,8 @@ app.use("/api/v1/maincategory", maincategoryRouter);
 app.use("/api/v1/subcategory", subcategoryRouter);
 app.use("/api/v1/report", reportRouter);
 app.use("/api/v1/mod", modRouter);
+
+app.use("/api/v1/wishlist", wishlistRouter);
 
 app.listen(PORT, () => {
   console.log("Server is running on http://localhost:" + PORT);

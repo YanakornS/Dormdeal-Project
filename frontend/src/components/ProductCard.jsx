@@ -1,46 +1,91 @@
-const ProductCard = ({ product }) => {
-  
+import { useState, useEffect, useContext } from "react";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
+import WishListService from "../services/wishlist.service";
+import { AuthContext } from "../context/AuthContext"; // ถ้าใช้ context user
+
+const ProductCard = ({ product = false }) => {
+  const [isHeartFilled, setIsHeartFilled] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { user } = useContext(AuthContext); // ต้องมี user ถึงเรียกได้
+
+  // ตรวจสอบว่า post นี้อยู่ใน wishlist หรือไม่
+  useEffect(() => {
+    const checkWishlist = async () => {
+      if (!user) return; // ต้อง login ก่อน
+      try {
+        const res = await WishListService.getWishlist();
+        const inWishlist = res.data.some((item) => item.post._id === product._id);
+        setIsHeartFilled(inWishlist);
+      } catch (err) {
+        console.error("โหลด wishlist ล้มเหลว", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkWishlist();
+  }, [product._id, user]);
+
+  const handleHeartClick = async (e) => {
+    e.preventDefault();
+    if (!user) {
+      alert("กรุณาเข้าสู่ระบบก่อนเพิ่มรายการโปรด");
+      return;
+    }
+
+    try {
+      await WishListService.toggleWishlist(product._id);
+      setIsHeartFilled(!isHeartFilled); // toggle ตามที่ backend ทำ
+    } catch (err) {
+      console.error("ไม่สามารถเพิ่ม/ลบ Wishlist ได้", err);
+    }
+  };
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("th-TH", {
       style: "currency",
       currency: "THB",
       minimumFractionDigits: 0,
-      maximumFractionDigits: 0, 
+      maximumFractionDigits: 0,
     }).format(price);
   };
 
   return (
-    <div className="card shadow-lg flex flex-col h-full">
-      <a href={`/postproductdetail/${product._id}`}>
-      {/* รูปสินค้า */}
-      <figure className="relative">
-        <img
-          src={product.images}
-          alt={product.productName}
-          className="w-full h-60 object-cover"
-        />
+    <div className="card shadow-lg flex flex-col h-full relative">
+      <a href={`/postproductdetail/${product._id}`} className="block">
+        <figure className="relative">
+          <img
+            src={product.images}
+            alt={product.productName}
+            className="w-full h-60 object-cover"
+          />
 
-        {/* Badge "โฆษณา" เฉพาะ Paid */}
-        {product.postPaymentType === "Paid" && (
-          <div className="absolute top-2 left-2">
-            <span className="badge badge-warning gap-2 px-3 py-1 text-xs font-semibold">
-              🔥 โฆษณา
-            </span>
-          </div>
-        )}
-      </figure>
+          {product.postPaymentType === "Paid" && (
+            <div className="absolute top-2 left-2">
+              <span className="badge badge-warning gap-2 px-3 py-1 text-xs font-semibold">
+                🔥 โฆษณา
+              </span>
+            </div>
+          )}
 
-      {/* รายละเอียดสินค้า */}
-      <div className="card-body p-4 flex flex-col grow">
-        {/* ชื่อสินค้า */}
-        <h3 className="text-sm font-extralight min-h-[48px] line-clamp-2">
-          {product.productName}
-        </h3>
+          {!isLoading && (
+            <button
+              onClick={handleHeartClick}
+              className="absolute top-2 right-2 bg-white p-2 rounded-full shadow text-red-500"
+            >
+              {isHeartFilled ? <FaHeart size={20} /> : <FaRegHeart size={20} />}
+            </button>
+          )}
+        </figure>
 
-        {/* ราคา */}
-        <p className="text-lg font-bold text-gray-900 mt-auto">{formatPrice(product.price)}
-        </p>
-      </div>
+        <div className="card-body p-4 flex flex-col grow">
+          <h3 className="text-sm font-extralight min-h-[48px] line-clamp-2">
+            {product.productName}
+          </h3>
+          <p className="text-lg font-bold text-gray-900 mt-auto">
+            {formatPrice(product.price)}
+          </p>
+        </div>
       </a>
     </div>
   );

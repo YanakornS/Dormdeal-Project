@@ -13,6 +13,8 @@ import ManagePostStatus from "../pages/UserPages/ManagePostStatus";
 import ApprovePosts from "../pages/ModPages/ApprovePosts/ApprovePosts";
 import AdminRoute from "../pages/ProtectPage/AdminRouter";
 import NotAllowed from "../pages/ProtectPage/NotAllowed";
+import Wishlists from "../pages/UserPages/Wishlists";
+import Profile from "../pages/UserPages/Profile"
 
 
 const router = createBrowserRouter([
@@ -47,6 +49,14 @@ const router = createBrowserRouter([
       {
         path: "/notallowed",
         element: <NotAllowed />,
+      },
+      {
+        path: "/profile",
+        element: <Profile />,
+      },
+      {
+        path: "/wishlish",
+        element: <Wishlists />,
       }
     ],
   },

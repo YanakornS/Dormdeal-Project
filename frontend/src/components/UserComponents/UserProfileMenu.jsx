@@ -86,7 +86,7 @@ const UserMenu = () => {
               <a href="/ManagePost">โพสต์ประกาศของฉัน</a>
             </li>
             <li>
-              <a href="/">รายการสินค้าที่สนใจ</a>
+              <a href="/wishlish">รายการสินค้าที่สนใจ</a>
             </li>
             <li>
               <a href="/">แก้ไขโปรไฟล์</a>
