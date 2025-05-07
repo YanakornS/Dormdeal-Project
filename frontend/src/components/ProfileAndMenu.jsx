@@ -89,10 +89,12 @@ const ProfileAndMenu = () => {
             <li>
               <a href="/ManagePostStatus">จัดการโพสต์ประกาศ</a>
             </li>
-            <li>
-            <a href={`/ManagePost/${userInfo._id}`}>โพสต์ประกาศของฉัน</a>
-
-            </li>
+            {userInfo?._id && (
+  <li>
+    <a href={`/ManagePost/${userInfo._id}`}>โพสต์ประกาศของฉัน</a>
+  </li>
+)}
+{/* sdfsfsefsefs */}
             <li>
               <a href="/wishlish">รายการสินค้าที่สนใจ</a>
             </li>
