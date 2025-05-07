@@ -62,7 +62,10 @@ const ProductDetail = () => {
 
       try {
         const res = await WishListService.getWishlist();
-        const found = res.data.some((item) => item.post._id === id);
+        const wishlistArray = res.data.wishlist || []; // <--  แก้ตรงนี้จาก โอ๊ค
+        const found = wishlistArray.some((item) => item._id === id); // หรือ item.post?._id === id
+        setIsHeartFilled(found);
+        
         setIsHeartFilled(found);
       } catch (error) {
         console.error("โหลด Wishlist ล้มเหลว", error);

@@ -14,7 +14,11 @@ const ProductCard = ({ product = false }) => {
       if (!user) return; // ต้อง login ก่อน
       try {
         const res = await WishListService.getWishlist();
-        const inWishlist = res.data.some((item) => item.post._id === product._id);
+        const wishlistArray = res.data.wishlist || [];
+        const inWishlist = wishlistArray.some(
+          (item) => item._id === product._id
+        );
+        
         setIsHeartFilled(inWishlist);
       } catch (err) {
         console.error("โหลด wishlist ล้มเหลว", err);
