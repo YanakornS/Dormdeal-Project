@@ -44,7 +44,7 @@ const ProductDetail = () => {
             loginModal.showModal();
           }
         }
-      });  
+      });
       return;
     }
     try {
@@ -65,7 +65,7 @@ const ProductDetail = () => {
         const wishlistArray = res.data.wishlist || []; // <--  แก้ตรงนี้จาก โอ๊ค
         const found = wishlistArray.some((item) => item._id === id); // หรือ item.post?._id === id
         setIsHeartFilled(found);
-        
+
         setIsHeartFilled(found);
       } catch (error) {
         console.error("โหลด Wishlist ล้มเหลว", error);
@@ -194,14 +194,7 @@ const ProductDetail = () => {
 
           <div className="flex items-center justify-between pb-2 mt-4 ">
             <h2 className="text-xl font-semibold ">รายละเอียด</h2>
-            <button
-  onClick={() => document.getElementById("report_modal").showModal()}
-  className="flex items-center justify-center btn-report"
->
-  <PiWarningCircle className="mr-2" size={24} />
-  รายงานโพสต์
-</button>
-
+            <ModalReport />
             {/* <ModalReport name="report_modal" /> */}
           </div>
           <p className="text-gray-700 text-sm leading-relaxed mt-1">
@@ -260,10 +253,7 @@ const ProductDetail = () => {
           ))}
         </div>
       </div>
-      <ModalReport />
-
     </div>
-    
   );
 };
 
