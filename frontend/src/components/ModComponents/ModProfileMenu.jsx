@@ -21,7 +21,7 @@ const ModProfileMenu = () => {
       <div className="flex items-center gap-4">
         <div className="dropdown dropdown-end">
           <a
-            href="/post"
+            href="/mod/reportpost"
             role="button"
             className="btn btn-ghost flex items-center"
           >
@@ -36,7 +36,7 @@ const ModProfileMenu = () => {
 
         <div className="dropdown dropdown-end ">
           <a
-            href="/post"
+            href="/mod"
             role="button"
             className="btn btn-ghost flex items-center"
           >
@@ -51,7 +51,7 @@ const ModProfileMenu = () => {
 
         <div className="dropdown dropdown-end ">
           <a
-            href="/post"
+            href="/mod/managecategories"
             role="button"
             className="btn btn-ghost flex items-center"
           >
@@ -83,13 +83,13 @@ const ModProfileMenu = () => {
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
             <li>
-              <a href="/">ตรวจสอบรายงานปัญหา</a>
+              <a href="/mod/reportpost">ตรวจสอบรายงานปัญหา</a>
             </li>
             <li>
-              <a href="/">ตรวจสอบโพสต์ซื้อขาย</a>
+              <a href="/mod">ตรวจสอบโพสต์ซื้อขาย</a>
             </li>
             <li>
-              <a href="/">จัดการหมวดหมู่สินค้า</a>
+              <a href="/mod/managecategories">จัดการหมวดหมู่สินค้า</a>
             </li>
             <li>
               <a href="/">แก้ไขโปรไฟล์</a>

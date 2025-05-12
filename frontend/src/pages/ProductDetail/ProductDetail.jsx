@@ -194,7 +194,9 @@ const ProductDetail = () => {
 
           <div className="flex items-center justify-between pb-2 mt-4 ">
             <h2 className="text-xl font-semibold ">รายละเอียด</h2>
-            <ModalReport />
+            <ModalReport postId={postProductDetail._id} />
+
+
             {/* <ModalReport name="report_modal" /> */}
           </div>
           <p className="text-gray-700 text-sm leading-relaxed mt-1">
