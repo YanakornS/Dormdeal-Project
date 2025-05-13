@@ -3,9 +3,10 @@ import { AuthContext } from "../../context/AuthContext";
 import { useChatStore } from "../../stores/useChatStore";
 import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
-import MessageSkeleton from "../skeletons/MessageSkeleton";
+import MessageSkeleton from "../Skeletons/MessageSkeleton";
 
 import { formatMessageTime, formatPrice } from "../../libs/utils";
+
 
 const ChatContainer = () => {
   const {
