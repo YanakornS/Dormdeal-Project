@@ -2,18 +2,20 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const secret = process.env.SECRET;
 
-const verifyToken = (req, res, next) => {
+verifyToken = (req, res, next) => {
   const token = req.headers["x-access-token"];
 
   if (!token) {
     return res.status(401).json({ message: "Token is missing" });
   }
-
   jwt.verify(token, secret, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ message: "Access Forbidden!!" });
-    }
-    //แก้ไขโดยkays
+    if (err) return res.status(403).json({ message: "Access Forbidden!!" });
+    req.userId = decoded.id
+    req.displayName = decoded.displayName; 
+    req.role = decoded.role;
+    
+    //เพิ่มโดยOxe ถ้าไม่ต้องการให้เพิ่ม wishlist ได้ต้องเพิ่มตรงนี้
+    // req.wishlist = decoded.wishlist;
     req.user = {
       id: decoded.id,
       displayName: decoded.displayName,
@@ -21,14 +23,13 @@ const verifyToken = (req, res, next) => {
     
       
     };
-    req.userId = decoded.id;
 
     next();
   });
 };
 
-const isMod = (req, res, next) => {
-  if (!req.user || req.user.role !== "mod") {
+isMod = (req, res, next) => {
+  if (req.role !== "mod") {
     return res.status(403).json({ message: "Require Mod Role" });
   }
   next();

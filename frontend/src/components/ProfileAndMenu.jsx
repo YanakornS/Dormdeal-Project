@@ -59,7 +59,7 @@ const ProfileAndMenu = () => {
         </div>
 
         <div className="dropdown dropdown-end">
-          <a href="/alerts" role="button" className="btn btn-ghost btn-circle">
+          <a href="/chat" role="button" className="btn btn-ghost btn-circle">
             <div className="indicator">
               <BiMessageSquareDetail className="w-6 h-6" />
               <span className="badge badge-xs badge-error indicator-item">

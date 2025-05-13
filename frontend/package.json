@@ -15,18 +15,22 @@
     "date-fns": "^4.1.0",
     "firebase": "^11.4.0",
     "install": "^0.13.0",
+    "lucide-react": "^0.509.0",
     "motion": "^12.4.7",
     "npm": "^11.1.0",
     "react": "^19.0.0",
     "react-cookie": "^7.2.2",
     "react-dom": "^19.0.0",
+    "react-hot-toast": "^2.5.2",
     "react-icons": "^5.5.0",
     "react-router": "^7.2.0",
     "react-select": "^5.10.1",
+    "socket.io-client": "^4.8.1",
     "sweetalert2": "^11.17.2",
     "swiper": "^11.2.4",
     "tailwindcss": "^4.0.8",
-    "yet-another-react-lightbox": "^3.21.9"
+    "yet-another-react-lightbox": "^3.21.9",
+    "zustand": "^5.0.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

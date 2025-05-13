@@ -1,6 +1,8 @@
 import WishListService from "../../services/wishlist.service";
 import { AuthContext } from "../../context/AuthContext"; // หรือ path ของ AuthContext จริงของคุณ
 import { useContext } from "react";
+import { useChatStore } from "../../stores/useChatStore";
+import { useNavigate } from "react-router";
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -9,7 +11,9 @@ import Swal from "sweetalert2";
 import { AiOutlineMessage } from "react-icons/ai";
 import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
+import Modal from "../../components/Login/Modal";
 import ProductCard from "../../components/ProductCard";
+
 
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { PiWarningCircle } from "react-icons/pi";
@@ -17,13 +21,19 @@ import { PiWarningCircle } from "react-icons/pi";
 import ModalReport from "../../components/ReportPost/ModalReport";
 
 const ProductDetail = () => {
+  const { createChatRoom, sendMessage } = useChatStore();
   const [postProductDetail, setPostProductDetail] = useState({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const { id } = useParams();
   const [relatedProducts, setRelatedProducts] = useState([]); // เพิ่มตัวแปรนี้
   const [isHeartFilled, setIsHeartFilled] = useState(false);
-  const { user } = useContext(AuthContext); // ใช้ตรวจว่า login หรือยัง
+  const { socket, getUser, user } = useContext(AuthContext);
+  const jwtUser = getUser();
+  const isLoggedIn = !!jwtUser;
+  const isOwner = isLoggedIn && postProductDetail.owner?._id === jwtUser._id;
+
+  const navigate = useNavigate();
 
   const handleHeartClick = async (e) => {
     e.preventDefault();
@@ -83,6 +93,7 @@ const ProductDetail = () => {
       maximumFractionDigits: 0,
     }).format(price);
   };
+
   useEffect(() => {
     const fetchPost = async () => {
       try {
@@ -124,6 +135,25 @@ const ProductDetail = () => {
     };
     fetchPost();
   }, [id]);
+
+  const handleChat = async () => {
+    if (!isLoggedIn) {
+      document.getElementById("login").showModal();
+      return;
+    }
+
+    try {
+      const receiverId = postProductDetail.owner._id;
+      const postId = postProductDetail._id;
+
+      await createChatRoom({ receiverId }, socket);
+      await sendMessage({ postId }, socket);
+
+      navigate("/chat");
+    } catch (error) {
+      console.error("Failed to start chat:", error);
+    }
+  };
 
   return (
     <div className="section-container sm:mt-7 mt-6 px-6 py-14">
@@ -195,8 +225,6 @@ const ProductDetail = () => {
           <div className="flex items-center justify-between pb-2 mt-4 ">
             <h2 className="text-xl font-semibold ">รายละเอียด</h2>
             <ModalReport postId={postProductDetail._id} />
-
-
             {/* <ModalReport name="report_modal" /> */}
           </div>
           <p className="text-gray-700 text-sm leading-relaxed mt-1">
@@ -223,8 +251,19 @@ const ProductDetail = () => {
             </a>
           </div>
           {/* ปุ่มแชท */}
-          <button className="mt-4 flex items-center justify-center bg-gray-200 text-black px-4 py-2 rounded-2xl w-full border border-gray-300 hover:bg-gray-300 cursor-pointer">
-            <AiOutlineMessage size={20} className="mr-2" /> แชท
+          <button
+            disabled={isOwner}
+            onClick={handleChat}
+            className={`mt-4 flex items-center justify-center px-4 py-2 rounded-2xl w-full transition
+    ${
+      isOwner
+        ? "bg-gray-100 cursor-not-allowed opacity-50"
+        : "bg-gray-200 hover:bg-gray-300"
+    }
+  `}
+          >
+            <AiOutlineMessage size={20} className="mr-2" />
+            แชท
           </button>
         </div>
       </div>
@@ -255,6 +294,7 @@ const ProductDetail = () => {
           ))}
         </div>
       </div>
+      <Modal name="login" />
     </div>
   );
 };

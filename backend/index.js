@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const mongoose = require("mongoose");
-const app = express();
+const { app, server } = require("./libs/socket");
 const BASE_URL = process.env.BASE_URL;
 const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
@@ -12,8 +12,9 @@ const reportRouter = require("./routers/report.router")
 const modRouter = require("./routers/mod.router")
 const maincategoryRouter = require("./routers/maincategory.router")
 const subcategoryRouter = require("./routers/subcategory.router")
-
 const wishlistRouter = require("./routers/wishlist.router");
+const messageRouter = require("./routers/message.router")
+const chatroomRouter = require("./routers/chatroom.router");
 
 try {
   mongoose.connect(DB_URL);
@@ -34,9 +35,10 @@ app.use("/api/v1/maincategory", maincategoryRouter);
 app.use("/api/v1/subcategory", subcategoryRouter);
 app.use("/api/v1/report", reportRouter);
 app.use("/api/v1/mod", modRouter);
-
 app.use("/api/v1/wishlist", wishlistRouter);
+app.use("/api/v1/message", messageRouter);
+app.use("/api/v1/chatroom", chatroomRouter);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log("Server is running on http://localhost:" + PORT);
 });

@@ -7,6 +7,7 @@ import AddProduct from "../pages/PostProduct/Index";
 import Home from "../pages/Home/Index";
 import ShoppingPost from "../pages/ShoppiongPost/Index";
 import ProductDetail from "../pages/ProductDetail/ProductDetail";
+import Chat from "../pages/Chat/Home";
 import ManagePosts from "../pages/UserPages/ManagePosts/Index";
 import ManagePostsByMod from "../pages/ModPages/ManagePostsByMod";
 import ManagePostStatus from "../pages/UserPages/ManagePostStatus";
@@ -14,7 +15,8 @@ import ApprovePosts from "../pages/ModPages/ApprovePosts/ApprovePosts";
 import AdminRoute from "../pages/ProtectPage/AdminRouter";
 import NotAllowed from "../pages/ProtectPage/NotAllowed";
 import Wishlists from "../pages/UserPages/Wishlists";
-import Profile from "../pages/UserPages/Profile"
+import Profile from "../pages/UserPages/Profile";
+
 
 import ReportPosts from "../pages/ModPages/ReportPosts/ReportPosts";
 import ManageCategories from "../pages/ModPages/MenageCategories/ManageCategories";
@@ -42,6 +44,10 @@ const router = createBrowserRouter([
         element: <AddProduct />,
       },
       {
+        path: "/chat",
+        element: <Chat />,
+      },
+      {
         path: "/ManagePost/:id",
         element: <ManagePosts />,
       },
@@ -60,21 +66,24 @@ const router = createBrowserRouter([
       {
         path: "/wishlish",
         element: <Wishlists />,
-      }
-      
-      
+      },
     ],
   },
   {
     path: "/mod",
-    element: <AdminRoute> <ModLayout /> </AdminRoute>,
+    element: (
+      <AdminRoute>
+        {" "}
+        <ModLayout />{" "}
+      </AdminRoute>
+    ),
     children: [
       {
         path: "",
         element: <ManagePostsByMod />,
       },
       {
-        path: "approveposts/:id", 
+        path: "approveposts/:id",
         element: <ApprovePosts />,
       },
       {

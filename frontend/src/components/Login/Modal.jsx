@@ -7,14 +7,11 @@ import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
 
 const Modal = ({ name }) => {
-  const { signUpWithGoogle } = useContext(AuthContext);
+  const { loginWithGoogle } = useContext(AuthContext);
 
   const googleSignUp = () => {
-    signUpWithGoogle()
-      .then(async (result) => {
-        const user = result.user;
-        console.log(user);
-        await UserService.addUser(user.email, user.displayName, user.photoURL);
+    loginWithGoogle()
+      .then(() => {
         Swal.fire({
           icon: "success",
           title: "ลงชื่อเข้าใช้สำเร็จ!",

@@ -8,8 +8,6 @@ export const getWishlist = async () => {
   return api.get("/wishlist");
 };
 
-
-
 const WishListService = {
   toggleWishlist,
   getWishlist,

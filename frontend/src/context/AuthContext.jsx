@@ -1,89 +1,126 @@
 import { createContext, useEffect, useState } from "react";
+import { io } from "socket.io-client";
 import { Cookies } from "react-cookie";
 export const AuthContext = createContext();
 import app from "../configs/firebase.config";
 import {
-  createUserWithEmailAndPassword,
   getAuth,
   onAuthStateChanged,
-  signInWithEmailAndPassword,
   signOut,
   signInWithPopup,
   GoogleAuthProvider,
-  GithubAuthProvider,
-  FacebookAuthProvider,
   updateProfile,
 } from "firebase/auth";
 import UserService from "../services/user.service";
 
 const cookies = new Cookies();
-
-const getUser = () => {
-  const userInfo = cookies.get("user") || null;
-  return userInfo;
-};
+const auth = getAuth(app);
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const auth = getAuth(app);
+  const [socket, setSocket] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
-  const logout = () => {
-    return signOut(auth);
+  const getUser = () => cookies.get("user") || null;
+
+  const connectSocket = (userId) => {
+    if (socket?.connected || socket !== null) return;
+
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL, {
+      query: { userId },
+      transports: ["websocket"],
+    });
+
+    newSocket.on("connect", () => {
+      console.log("Socket connected:", newSocket.id);
+    });
+
+    newSocket.on("getOnlineUsers", (userIds) => setOnlineUsers(userIds));
+    setSocket(newSocket);
   };
 
-  const signUpWithGoogle = () => {
+  const disconnectSocket = () => {
+    if (socket && socket.connected) {
+      socket.disconnect();
+      setSocket(null);
+    }
+  };
+
+  const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ hd: "webmail.npru.ac.th" });
-
-    return signInWithPopup(auth, provider).then((result) => {
-      const email = result.user.email;
+  
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const { email, displayName, photoURL } = user;
+  
       if (!email.endsWith("@webmail.npru.ac.th")) {
-        auth.signOut();
+        await signOut(auth);
         throw new Error("กรุณาใช้บัญชีอีเมลมหาวิทยาลัยในการเข้าสู่ระบบ");
       }
-      return result;
-    });
+  
+      await UserService.addUser(email, displayName, photoURL);
+  
+      const jwtResponse = await UserService.signJwt(
+        email,
+        displayName,
+        photoURL
+      );
+  
+      const userData = jwtResponse.data;
+  
+      if (userData) {
+        cookies.set("user", userData, {
+          path: "/",
+          maxAge: 60 * 60 * 24,
+        });
+      
+        connectSocket(userData.id);
+      }
+    } catch (error) {
+      console.log("Login failed:", error);
+    }
+  };
+  
+  const logout = async () => {
+    await signOut(auth);
+    disconnectSocket();
+    cookies.remove("user");
   };
 
-  const updateUserProfile = ({ name, photoURL }) => {
-    return updateProfile(auth.currentUser, {
-      displayName: name,
-      photoURL: photoURL,
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setIsLoading(false);
+  
+      const jwt = cookies.get("user");
+      const userId = jwt?._id;
+      
+      if (currentUser && userId && (!socket || !socket.connected)) {
+        connectSocket(userId);
+        console.log("Reconnected socket with ID:", userId);
+      }
+  
+      if (!currentUser) {
+        cookies.remove("user");
+        disconnectSocket();
+      }
     });
-  };
-
+  
+    return () => unsubscribe();
+  }, []);
+  
   const authInfo = {
     user,
     isLoading,
     logout,
-    signUpWithGoogle,
-    updateUserProfile,
+    loginWithGoogle,
     getUser,
+    socket,
+    onlineUsers,
   };
-
-  //check if user is logged in
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        setUser(currentUser);
-        setIsLoading(false);
-        const { email, displayName, photoURL } = currentUser;
-        const response = await UserService.signJwt(email, displayName, photoURL);
-        if (response.data) {
-          console.log(response.data);
-          cookies.set("user", response.data);
-        }
-      } else {
-        cookies.remove("user");
-      }
-      setIsLoading(false);
-    });
-    return () => {
-      return unsubscribe();
-    };
-  }, [auth]);
 
   return (
     <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
