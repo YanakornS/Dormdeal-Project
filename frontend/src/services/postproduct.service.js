@@ -26,6 +26,15 @@ const getPostById = async (id) => {
   return response.data || null;  // ใช้ response.data โดยตรง
 };
 
+const updatePostProduct = async (id, post) => {
+  return await api.put(`${API_URL}/${id}`, post, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+
 const deletePostByOwner = async (id) => {
   return await api.delete(`${API_URL}/${id}`);
 };
@@ -37,6 +46,7 @@ const PostService = {
   getPostById,
   getPostByOwner,
   deletePostByOwner,
+  updatePostProduct,
   
 };
 

@@ -3,11 +3,17 @@ import { FaTrashAlt } from "react-icons/fa";
 import { FaRegEdit } from "react-icons/fa";
 import PostService from "../services/postproduct.service";
 import Swal from "sweetalert2";
-
+import Index from "../pages/PostProduct/Index";
+import { useNavigate } from "react-router";
 import { useState } from "react";
 
 const PostReviewCard = ({ post, onDelete = () => {} }) => {
   const isRevision = post.status === "needs_revision";
+  const navigate = useNavigate();
+
+  const handleEditPost = () => {
+   navigate(`/updatepost/${post._id}`);
+  };
 
   const handleDeletePost = async (id) => {
     const result = await Swal.fire({
@@ -66,9 +72,7 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
           </p>
           <div>
             {post.status === "rejected" && post.modNote && (
-              <p className="text-sm text-red-500 mt-1">
-                {post.modNote}
-              </p>
+              <p className="text-sm text-red-500 mt-1">{post.modNote}</p>
             )}
           </div>
         </div>
@@ -83,7 +87,10 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
           >
             <FaTrashAlt />
           </button>
-          <button className="btn border-vivid rounded-lg btn-sm px-8 text-vivid">
+          <button
+            onClick={handleEditPost}
+            className="btn border-vivid rounded-lg btn-sm px-8 text-vivid"
+          >
             แก้ไข
           </button>
         </div>

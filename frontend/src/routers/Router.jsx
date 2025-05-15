@@ -17,10 +17,9 @@ import NotAllowed from "../pages/ProtectPage/NotAllowed";
 import Wishlists from "../pages/UserPages/Wishlists";
 import Profile from "../pages/UserPages/Profile";
 
-
 import ReportPosts from "../pages/ModPages/ReportPosts/ReportPosts";
 import ManageCategories from "../pages/ModPages/MenageCategories/ManageCategories";
-
+import UpdatePostProduct from "../pages/UserPages/UpdatePost/UpdatePostProduct";
 
 const router = createBrowserRouter([
   {
@@ -67,6 +66,10 @@ const router = createBrowserRouter([
         path: "/wishlish",
         element: <Wishlists />,
       },
+      {
+        path: "/updatepost/:id",
+        element: <UpdatePostProduct />,
+      },
     ],
   },
   {
@@ -88,12 +91,12 @@ const router = createBrowserRouter([
       },
       {
         path: "/mod/reportpost",
-        element: <ReportPosts />
+        element: <ReportPosts />,
       },
       {
         path: "/mod/managecategories",
-        element: <ManageCategories/>
-      }
+        element: <ManageCategories />,
+      },
     ],
   },
 ]);

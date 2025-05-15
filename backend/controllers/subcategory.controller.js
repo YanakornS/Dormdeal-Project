@@ -38,7 +38,7 @@ exports.addSubCategory = async (req, res) => {
 
 exports.getSubCategories = async(req,res) =>{
   try{
-    const subcategories = await SubCategory.find()
+    const subcategories = await MainCategory.find()
     res.json(subcategories);
   } catch (error) {
     res.status(500).send({
@@ -47,10 +47,11 @@ exports.getSubCategories = async(req,res) =>{
   }
 }
 
+
 exports.getSubCategoryById = async(req,res)=>{
   const {id} = req.params
   try{
-    const subcategory = await SubCategory.findById(id);
+    const subcategory = await MainCategory.findById(id);
     if(!subcategory){
       res.status(404).send({message:"SubCategory not found"})
       return
@@ -69,7 +70,7 @@ exports.updateSubCategory = async (req,res)=>{
     return res.status(404).json({message:"SubCategory name is required"})
   }
   try{
-    const subcategory = await SubCategory.findByIdAndUpdate(
+    const subcategory = await MainCategory.findByIdAndUpdate(
       id,
       {name},
       { new: true }
@@ -88,7 +89,7 @@ exports.updateSubCategory = async (req,res)=>{
 exports.deleteSubCategory = async(req,res)=>{
   const {id} = req.params;
   try{
-    const subcategory = await SubCategory.findByIdAndDelete(id);
+    const subcategory = await MainCategory.findByIdAndDelete(id);
     if(!subcategory){
       res.status(400).send({message:"SubCategory not found"})
     }

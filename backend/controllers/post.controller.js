@@ -205,31 +205,61 @@ exports.updatePost = async (req, res) => {
       });
     }
 
-    const { productName, category, price, description, condition } = req.body;
+    const {
+      productName,
+      category,
+      subcategory,
+      price,
+      description,
+      condition,
+      postType,
+      postPaymentType,
+      existingImages,
+    } = req.body;
 
-    if (!productName || !category || !price || !description || !condition) {
+    if (
+      !productName || !category || !subcategory ||
+      !price || !description || !condition || !postType || !postPaymentType
+    ) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
+    // อัปเดตฟิลด์
     postDoc.productName = productName;
     postDoc.category = category;
+    postDoc.subcategory = subcategory;
     postDoc.price = price;
     postDoc.description = description;
     postDoc.condition = condition;
+    postDoc.postType = postType;
+    postDoc.postPaymentType = postPaymentType;
 
-    if (req.files) {
-      postDoc.images = req.fileUrls;
+    // ✅ รวมภาพเก่าและใหม่
+    let oldImages = [];
+    try {
+      oldImages = JSON.parse(existingImages);
+    } catch (e) {
+      oldImages = [];
     }
+
+    postDoc.images = req.fileUrls
+      ? [...oldImages, ...req.fileUrls]
+      : oldImages;
+
+    // รีเซ็ตสถานะเพื่อให้ admin ตรวจสอบใหม่
+    postDoc.status = "pending_review";
+    postDoc.modNote = null;
 
     await postDoc.save();
     res.json(postDoc);
   } catch (error) {
+    console.error(error.message);
     res.status(500).send({
-      message:
-        error.message || "Something error occurred while updating a post",
+      message: error.message || "Something error occurred while updating a post",
     });
   }
 };
+
 
 // getAllPostByMod
 // exports.getAllPostsByMod = async (req, res) => {
