@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
-import CategorieService from "../../../services/categorie.service";
+import mainCategoryService from "../../../services/mainCategory.service";
 import { FaPlus, FaTrash } from "react-icons/fa";
+import { FiEdit } from "react-icons/fi";
 import Swal from "sweetalert2";
+
+import ModalEditMainCategory from "./ModalEditMainCategory";
+import ModalEditSubCategory from "./ModalEditSubCategory";
 
 const ManageCategories = () => {
   const [categories, setCategories] = useState([]);
@@ -9,6 +13,14 @@ const ManageCategories = () => {
   const [expanded, setExpanded] = useState(null);
   const [newName, setNewName] = useState("");
   const [image, setImage] = useState(null);
+  const [adding, setAdding] = useState(false);
+  const [subNames, setSubNames] = useState({});
+  const [editingId, setEditingId] = useState(null);
+  const [editingName, setEditingName] = useState("");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const [editSubModalOpen, setEditSubModalOpen] = useState(false);
+  const [selectedSub, setSelectedSub] = useState(null);
 
   useEffect(() => {
     fetchCategories();
@@ -16,7 +28,7 @@ const ManageCategories = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await CategorieService.getAllCategorie();
+      const res = await mainCategoryService.getAllMainCategories();
       setCategories(res.data);
     } catch (err) {
       console.error("Error loading categories:", err);
@@ -33,17 +45,23 @@ const ManageCategories = () => {
 
     const formData = new FormData();
     formData.append("name", newName);
-    formData.append("image", image);
+    formData.append("file", image);
 
+    setAdding(true);
     try {
-      await CategorieService.addCategory(formData);
+      await mainCategoryService.addMainCategory(formData);
       Swal.fire("เพิ่มหมวดหมู่สำเร็จ", "", "success");
       setNewName("");
       setImage(null);
       fetchCategories();
     } catch (err) {
-      console.error("Error adding category:", err);
-      Swal.fire("เกิดข้อผิดพลาด", err.message || "", "error");
+      Swal.fire(
+        "เกิดข้อผิดพลาด",
+        err?.response?.data?.message || err.message,
+        "error"
+      );
+    } finally {
+      setAdding(false);
     }
   };
 
@@ -59,12 +77,99 @@ const ManageCategories = () => {
 
     if (result.isConfirmed) {
       try {
-        await CategorieService.deleteCategory(id);
+        await mainCategoryService.deleteMainCategory(id);
         Swal.fire("ลบสำเร็จ", "", "success");
         fetchCategories();
       } catch (err) {
-        console.error("Error deleting:", err);
         Swal.fire("เกิดข้อผิดพลาด", err.message || "", "error");
+      }
+    }
+  };
+
+  const handleAddSubCategory = async (mainCategoryId) => {
+    const subCategoryName = subNames[mainCategoryId];
+    if (!subCategoryName) {
+      Swal.fire("กรุณาใส่ชื่อหมวดย่อย", "", "warning");
+      return;
+    }
+
+    try {
+      await mainCategoryService.addSubCategory({
+        mainCategoryId,
+        subCategoryName,
+      });
+      Swal.fire("เพิ่มหมวดย่อยสำเร็จ", "", "success");
+      setSubNames((prev) => ({ ...prev, [mainCategoryId]: "" }));
+      fetchCategories();
+    } catch (err) {
+      Swal.fire(
+        "เกิดข้อผิดพลาด",
+        err?.response?.data?.message || err.message,
+        "error"
+      );
+    }
+  };
+
+  const handleEditCategory = (cat) => {
+    setEditingId(cat._id);
+    setEditingName(cat.name);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateCategory = async () => {
+    if (!editingName || !editingId) return;
+
+    const formData = new FormData();
+    formData.append("name", editingName);
+    try {
+      await mainCategoryService.updateMainCategory(editingId, formData);
+      Swal.fire("อัปเดตหมวดหมู่สำเร็จ", "", "success");
+      setEditingId(null);
+      setEditingName("");
+      setIsEditModalOpen(false);
+      fetchCategories();
+    } catch (err) {
+      Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
+    }
+  };
+
+  const handleEditSubCategory = (sub) => {
+    setSelectedSub(sub);
+    setEditSubModalOpen(true);
+  };
+
+  const handleUpdateSubCategory = async (newName) => {
+    if (!selectedSub || !newName) return;
+    try {
+      await mainCategoryService.updateSubCategory(selectedSub._id, {
+        name: newName,
+      });
+      Swal.fire("อัปเดตหมวดย่อยสำเร็จ", "", "success");
+      setEditSubModalOpen(false);
+      setSelectedSub(null);
+      fetchCategories();
+    } catch (err) {
+      Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
+    }
+  };
+
+  const handleDeleteSubCategory = async (id) => {
+    const result = await Swal.fire({
+      title: "ยืนยันการลบ?",
+      text: "หมวดย่อยจะถูกลบถาวร",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "ใช่, ลบเลย",
+      cancelButtonText: "ยกเลิก",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await mainCategoryService.deleteSubCategory(id);
+        Swal.fire("ลบสำเร็จ", "", "success");
+        fetchCategories();
+      } catch (err) {
+        Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
       }
     }
   };
@@ -74,11 +179,10 @@ const ManageCategories = () => {
   };
 
   return (
-    <div className="w-full max-w-[846px] mx-auto px-4 py-6">
+    <div className="section-container-add-products pt-22 w-full max-w-[846px] mx-auto px-4 py-6">
       <h2 className="text-2xl font-bold mb-6">จัดการหมวดหมู่สินค้า</h2>
 
-      {/* ฟอร์มเพิ่มหมวดหมู่ */}
-      <div className="mb-6 space-y-2">
+      <div className="mb-6 flex flex-col md:flex-row items-center gap-2">
         <input
           type="text"
           placeholder="ชื่อหมวดหมู่ใหม่"
@@ -90,14 +194,25 @@ const ManageCategories = () => {
           type="file"
           accept="image/*"
           onChange={(e) => setImage(e.target.files[0])}
-          className="file-input file-input-bordered w-full"
+          className="file-input file-input-bordered"
         />
-        <button onClick={handleAddCategory} className="btn btn-primary w-full">
-          เพิ่มหมวดหมู่
+        <button
+          onClick={handleAddCategory}
+          className="btn btn-primary"
+          disabled={adding}
+        >
+          {adding ? "กำลังเพิ่ม..." : "เพิ่มหมวดหมู่"}
         </button>
       </div>
 
-      {/* รายการหมวดหมู่ */}
+      {image && (
+        <img
+          src={URL.createObjectURL(image)}
+          alt="Preview"
+          className="w-20 h-20 object-cover rounded mb-4"
+        />
+      )}
+
       {loading ? (
         <div className="text-center">กำลังโหลดข้อมูล...</div>
       ) : (
@@ -107,31 +222,97 @@ const ManageCategories = () => {
               key={cat._id}
               className="bg-white rounded-lg border border-gray-200 shadow px-4 py-3"
             >
-              <div
-                onClick={() => toggleExpand(index)}
-                className="flex items-center justify-between flex-wrap gap-4 cursor-pointer"
-              >
-                <span className="font-medium text-lg">{cat.name}</span>
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  className="w-10 h-10 object-cover rounded-full"
-                />
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div
+                  className="flex items-center gap-3 cursor-pointer"
+                  onClick={() => toggleExpand(index)}
+                >
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    className="w-10 h-10 object-cover rounded-full"
+                  />
+                  <span className="font-medium text-lg">{cat.name}</span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                  <button
+                    onClick={() => handleEditCategory(cat)}
+                    className="flex items-center gap-1 text-sm bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded shadow-sm transition duration-200"
+                  >
+                    <FiEdit className="text-base" />
+                    แก้ไขหมวดหมู่
+                  </button>
+
+                  <button
+                    onClick={() => toggleExpand(index)}
+                    className="flex items-center gap-1 text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded shadow-sm transition duration-200"
+                  >
+                    <FaPlus className="text-base" />
+                    เพิ่มหมวดย่อย
+                  </button>
+                  <button
+                    onClick={() => handleDeleteCategory(cat._id)}
+                    className="flex items-center gap-1 text-sm bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded shadow-sm transition duration-200"
+                  >
+                    <FaTrash className="text-base" />
+                    ลบหมวดหมู่
+                  </button>
+                </div>
               </div>
 
               {expanded === index && (
-                <div className="mt-3 px-2 space-y-3">
-                  <p className="text-sm text-gray-500">ยังไม่มีหมวดหมู่ย่อย</p>
-                  <div className="flex flex-wrap gap-3">
-                    <button className="flex items-center gap-1 text-sm bg-blue-100 hover:bg-blue-200 text-blue-600 px-3 py-1 rounded">
-                      <FaPlus /> เพิ่มหมวดย่อย
-                    </button>
+                <div className="mt-4 space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="ชื่อหมวดย่อย"
+                      value={subNames[cat._id] || ""}
+                      onChange={(e) =>
+                        setSubNames((prev) => ({
+                          ...prev,
+                          [cat._id]: e.target.value,
+                        }))
+                      }
+                      className="input input-bordered w-full"
+                    />
                     <button
-                      onClick={() => handleDeleteCategory(cat._id)}
-                      className="flex items-center gap-1 text-sm bg-red-100 hover:bg-red-200 text-red-600 px-3 py-1 rounded"
+                      onClick={() => handleAddSubCategory(cat._id)}
+                      className="btn btn-outline btn-primary"
                     >
-                      <FaTrash /> ลบหมวดหมู่
+                      เพิ่ม
                     </button>
+                  </div>
+
+                  <div className="text-sm text-gray-600">
+                    หมวดย่อย:
+                    {cat.subCategories?.length > 0 ? (
+                      <ul className="list-disc pl-5 mt-1 space-y-1">
+                        {cat.subCategories.map((sub) => (
+                          <li key={sub._id} className="flex justify-between items-center">
+                            <span>{sub.subCategoryName}</span>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleEditSubCategory(sub)}
+                                className="text-yellow-600 hover:underline text-sm"
+                              >
+                                แก้ไข
+                              </button>
+                              <button
+                                onClick={() => handleDeleteSubCategory(sub._id)}
+                                className="text-red-600 hover:underline text-sm"
+                              >
+                                ลบ
+                              </button>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <span className="italic text-gray-400">
+                        ไม่มีหมวดย่อย
+                      </span>
+                    )}
                   </div>
                 </div>
               )}
@@ -139,6 +320,28 @@ const ManageCategories = () => {
           ))}
         </div>
       )}
+
+      <ModalEditMainCategory
+        isOpen={isEditModalOpen}
+        name={editingName}
+        onChange={setEditingName}
+        onConfirm={handleUpdateCategory}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingId(null);
+          setEditingName("");
+        }}
+      />
+
+      <ModalEditSubCategory
+        isOpen={editSubModalOpen}
+        subCategory={selectedSub}
+        onClose={() => {
+          setEditSubModalOpen(false);
+          setSelectedSub(null);
+        }}
+        onConfirm={handleUpdateSubCategory}
+      />
     </div>
   );
 };
