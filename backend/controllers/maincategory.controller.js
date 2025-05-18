@@ -1,4 +1,7 @@
 const MainCategory = require ("../models/maincategory.model")
+
+
+
 // ใน category.controller.js
 exports.addCategory = async (req, res) => {
   const { name } = req.body;
@@ -80,7 +83,7 @@ exports.updateCategory = async (req, res) => {
 exports.deleteCategory = async (req,res)=>{
   const {id} = req.params;
   try{
-    const category = await MainCategory.findById(id);
+    const category = await MainCategory.findByIdAndDelete(id);
     if(!category){
       return res.status(404).json({message:"Category not found"})
     }

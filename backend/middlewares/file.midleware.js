@@ -105,9 +105,9 @@ async function uploadsToFirebase(req, res, next) {
   
   //upload to firebase
   async function uploadToFirebase(req,res,next){
-    if(!req.file){
-      // return res.status(400).json({message:"Image is required"})
-      next();
+    if (!req.file) {
+  return res.status(400).json({ message: "No image file provided" });
+
     }else{
       //savelocation
     const storageRef = ref(firebaseStorage,`SE-Shop/DormDeals/imageMainCategory/${req?.file?.originalname}`);

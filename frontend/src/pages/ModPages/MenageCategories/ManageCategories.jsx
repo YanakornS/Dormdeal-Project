@@ -37,34 +37,35 @@ const ManageCategories = () => {
     }
   };
 
-  const handleAddCategory = async () => {
-    if (!newName || !image) {
-      Swal.fire("กรุณาใส่ชื่อและเลือกรูป", "", "warning");
-      return;
-    }
+  // const handleAddCategory = async () => {
+  //   if (!newName || !image) {
+  //     Swal.fire("กรุณาใส่ชื่อและเลือกรูป", "", "warning");
+  //     return;
+  //   }
 
-    const formData = new FormData();
-    formData.append("name", newName);
-    formData.append("file", image);
+  //   const formData = new FormData();
+  //   formData.append("name", newName);
+  //   formData.append("file", image);
 
-    setAdding(true);
-    try {
-      await mainCategoryService.addMainCategory(formData);
-      Swal.fire("เพิ่มหมวดหมู่สำเร็จ", "", "success");
-      setNewName("");
-      setImage(null);
-      fetchCategories();
-    } catch (err) {
-      Swal.fire(
-        "เกิดข้อผิดพลาด",
-        err?.response?.data?.message || err.message,
-        "error"
-      );
-    } finally {
-      setAdding(false);
-    }
-  };
+  //   setAdding(true);
+  //   try {
+  //     await mainCategoryService.addMainCategory(formData);
+  //     Swal.fire("เพิ่มหมวดหมู่สำเร็จ", "", "success");
+  //     setNewName("");
+  //     setImage(null);
+  //     fetchCategories();
+  //   } catch (err) {
+  //     Swal.fire(
+  //       "เกิดข้อผิดพลาด",
+  //       err?.response?.data?.message || err.message,
+  //       "error"
+  //     );
+  //   } finally {
+  //     setAdding(false);
+  //   }
+  // };
 
+ 
   const handleDeleteCategory = async (id) => {
     const result = await Swal.fire({
       title: "ยืนยันการลบ?",
@@ -139,19 +140,20 @@ const ManageCategories = () => {
   };
 
   const handleUpdateSubCategory = async (newName) => {
-    if (!selectedSub || !newName) return;
-    try {
-      await mainCategoryService.updateSubCategory(selectedSub._id, {
-        name: newName,
-      });
-      Swal.fire("อัปเดตหมวดย่อยสำเร็จ", "", "success");
-      setEditSubModalOpen(false);
-      setSelectedSub(null);
-      fetchCategories();
-    } catch (err) {
-      Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
-    }
-  };
+  if (!selectedSub || !newName) return;
+  try {
+    await mainCategoryService.updateSubCategory(selectedSub._id, {
+      subCategoryName: newName,
+    });
+    Swal.fire("อัปเดตหมวดย่อยสำเร็จ", "", "success");
+    setEditSubModalOpen(false);
+    setSelectedSub(null);
+    fetchCategories();
+  } catch (err) {
+    Swal.fire("เกิดข้อผิดพลาด", err?.response?.data?.message || err.message, "error");
+  }
+};
+
 
   const handleDeleteSubCategory = async (id) => {
     const result = await Swal.fire({

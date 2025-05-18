@@ -1,3 +1,4 @@
+// ModalEditSubCategory.jsx
 import React, { useState, useEffect } from "react";
 
 const ModalEditSubCategory = ({ isOpen, onClose, onConfirm, subCategory }) => {

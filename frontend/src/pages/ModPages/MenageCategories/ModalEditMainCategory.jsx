@@ -4,7 +4,7 @@ const ModalEditMainCategory = ({ isOpen, name, onChange, onConfirm, onClose }) =
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-20 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-20 backdrop-blur-sm">
       <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
         <h3 className="text-xl font-semibold mb-4">แก้ไขหมวดหมู่</h3>
         <input
