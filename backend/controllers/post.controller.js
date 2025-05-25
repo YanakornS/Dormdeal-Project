@@ -22,7 +22,7 @@ exports.createPost = async (req, res) => {
     !postType ||
     !productName ||
     !category ||
-    !subcategory || 
+    !subcategory ||
     !price ||
     !description ||
     !condition ||
@@ -32,28 +32,28 @@ exports.createPost = async (req, res) => {
   }
   try {
     const userDoc = await UserModel.findById(owner);
-    if(!userDoc){
+    if (!userDoc) {
       return res.status(404).json({ message: "User not found" });
     }
-    if(userDoc.userStatus !== "normal"){
+    if (userDoc.userStatus !== "normal") {
       return res.status(403).json({ message: "User is banned or outof " });
     }
-
     const categoryDoc = await MainCategory.findById(category);
-    const subCategoryDoc = await MainCategory.findById(category);
-
-    if (!categoryDoc) {
+    if (!categoryDoc)
       return res.status(404).json({ message: "Category not found" });
-    }
-    if (!subCategoryDoc) {
+
+    const matchedSub = categoryDoc.subCategories.find(
+      (sub) => sub._id.toString() === subcategory
+    );
+    if (!matchedSub)
       return res.status(404).json({ message: "Subcategory not found" });
-    }
+
     const postDoc = await PostModel.create({
       owner,
       postType,
       productName,
       category: categoryDoc._id,
-      subcategory: subCategoryDoc._id,
+      subcategory: matchedSub._id, // ✅ ใช้ _id จาก subCategories array
       images: req.fileUrls,
       price,
       description,
@@ -108,7 +108,12 @@ exports.getPostById = async (req, res) => {
   const { id } = req.params;
   try {
     const postDoc = await PostModel.findById(id).populate("owner", [
-      "displayName","photoURL",
+      "displayName",
+      "photoURL",
+      "category",
+      "name",
+      "subcategory",
+      "subCategoryName",
     ]);
     if (!postDoc) {
       res.status(404).send({
@@ -157,7 +162,6 @@ exports.deletePostByOwner = async (req, res) => {
     });
   }
 };
-
 
 //getPostByOwner
 exports.getPostByOwner = async (req, res) => {
@@ -218,8 +222,14 @@ exports.updatePost = async (req, res) => {
     } = req.body;
 
     if (
-      !productName || !category || !subcategory ||
-      !price || !description || !condition || !postType || !postPaymentType
+      !productName ||
+      !category ||
+      !subcategory ||
+      !price ||
+      !description ||
+      !condition ||
+      !postType ||
+      !postPaymentType
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
@@ -242,9 +252,7 @@ exports.updatePost = async (req, res) => {
       oldImages = [];
     }
 
-    postDoc.images = req.fileUrls
-      ? [...oldImages, ...req.fileUrls]
-      : oldImages;
+    postDoc.images = req.fileUrls ? [...oldImages, ...req.fileUrls] : oldImages;
 
     // รีเซ็ตสถานะเพื่อให้ admin ตรวจสอบใหม่
     postDoc.status = "pending_review";
@@ -255,11 +263,11 @@ exports.updatePost = async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).send({
-      message: error.message || "Something error occurred while updating a post",
+      message:
+        error.message || "Something error occurred while updating a post",
     });
   }
 };
-
 
 // getAllPostByMod
 // exports.getAllPostsByMod = async (req, res) => {
@@ -306,11 +314,10 @@ exports.updatePost = async (req, res) => {
 //   }
 // };
 
-
 // approve or reject post by mod
 // exports.reviewPost = async (req, res) => {
 //   const { id } = req.params;
-//   const { action, message } = req.body; 
+//   const { action, message } = req.body;
 
 //   try {
 //     const postDoc = await PostModel.findById(id);
@@ -324,14 +331,14 @@ exports.updatePost = async (req, res) => {
 //       return res.status(400).json({ message: "Invalid action." });
 //     }
 
-//     postDoc.status = action;  
+//     postDoc.status = action;
 //     if (action === "needs_revision") {
 //       if (!message || message.trim() === "") {
 //         return res.status(400).json({ message: "Revision message is required." });
 //       }
-//       postDoc.modNote = message; 
+//       postDoc.modNote = message;
 //     } else {
-//       postDoc.modNote = null; 
+//       postDoc.modNote = null;
 //     }
 
 //     await postDoc.save();
@@ -344,7 +351,7 @@ exports.updatePost = async (req, res) => {
 //       // post: responsePost,
 //       post: postDoc,
 //     });
-    
+
 //   } catch (error) {
 //     console.error(error.message);
 //     res.status(500).json({
@@ -353,5 +360,3 @@ exports.updatePost = async (req, res) => {
 //     });
 //   }
 // };
-
-

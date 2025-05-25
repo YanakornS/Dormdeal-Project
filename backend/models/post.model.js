@@ -17,6 +17,8 @@ const PostSchema = new Schema({
     ref: "MainCategory",  
     required: true,
   },
+    subcategory: { type: mongoose.Schema.Types.ObjectId,  },
+
   images: {
     type: [String],
     required: true,

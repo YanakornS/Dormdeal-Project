@@ -30,7 +30,6 @@ const UpdatePostProduct = () => {
   const { id } = useParams();
 
 
-
 useEffect(() => {
   const fetchInitial = async () => {
     try {
@@ -39,23 +38,31 @@ useEffect(() => {
         MainCategoryService.getAllMainCategories(),
       ]);
 
-      const categoryId = postRes.category?._id?.toString() || postRes.category?.toString();
-      const subcategoryId = postRes.subcategory?._id?.toString() || postRes.subcategory?.toString();
-      const categoriesData = mainRes.data;
+      const categoryId =
+        postRes.category?._id?.toString() || postRes.category?.toString();
+      const subcategoryId =
+        postRes.subcategory?._id?.toString() || postRes.subcategory?.toString();
 
+      const categoriesData = mainRes.data;
       setCategories(categoriesData);
 
-      // ✨ หา subCategories ที่ตรงกับหมวดหมู่หลักจากโพสต์
-      const matchedCategory = categoriesData.find(c => c._id.toString() === categoryId);
+      const matchedCategory = categoriesData.find(
+        (c) => c._id.toString() === categoryId
+      );
       const matchedSubCategories = matchedCategory?.subCategories || [];
 
       setSubCategories(matchedSubCategories);
+
+      // ตรวจสอบว่าหมวดหมู่ย่อยยังมีอยู่ไหม ไม่ต้องรีเซตถ้าไม่จำเป็น
+      const isSubcategoryValid = matchedSubCategories.some(
+        (sub) => sub._id.toString() === subcategoryId
+      );
 
       setPostProduct({
         postType: postRes.postType,
         productName: postRes.productName,
         category: categoryId,
-        subcategory: subcategoryId,
+        subcategory: isSubcategoryValid ? subcategoryId : "",
         price: postRes.price,
         description: postRes.description,
         condition: postRes.condition,
@@ -66,7 +73,7 @@ useEffect(() => {
 
       setExistingImages(postRes.images || []);
     } catch (err) {
-      console.error("❌ โหลดข้อมูลล้มเหลว:", err);
+      console.error("\u274C โหลดข้อมูลล้มเหลว:", err);
     }
   };
 
@@ -76,16 +83,20 @@ useEffect(() => {
 useEffect(() => {
   if (!postProduct.category || categories.length === 0) return;
 
-  const matched = categories.find(c => c._id.toString() === postProduct.category);
+  const matched = categories.find(
+    (c) => c._id.toString() === postProduct.category
+  );
   const subs = matched?.subCategories || [];
   setSubCategories(subs);
 
-  // ถ้าหมวดหมู่ย่อยเดิมไม่ตรงกับที่มีอยู่ ก็ล้าง
-  const stillValid = subs.some(s => s._id?.toString() === postProduct.subcategory);
+  const stillValid = subs.some(
+    (s) => s._id?.toString() === postProduct.subcategory
+  );
   if (!stillValid) {
     setPostProduct((prev) => ({ ...prev, subcategory: "" }));
   }
-}, [postProduct.category]);
+}, [postProduct.category, categories]);
+
 
 
   const handleChange = (e) => {

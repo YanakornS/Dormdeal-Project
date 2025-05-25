@@ -9,7 +9,7 @@ const MainCategorySchema = new Schema({
   },
   image: { type: String, required: true },
   subCategories: [
-    { subCategoryName: { type: String, required: false, unique: true } },
+    { subCategoryName: { type: String } },
   ],
 });
 

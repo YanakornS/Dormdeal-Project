@@ -2,7 +2,7 @@ import logo from "/Logo/logo.png";
 import Modal from "./Login/Modal";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
-import ProfileAndMenu from "./ProfileAndMenu";
+import ProfileAndMenu from "./UserComponents/UserProfileMenu";
 
 const Navbar = () => {
   const { user } = useContext(AuthContext);

@@ -5,7 +5,6 @@ import ProductCard from "../../../components/ProductCard";
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-
 import { LuEye } from "react-icons/lu";
 import { FiBox } from "react-icons/fi";
 import { LuStar } from "react-icons/lu";
@@ -15,7 +14,6 @@ const Index = () => {
   const [products, setProducts] = useState([]);
   const { id } = useParams();
   const [currentUser, setCurrentUser] = useState(null);
-
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -28,22 +26,26 @@ const Index = () => {
 
     return () => unsubscribe();
   }, []);
-  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await PostService.getPostByOwner(id); // เรียก API
-        setProducts(response.data); // อัปเดต state
+        const response = await PostService.getPostByOwner(id);
+
+        //  กรองเฉพาะโพสต์ที่ approved และเอาแค่ 5 อันแรก
+        const approvedPosts = response.data
+          .filter((post) => post.status === "approved")
+          .slice(0, 5); //  จำกัดจำนวนไม่เกิน 5 โพสต์
+
+        setProducts(approvedPosts);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
 
-    fetchProducts();
-  }, []);
+    if (id) fetchProducts();
+  }, [id]);
 
-  console.log( "UserSSS", user);
-  
+  console.log("UserSSS", user);
 
   return (
     <div className="section-container pt-24 max-w-screen-xl mx-auto px-4">
@@ -51,7 +53,7 @@ const Index = () => {
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-10">
         <div className="profile pt-8 flex justify-center md:justify-start">
           <img
-            src={currentUser?.photoURL} 
+            src={currentUser?.photoURL}
             alt="Profile"
             className="rounded-full w-32 h-32 md:w-40 md:h-40"
           />
@@ -64,7 +66,9 @@ const Index = () => {
           </span>
           <span className="flex items-center justify-center md:justify-start">
             <LuEye />
-            <span className="ml-2">จำนวนรายการสินค้าทั้งหมด : {products.length} รายการ</span>
+            <span className="ml-2">
+              จำนวนรายการสินค้าทั้งหมด : {products.length} รายการ
+            </span>
           </span>
           <span className="flex items-center justify-center md:justify-start">
             <FiBox />

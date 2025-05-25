@@ -1,7 +1,12 @@
 import React from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
+
 import { CiUser } from "react-icons/ci";
+import { BiMessageDetail } from "react-icons/bi";
+import { IoNotificationsOutline } from "react-icons/io5";
+import { PiPencilDuotone } from "react-icons/pi";
+
 import { BiBell, BiMessageSquareDetail } from "react-icons/bi";
 import { LuPlus } from "react-icons/lu";
 
@@ -13,15 +18,16 @@ const UserMenu = () => {
   };
 
   const userInfo = getUser();
+  console.log("User Object:", user);
+  console.log("User Role:", user?.role);
   console.log("User Info:", userInfo);
-  
   const handleLogout = () => {
     logout();
   };
 
   return (
     <>
-      <div className="flex items-center gap-4 ">
+      <div className="flex items-center gap-4">
         <div className="dropdown dropdown-end">
           <a
             onClick={handleGoToPost}
@@ -52,7 +58,7 @@ const UserMenu = () => {
         </div>
 
         <div className="dropdown dropdown-end">
-          <a href="/alerts" role="button" className="btn btn-ghost btn-circle">
+          <a href="/chat" role="button" className="btn btn-ghost btn-circle">
             <div className="indicator">
               <BiMessageSquareDetail className="w-6 h-6" />
               <span className="badge badge-xs badge-error indicator-item">
@@ -77,19 +83,22 @@ const UserMenu = () => {
 
           <ul
             tabIndex={0}
-            className="menu menu-sm dropdown-content bg-white rounded-box z-[1] mt-3 w-52 p-2 shadow"
+            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
             <li>
               <a href="/ManagePostStatus">จัดการโพสต์ประกาศ</a>
             </li>
-            <li>
-              <a href="/ManagePost">โพสต์ประกาศของฉัน</a>
-            </li>
+            {userInfo?._id && (
+              <li>
+                <a href={`/ManagePost/${userInfo._id}`}>โพสต์ประกาศของฉัน</a>
+              </li>
+            )}
+            {/* sdfsfsefsefs */}
             <li>
               <a href="/wishlish">รายการสินค้าที่สนใจ</a>
             </li>
             <li>
-              <a href="/">แก้ไขโปรไฟล์</a>
+              <a href="/profile">แก้ไขโปรไฟล์</a>
             </li>
             <li>
               <a onClick={handleLogout}>ออกจากระบบ</a>

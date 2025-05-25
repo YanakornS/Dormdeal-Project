@@ -9,21 +9,25 @@ exports.addCategory = async (req, res) => {
     return res.status(400).json({ message: "Category name  is required" });
   }
   if (!req.file || !req.file.firebaseUrl)
-    return res.status(400).json({ message: "Image name  is required" });
+    return res.status(400).json({ message: "Image is required" });
+
   try {
     const newCategory = new MainCategory({
       name,
       image: req.file.firebaseUrl,
+      subCategories: [], // ตั้งค่า default ไว้ก่อน
     });
     await newCategory.save();
     res.status(201).json(newCategory);
   } catch (error) {
+    console.log("CATEGORY CREATE ERROR:", error); // log error
     res.status(500).json({
       message: "Something went wrong while creating the category",
       error: error.message,
     });
   }
 };
+
 
   exports.getCategory = async (req, res) => {
     try {

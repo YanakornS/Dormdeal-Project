@@ -17,6 +17,7 @@ import api from "./api";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const MAIN_URL = `${BASE_URL}/maincategory`;
+
 const SUB_URL = `${BASE_URL}/subcategory`;
 
 
@@ -29,8 +30,14 @@ const getMainCategoryById = async (id) => {
 };
 
 const addMainCategory = async (formData) => {
-  return await api.post(MAIN_URL, formData); 
+  return await api.post(`${MAIN_URL}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data", 
+    },
+  });
 };
+
+
 
 const updateMainCategory = async (id, formData) => {
   return await api.put(`${MAIN_URL}/${id}`, formData);
