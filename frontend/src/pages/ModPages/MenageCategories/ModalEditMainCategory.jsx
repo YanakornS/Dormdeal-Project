@@ -1,24 +1,61 @@
+import React from "react";
 
-
-const ModalEditMainCategory = ({ isOpen, name, onChange, onConfirm, onClose }) => {
+const ModalEditMainCategory = ({
+  isOpen,
+  name,
+  image,
+  onChangeName,
+  onChangeImage,
+  onConfirm,
+  onClose,
+}) => {
   if (!isOpen) return null;
 
+  const isFile = image && typeof image !== "string";
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-20 backdrop-blur-sm">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-        <h3 className="text-xl font-semibold mb-4">แก้ไขหมวดหมู่</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-20 backdrop-blur-sm">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
+        <h2 className="text-xl font-bold mb-4">แก้ไขหมวดหมู่หลัก</h2>
+
+        {/* input ชื่อหมวดหมู่ */}
         <input
           type="text"
           className="input input-bordered w-full mb-4"
+          placeholder="ชื่อหมวดหมู่"
           value={name}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChangeName(e.target.value)}
         />
-        <div className="flex justify-end gap-2">
-          <button onClick={onConfirm} className="btn btn-success">
-            บันทึก
-          </button>
-          <button onClick={onClose} className="btn btn-ghost">
+
+        {/* input รูปภาพใหม่ */}
+        <input
+          type="file"
+          accept="image/*"
+          className="file-input file-input-bordered w-full mb-2"
+          onChange={(e) => onChangeImage(e.target.files[0])}
+        />
+
+        {/* preview รูป */}
+        {image && (
+          <div className="mt-2">
+            <img
+              src={isFile ? URL.createObjectURL(image) : image}
+              alt="preview"
+              className="w-100 h-100 object-cover rounded mb-2 border"
+            />
+            <p className="text-sm text-gray-500 text-center">
+              {isFile ? "ภาพใหม่ที่เลือก" : "ภาพเดิม"}
+            </p>
+          </div>
+        )}
+
+        {/* ปุ่ม action */}
+        <div className="flex justify-end gap-2 mt-6">
+          <button className="btn btn-ghost" onClick={onClose}>
             ยกเลิก
+          </button>
+          <button className="btn btn-primary" onClick={onConfirm}>
+            ยืนยัน
           </button>
         </div>
       </div>

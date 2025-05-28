@@ -22,6 +22,8 @@ const ManageCategories = () => {
   const [editSubModalOpen, setEditSubModalOpen] = useState(false);
   const [selectedSub, setSelectedSub] = useState(null);
 
+  const [editingImage, setEditingImage] = useState(null);
+
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -37,37 +39,33 @@ const ManageCategories = () => {
     }
   };
 
-  
-const handleAddCategory = async () => {
-  if (!newName || !image) {
-    Swal.fire("กรุณาใส่ชื่อและเลือกรูป", "", "warning");
-    return;
-  }
-  const formData = new FormData();
-  formData.append("name", newName);
-  formData.append("file", image); // ชื่อ key file ตรงแล้ว
+  const handleAddCategory = async () => {
+    if (!newName || !image) {
+      Swal.fire("กรุณาใส่ชื่อและเลือกรูป", "", "warning");
+      return;
+    }
+    const formData = new FormData();
+    formData.append("name", newName);
+    formData.append("file", image); // ชื่อ key file ตรงแล้ว
 
-  console.log("🚀 ส่ง FormData:", [...formData.entries()]); // ใช้ตรวจสอบ key-value ได้
+    setAdding(true);
+    try {
+      await mainCategoryService.addMainCategory(formData);
+      Swal.fire("เพิ่มหมวดหมู่สำเร็จ", "", "success");
+      setNewName("");
+      setImage(null);
+      fetchCategories();
+    } catch (err) {
+      Swal.fire(
+        "เกิดข้อผิดพลาด",
+        err?.response?.data?.message || err.message,
+        "error"
+      );
+    } finally {
+      setAdding(false);
+    }
+  };
 
-  setAdding(true);
-  try {
-    await mainCategoryService.addMainCategory(formData);
-    Swal.fire("เพิ่มหมวดหมู่สำเร็จ", "", "success");
-    setNewName("");
-    setImage(null);
-    fetchCategories();
-  } catch (err) {
-    Swal.fire(
-      "เกิดข้อผิดพลาด",
-      err?.response?.data?.message || err.message,
-      "error"
-    );
-  } finally {
-    setAdding(false);
-  }
-};
-
- 
   const handleDeleteCategory = async (id) => {
     const result = await Swal.fire({
       title: "ยืนยันการลบ?",
@@ -116,6 +114,7 @@ const handleAddCategory = async () => {
   const handleEditCategory = (cat) => {
     setEditingId(cat._id);
     setEditingName(cat.name);
+    setEditingImage(cat.image);
     setIsEditModalOpen(true);
   };
 
@@ -124,11 +123,16 @@ const handleAddCategory = async () => {
 
     const formData = new FormData();
     formData.append("name", editingName);
+    if (editingImage && typeof editingImage !== "string") {
+      formData.append("file", editingImage);
+    }
+
     try {
       await mainCategoryService.updateMainCategory(editingId, formData);
       Swal.fire("อัปเดตหมวดหมู่สำเร็จ", "", "success");
       setEditingId(null);
       setEditingName("");
+      setEditingImage(null);
       setIsEditModalOpen(false);
       fetchCategories();
     } catch (err) {
@@ -142,20 +146,23 @@ const handleAddCategory = async () => {
   };
 
   const handleUpdateSubCategory = async (newName) => {
-  if (!selectedSub || !newName) return;
-  try {
-    await mainCategoryService.updateSubCategory(selectedSub._id, {
-      subCategoryName: newName,
-    });
-    Swal.fire("อัปเดตหมวดย่อยสำเร็จ", "", "success");
-    setEditSubModalOpen(false);
-    setSelectedSub(null);
-    fetchCategories();
-  } catch (err) {
-    Swal.fire("เกิดข้อผิดพลาด", err?.response?.data?.message || err.message, "error");
-  }
-};
-
+    if (!selectedSub || !newName) return;
+    try {
+      await mainCategoryService.updateSubCategory(selectedSub._id, {
+        subCategoryName: newName,
+      });
+      Swal.fire("อัปเดตหมวดย่อยสำเร็จ", "", "success");
+      setEditSubModalOpen(false);
+      setSelectedSub(null);
+      fetchCategories();
+    } catch (err) {
+      Swal.fire(
+        "เกิดข้อผิดพลาด",
+        err?.response?.data?.message || err.message,
+        "error"
+      );
+    }
+  };
 
   const handleDeleteSubCategory = async (id) => {
     const result = await Swal.fire({
@@ -171,7 +178,9 @@ const handleAddCategory = async () => {
       try {
         await mainCategoryService.deleteSubCategory(id);
         Swal.fire("ลบสำเร็จ", "", "success");
-        fetchCategories();
+        setTimeout(() => {
+          fetchCategories();
+        }, 500);
       } catch (err) {
         Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
       }
@@ -281,7 +290,7 @@ const handleAddCategory = async () => {
                       className="input input-bordered w-full"
                     />
                     <button
-                      onClick={() => handleAddSubCategory(cat._id)}
+                      onClick={() => handleAddCategory(cat._id)}
                       className="btn btn-outline btn-primary"
                     >
                       เพิ่ม
@@ -293,7 +302,10 @@ const handleAddCategory = async () => {
                     {cat.subCategories?.length > 0 ? (
                       <ul className="list-disc pl-5 mt-1 space-y-1">
                         {cat.subCategories.map((sub) => (
-                          <li key={sub._id} className="flex justify-between items-center">
+                          <li
+                            key={sub._id}
+                            className="flex justify-between items-center"
+                          >
                             <span>{sub.subCategoryName}</span>
                             <div className="flex gap-2">
                               <button
@@ -328,12 +340,15 @@ const handleAddCategory = async () => {
       <ModalEditMainCategory
         isOpen={isEditModalOpen}
         name={editingName}
-        onChange={setEditingName}
+        image={editingImage}
+        onChangeName={setEditingName}
+        onChangeImage={setEditingImage}
         onConfirm={handleUpdateCategory}
         onClose={() => {
           setIsEditModalOpen(false);
           setEditingId(null);
           setEditingName("");
+          setEditingImage(null);
         }}
       />
 
