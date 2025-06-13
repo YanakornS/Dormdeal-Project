@@ -37,8 +37,6 @@ const addMainCategory = async (formData) => {
   });
 };
 
-
-
 const updateMainCategory = async (id, formData) => {
   return await api.put(`${MAIN_URL}/${id}`, formData, {
     headers: {
@@ -46,6 +44,7 @@ const updateMainCategory = async (id, formData) => {
     },
   });
 };
+
 const deleteMainCategory = async (id) => {
   return await api.delete(`${MAIN_URL}/${id}`);
 };
