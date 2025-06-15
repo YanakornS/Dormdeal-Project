@@ -1,4 +1,4 @@
-const MainCategory = require("../models/maincategory.model");
+const MainCategory = require ("../models/maincategory.model")
 
 // ใน category.controller.js
 exports.addCategory = async (req, res) => {
@@ -26,34 +26,32 @@ exports.addCategory = async (req, res) => {
   }
 };
 
-exports.getCategory = async (req, res) => {
-  try {
-    const categories = await MainCategory.find().populate("subCategories");
-    res.json(categories);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred while fetching categories" });
-  }
-};
+  exports.getCategory = async (req, res) => {
+    try {
+      const categories = await MainCategory.find().populate("subCategories");
+      res.json(categories);
+    } catch (error) {
+      res.status(500).json({ message: "An error occurred while fetching categories" });
+    }
+  };
 
-exports.getCategoryById = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const categories = await MainCategory.findById(id);
-    if (!categories) {
+exports.getCategoryById = async (req,res) =>{
+  const {id} = req.params;
+  try{
+    const categories = await MainCategory.findById(id)
+    if(!categories){
       res.status(404).send({
-        message: "categories not found",
-      });
+        message:"categories not found"
+      })
       return;
     }
-    res.json(categories);
-  } catch (error) {
+    res.json(categories)
+  }catch(error){
     res.status(500).send({
-      message: "Something error occurred while getting category",
-    });
+      message:"Something error occurred while getting category"
+    })
   }
-};
+}
 
 exports.updateCategory = async (req, res) => {
   try {
@@ -62,17 +60,15 @@ exports.updateCategory = async (req, res) => {
     const updateData = {};
     if (name) updateData.name = name;
 
+   
+    
     if (req.file?.firebaseUrl) {
       updateData.image = req.file.firebaseUrl;
     }
 
-    const updated = await MainCategory.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      {
-        new: true,
-      }
-    );
+    const updated = await MainCategory.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+    });
 
     if (!updated) {
       return res.status(404).json({ message: "Category not found" });
@@ -81,26 +77,23 @@ exports.updateCategory = async (req, res) => {
     res.json(updated);
   } catch (error) {
     console.error("Update failed:", error);
-    res
-      .status(500)
-      .json({ message: "เกิดข้อผิดพลาดในการอัปเดต", error: error.message });
+    res.status(500).json({ message: "เกิดข้อผิดพลาดในการอัปเดต", error: error.message });
   }
 };
 
-exports.deleteCategory = async (req, res) => {
-  const { id } = req.params;
-  try {
+
+exports.deleteCategory = async (req,res)=>{
+  const {id} = req.params;
+  try{
     const category = await MainCategory.findByIdAndDelete(id);
-    if (!category) {
-      return res.status(404).json({ message: "Category not found" });
+    if(!category){
+      return res.status(404).json({message:"Category not found"})
     }
-    return res
-      .status(200)
-      .send({ message: "Deleted MainCategory successfully" });
-  } catch (error) {
+    return res.status(200).send({message:"Deleted MainCategory successfully"});
+  }catch (error) {
     res.status(500).json({
       message: "Something went wrong while deleted the category",
       error: error.message,
     });
   }
-};
+}
