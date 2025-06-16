@@ -11,7 +11,7 @@ import SubCategoryService from "../../../services/subCategory.service";
 const UpdatePostProduct = () => {
   const [categories, setCategories] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
-  
+
   const [subCategories, setSubCategories] = useState([]);
   const [tempPost, setTempPost] = useState(null);
   const [postProduct, setPostProduct] = useState({
@@ -29,8 +29,7 @@ const UpdatePostProduct = () => {
   const navigate = useNavigate();
   const { id } = useParams();
 
-
-useEffect(() => {
+  useEffect(() => {
   const fetchInitial = async () => {
     try {
       const [postRes, mainRes] = await Promise.all([
@@ -38,31 +37,32 @@ useEffect(() => {
         MainCategoryService.getAllMainCategories(),
       ]);
 
-      const categoryId =
-        postRes.category?._id?.toString() || postRes.category?.toString();
-      const subcategoryId =
-        postRes.subcategory?._id?.toString() || postRes.subcategory?.toString();
-
+      const categoryId = postRes.category?._id?.toString() || postRes.category?.toString();
+      const subcategoryId = postRes.subcategory?._id?.toString() || postRes.subcategory?.toString();
       const categoriesData = mainRes.data;
+
       setCategories(categoriesData);
 
-      const matchedCategory = categoriesData.find(
-        (c) => c._id.toString() === categoryId
-      );
-      const matchedSubCategories = matchedCategory?.subCategories || [];
+      const matchedCategory = categoriesData.find(c => c._id.toString() === categoryId);
+      let matchedSubCategories = matchedCategory?.subCategories || [];
+
+      // ✅ ถ้ายังไม่มี subCategories ให้ดึง subcategory เดิมแยกมาเพิ่มลงไป
+      if (!matchedSubCategories.length && subcategoryId) {
+        try {
+          const subRes = await MainCategoryService.getSubCategoryById(subcategoryId);
+          matchedSubCategories = [subRes.data]; // แปะเพิ่มเป็น array เดียว
+        } catch (err) {
+          console.warn("ไม่พบ subcategory นี้:", subcategoryId);
+        }
+      }
 
       setSubCategories(matchedSubCategories);
-
-      // ตรวจสอบว่าหมวดหมู่ย่อยยังมีอยู่ไหม ไม่ต้องรีเซตถ้าไม่จำเป็น
-      const isSubcategoryValid = matchedSubCategories.some(
-        (sub) => sub._id.toString() === subcategoryId
-      );
 
       setPostProduct({
         postType: postRes.postType,
         productName: postRes.productName,
         category: categoryId,
-        subcategory: isSubcategoryValid ? subcategoryId : "",
+        subcategory: subcategoryId,
         price: postRes.price,
         description: postRes.description,
         condition: postRes.condition,
@@ -73,31 +73,30 @@ useEffect(() => {
 
       setExistingImages(postRes.images || []);
     } catch (err) {
-      console.error("\u274C โหลดข้อมูลล้มเหลว:", err);
+      console.error("❌ โหลดข้อมูลล้มเหลว:", err);
     }
   };
 
   if (id) fetchInitial();
 }, [id]);
 
-useEffect(() => {
-  if (!postProduct.category || categories.length === 0) return;
+  useEffect(() => {
+    if (!postProduct.category || categories.length === 0) return;
 
-  const matched = categories.find(
-    (c) => c._id.toString() === postProduct.category
-  );
-  const subs = matched?.subCategories || [];
-  setSubCategories(subs);
+    const matched = categories.find(
+      (c) => c._id.toString() === postProduct.category
+    );
+    const subs = matched?.subCategories || [];
+    setSubCategories(subs);
 
-  const stillValid = subs.some(
-    (s) => s._id?.toString() === postProduct.subcategory
-  );
-  if (!stillValid) {
-    setPostProduct((prev) => ({ ...prev, subcategory: "" }));
-  }
-}, [postProduct.category, categories]);
-
-
+    // ถ้าหมวดหมู่ย่อยเดิมไม่ตรงกับที่มีอยู่ ก็ล้าง
+    const stillValid = subs.some(
+      (s) => s._id?.toString() === postProduct.subcategory
+    );
+    if (!stillValid) {
+      setPostProduct((prev) => ({ ...prev, subcategory: "" }));
+    }
+  }, [postProduct.category]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -263,12 +262,11 @@ useEffect(() => {
                 <option value="">เลือกหมวดหมู่ย่อย</option>
                 {subCategories.map((sub, index) => (
                   <option
-  key={sub._id?.toString() || sub.subCategoryName}
-  value={sub._id?.toString() || sub.subCategoryName}
->
-  {sub.subCategoryName}
-</option>
-
+                    key={sub._id?.toString() || sub.subCategoryName}
+                    value={sub._id?.toString() || sub.subCategoryName}
+                  >
+                    {sub.subCategoryName}
+                  </option>
                 ))}
               </select>
             </div>

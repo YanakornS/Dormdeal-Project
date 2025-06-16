@@ -1,96 +1,47 @@
 import { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import PostService from "../services/postproduct.service";
-import MainCategoryService from "../services/mainCategory.service";
-import { useLocation } from "react-router";
 
 const ShoppingCart = () => {
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedSubCategory, setSelectedSubCategory] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSort, setSelectedSort] = useState("");
   const [selectedCondition, setSelectedCondition] = useState("");
-  const location = useLocation();
 
-  // --- ดึง Products ---
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await PostService.getAllPostsProduct();
-        setProducts(res.data);
-      } catch (e) {
-        console.error("Error fetching products:", e);
+        const response = await PostService.getAllPostsProduct();
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
       }
     };
+
     fetchProducts();
   }, []);
 
-  // --- ดึง Categories + SubCategories ---
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const res = await MainCategoryService.getAllMainCategories();
-        setCategories(res.data);
-      } catch (e) {
-        console.error("Error fetching categories:", e);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  // --- จัดการหมวดหมู่ใน URL ---
-  useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const categoryParam = queryParams.get("category");
-    setSelectedCategory(categoryParam || "");
-    setSelectedSubCategory(""); // Reset subcategory ทุกครั้งที่เลือกหมวดหมู่หลักใหม่
+  const handleClearFilters = () => {
     setSearchQuery("");
     setSelectedSort("");
     setSelectedCondition("");
-  }, [location.search]);
+  };
 
-  // --- เมื่อเลือก Category ให้แสดงเฉพาะ Sub ของอันนั้น ---
-  useEffect(() => {
-    if (!selectedCategory) {
-      setSubCategories([]);
-      setSelectedSubCategory("");
-      return;
-    }
-    const found = categories.find((c) => c._id === selectedCategory);
-    setSubCategories(found?.subCategories || []);
-    setSelectedSubCategory(""); // reset
-  }, [selectedCategory, categories]);
-
-  // --- Filter ---
   const getFilteredAndSortedProducts = () => {
     let result = [...products];
 
-    // Filter by main category
-    if (selectedCategory) {
-      result = result.filter((p) => p.category?._id === selectedCategory);
-    }
-    // Filter by sub category
-    if (selectedSubCategory) {
-      result = result.filter((p) =>
-        // กรณี p.subcategory เป็น object หรือ id
-        (typeof p.subcategory === "string"
-          ? p.subcategory === selectedSubCategory
-          : p.subcategory?._id === selectedSubCategory)
-      );
-    }
-    // Filter by condition
-    if (selectedCondition) {
-      result = result.filter((p) => p.condition === selectedCondition);
-    }
     // Search
     if (searchQuery) {
-      result = result.filter((p) =>
-        p.productName?.toLowerCase().includes(searchQuery.toLowerCase())
+      result = result.filter((product) =>
+        product.productName?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
+
+    // Filter by condition
+    if (selectedCondition) {
+      result = result.filter((product) => product.condition === selectedCondition);
+    }
+
     // Sort
     if (selectedSort === "newest") {
       result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -103,40 +54,25 @@ const ShoppingCart = () => {
     } else if (selectedSort === "za") {
       result.sort((a, b) => b.productName.localeCompare(a.productName));
     }
+
     return result;
   };
 
   const filteredProducts = getFilteredAndSortedProducts();
 
-    const handleClearFilters = () => {
-    setSearchQuery("");
-    setSelectedSort("");
-    setSelectedCondition("");
-    setSelectedCategory("");
-  };
   return (
     <div className="section-container pt-14">
       {/* Filter + Search */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between flex-wrap gap-y-4 mb-6">
         <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full sm:w-auto">
-         
-         
-          {/* หมวดหมู่ย่อย */}
-          <select
-            className="select select-bordered rounded-lg w-full sm:w-36 bg-white"
-            value={selectedSubCategory}
-            onChange={(e) => setSelectedSubCategory(e.target.value)}
-            disabled={!selectedCategory || subCategories.length === 0}
-          >
-            <option value="">หมวดหมู่ย่อย</option>
-            {subCategories.map((sub) => (
-              <option key={sub._id} value={sub._id}>
-                {sub.subCategoryName}
-              </option>
-            ))}
+          {/* (ยังไม่ทำงาน) หมวดหมู่ */}
+          <select className="select select-bordered rounded-lg w-full sm:w-36 bg-white">
+            <option>หมวดหมู่</option>
+            <option>หมวดหมู่ 1</option>
+            <option>หมวดหมู่ 2</option>
           </select>
 
-          {/* จัดเรียงตาม */}
+          {/*  จัดเรียงตาม */}
           <select
             className="select select-bordered rounded-lg w-full sm:w-36 bg-white"
             value={selectedSort}
@@ -150,7 +86,7 @@ const ShoppingCart = () => {
             <option value="za">ฮ-ก</option>
           </select>
 
-          {/* สภาพสินค้า */}
+          {/*  สภาพสินค้า */}
           <select
             className="select select-bordered rounded-lg w-full sm:w-36 bg-white"
             value={selectedCondition}
