@@ -12,7 +12,7 @@ const ProductSection = () => {
         const response = await PostService.getAllPostsProduct(); 
         setProducts(response.data); 
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลผลิตภัณฑ์ :", error);
       }
     };
 

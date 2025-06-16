@@ -28,7 +28,7 @@ const Index = () => {
         const response = await CategorieService.getAllCategorie();
         setCategories(response.data);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        console.error("เกิดข้อผิดพลาดในการเรียกหมวดหมู่ :", error);
       }
     };
 

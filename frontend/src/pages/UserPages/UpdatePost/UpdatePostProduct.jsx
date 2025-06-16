@@ -73,7 +73,7 @@ const UpdatePostProduct = () => {
 
       setExistingImages(postRes.images || []);
     } catch (err) {
-      console.error("❌ โหลดข้อมูลล้มเหลว:", err);
+      console.error("โหลดข้อมูลล้มเหลว ", err);
     }
   };
 

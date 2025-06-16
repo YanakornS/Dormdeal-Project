@@ -16,7 +16,7 @@ const ManagePostsByMod = () => {
         setPosts(response.data);
         console.log(response.data);
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลผลิตภัณฑ์ :", error);
       }
     };
 

@@ -34,7 +34,6 @@ const ModalReport = ({ postId }) => {
       details: otherReason.trim(),
     };
 
-    console.log("🚀 ส่งข้อมูล payload:", payload);
 
     try {
       await ReportService.createReport(payload);
@@ -43,7 +42,7 @@ const ModalReport = ({ postId }) => {
       setOtherReason("");
       document.getElementById("report_modal").close();
     } catch (error) {
-      console.error("Report error:", error);
+      console.error("ไม่สามารถรีพอร์ตได้:", error);
       Swal.fire("เกิดข้อผิดพลาด", error.response?.data?.message || "ไม่สามารถส่งรายงานได้", "error");
     }
   };

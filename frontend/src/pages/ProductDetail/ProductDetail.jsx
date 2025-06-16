@@ -104,11 +104,11 @@ const ProductDetail = () => {
           const relatedResponse = await PostService.getAllPostsProduct();
 
           // ตรวจสอบค่าของ category และ _id ใน response
-          console.log("Current Product Category:", response.category);
-          console.log("Current Product ID:", response._id);
+          console.log("หมวดหมู่สินค้าปัจจุบัน :", response.category);
+          console.log("ID ผลิตภัณฑ์ปัจจุบัน :", response._id);
 
           // ตรวจสอบข้อมูลสินค้าที่ได้รับจาก relatedResponse
-          console.log("All Products:", relatedResponse.data);
+          console.log("ผลิตภัณฑ์ทั้งหมด :", relatedResponse.data);
 
           // ตรวจสอบการเปรียบเทียบ category ว่าเป็น string หรือ object
           const categoryId = response.category?._id || response.category; // ถ้า category เป็น object ให้เข้าถึง _id
@@ -121,7 +121,7 @@ const ProductDetail = () => {
             );
           });
 
-          console.log("Filtered Related Products:", related); // ตรวจสอบข้อมูลที่กรองออกมา
+          console.log("กรองสินค้าที่เกี่ยวข้องแล้ว :", related); // ตรวจสอบข้อมูลที่กรองออกมา
 
           setRelatedProducts(related);
         }
@@ -151,7 +151,7 @@ const ProductDetail = () => {
 
       navigate("/chat");
     } catch (error) {
-      console.error("Failed to start chat:", error);
+      console.error("ไม่สามารถเริ่มแชทได้ :", error);
     }
   };
 

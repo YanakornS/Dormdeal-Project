@@ -21,7 +21,7 @@ const ManagePostStatus = () => {
   const userInfo = getUser();
 
   const user = auth.currentUser;
-  console.log("Firebase user:", user);
+  console.log("ผู้ใช้ Firebase :", user);
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const ManagePostStatus = () => {
 
         setPosts(response.data); 
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลผลิตภัณฑ์ :", error);
       }
     };
 

@@ -35,14 +35,14 @@ const Index = () => {
         const response = await PostService.getPostByOwner(id); // เรียก API
         setProducts(response.data); // อัปเดต state
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("เกิดข้อผิดพลาดในการดึงข้อมูลผลิตภัณฑ์ :", error);
       }
     };
 
     fetchProducts();
   }, []);
 
-  console.log( "UserSSS", user);
+  console.log( "เช็คผู้ใช้ :", user);
   
 
   return (
