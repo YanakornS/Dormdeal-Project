@@ -162,9 +162,9 @@ const UpdatePostProduct = () => {
           รายละเอียดสินค้า
         </h2>
         {/* เลือกข้อเสนอ */}
-        <div className="mt-8">
+        <div className="mt-2  shadow-md">
           {postProduct.modNote && (
-            <div className="bg-red-200 text-red-800 px-4 py-2 rounded-lg mb-4">
+            <div className="bg-red-200 text-red-800 px-7 py-4 rounded-lg mb-4">
               เหตุผลสำหรับการแก้ไข: {postProduct.modNote}
             </div>
           )}
