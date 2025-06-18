@@ -16,14 +16,14 @@ exports.addSubCategory = async (req, res) => {
       return res.status(404).json({ message: "Main category not found" });
     }
 
-    // mainCategory.subCategories.push(subCategoryName)
+    // include ไส้ตรวจสอบ subname 
     const subexits = mainCategory.subCategories.includes(subCategoryName);
     if (subexits) {
       return res.status(409).json({ message: "subcategory already" });
     }
     console.log(subCategoryName);
 
-    // เพิ่ม ObjectId ของ SubCategory ไปที่ MainCategory
+    // เพิ่ม SubCategory ไปที่ MainCategory 
     mainCategory.subCategories.push({ subCategoryName: subCategoryName });
     console.log(mainCategory);
 
@@ -106,7 +106,7 @@ exports.updateSubCategory = async (req, res) => {
       return res.status(404).json({ message: "Subcategory not found" });
     }
 
-    // แก้ไขชื่อหมวดย่อย
+    // method id ใช้ดึงค่าในelement 
     const sub = mainCategory.subCategories.id(id);
     sub.subCategoryName = subCategoryName;
 

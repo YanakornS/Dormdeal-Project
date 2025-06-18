@@ -11,21 +11,31 @@ import { LuStar } from "react-icons/lu";
 import { MdOutlinePersonOutline } from "react-icons/md";
 
 const Index = () => {
+  //products ทำหน้าที่ state เก็บรายการสินค้า (เฉพาะที่ approved และจำกัด 5 รายการ)
   const [products, setProducts] = useState([]);
+  //ดึง id จาก URL ผ่าน useParams()
   const { id } = useParams();
+  //สร้าง state: products, currentUser
   const [currentUser, setCurrentUser] = useState(null);
 
   const auth = getAuth();
   const user = auth.currentUser;
 
+  //ตรวจสอบผู้ใช้ผ่าน  Auth
+  //เมื่อมีการเปลี่ยนแปลงสถานะการล็อกอิน จะเก็บข้อมูลผู้ใช้ไว้ใน currentUser เเละใช้ onAuthStateChanged ของ Firebase
+  
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+      setCurrentUser(user); //// ถ้ามีผู้ใช้ล็อกอินอยู่ จะเก็บไว้ใน currentUser
     });
 
     return () => unsubscribe();
   }, []);
+  //onAuthStateChanged จะทำงานเรียก callback ทุกครั้งที่สถานะการล็อกอินเปลี่ยนแปลงเช่น ล็อกอินสำเร็จ, ออกจากระบบ
+
+
+  //ดึงโพสต์จากเจ้าของ ตาม id
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -35,8 +45,8 @@ const Index = () => {
         const approvedPosts = response.data
           .filter((post) => post.status === "approved")
           .slice(0, 5); //  จำกัดจำนวนไม่เกิน 5 โพสต์
-
-        setProducts(approvedPosts);
+        
+        setProducts(approvedPosts); //เก็บลงใน products เฉพาะโพสต์ที่ approved หรือผ่่านการอนุมัติแล้ว
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -83,8 +93,10 @@ const Index = () => {
 
       {/* รายการสินค้า */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-        {products.map((product) => (
+        
+        {products.map((product) => (//คือวนลูปในรายการสินค้าใน products
           <ProductCard key={product._id} product={product} />
+          //ใช้ ProductCard แสดงแต่ละสินค้า
         ))}
       </div>
     </div>

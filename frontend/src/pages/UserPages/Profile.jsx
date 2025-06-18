@@ -4,27 +4,38 @@ import { FaCamera } from "react-icons/fa";
 
 const Profile = () => {
   const auth = getAuth();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null); //เก็บข้อมูลผู้ใช้ที่ล็อกอินอยู่
+  
   const [initialData, setInitialData] = useState({
     name: "",
     email: "",
     imageURL: "", 
-  });
+  });//เก็บข้อมูลเริ่มต้นของผู้ใช้ เช่น ชื่อ, อีเมล และรูปภาพ
+  //ดึงชื่อ, อีเมล และรูปภาพจาก initialData แสดงแบบไม่ให้แก้ไข (เหมาะกับ read-only profile)
+ 
 
+  //ใช้ onAuthStateChanged เพื่อดึงข้อมูลผู้ใช้เมื่อโหลดหน้า
+  //ถ้ามีผู้ใช้ล็อกอิน จะเก็บข้อมูลไว้ใน state user และ initialData
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        // ดึงชื่อ, อีเมล และรูปภาพจาก currentUser
+
         setInitialData({
           name: currentUser.displayName ,
           email: currentUser.email ,
           imageURL: currentUser.photoURL ,
         });
+
+
       }
     });
 
+    // ถ้าไม่มีผู้ใช้ล็อกอิน จะรีเซ็ตข้อมูล
     return () => unsubscribe();
   }, [auth]);
+
 
   if (!user) {
     return <div className="text-center pt-20">กำลังโหลดข้อมูลผู้ใช้...</div>;
@@ -42,7 +53,7 @@ const Profile = () => {
           <div className="flex flex-col items-center gap-4">
             <div className="relative">
               <img
-                src={initialData.imageURL}
+                src={initialData.imageURL} // ใช้ imageURL จาก initialData
                 alt="Profile"
                 className="w-32 h-32 rounded-full object-cover border-4"
               />
@@ -62,7 +73,7 @@ const Profile = () => {
             <div className="space-y-1.5">
               <div className="text-sm text-zinc-400">ชื่อผู้ใช้</div>
               <p className="px-4 py-2.5 bg-base-200 rounded-lg border">
-                {initialData.name}
+                {initialData.name} 
               </p>
             </div>
 

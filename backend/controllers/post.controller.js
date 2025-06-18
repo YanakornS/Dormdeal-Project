@@ -8,6 +8,7 @@ exports.createPost = async (req, res) => {
   }
   //const firebaseUrl = req.files.firebaseUrl;
   const owner = req.userId;
+  //สลายโครงสร้าง
   const {
     postType,
     productName,
@@ -74,11 +75,9 @@ exports.createPost = async (req, res) => {
     });
   }
 };
-
 // getAllPost
 exports.getAllPosts = async (req, res) => {
   try {
-    // ค้นหาข้อมูลโพสต์ทั้งหมดจากฐานข้อมูล MongoDB
     const posts = await PostModel.find({ status: "approved" })
       // ใช้ populate เพื่อดึงข้อมูลจากคอลเลกชันที่เชื่อมโยง (ในที่นี้คือข้อมูลเจ้าของโพสต์)
       .populate("category", ["name"])
@@ -90,13 +89,11 @@ exports.getAllPosts = async (req, res) => {
         createdAt: -1, // แล้วเรียงตามวันที่ใหม่สุด
       });
 
-    // ส่งข้อมูลโพสต์ที่ได้กลับไปยัง client ในรูปแบบ JSON
     res.json(posts);
   } catch (error) {
-    // ถ้ามีข้อผิดพลาดเกิดขึ้นในส่วน `try` จะมาที่นี่
-    console.error(error.message);
 
-    // ส่งข้อผิดพลาดกลับไปที่ client โดยให้รหัสสถานะ 500 (Internal Server Error)
+
+
     res.status(500).send({
       message: "An error occurred while fetching posts",
     });
@@ -244,14 +241,14 @@ exports.updatePost = async (req, res) => {
     postDoc.postType = postType;
     postDoc.postPaymentType = postPaymentType;
 
-    // ✅ รวมภาพเก่าและใหม่
+    //แปลง existingImages จาก JSON เป็น Array
     let oldImages = [];
     try {
       oldImages = JSON.parse(existingImages);
     } catch (e) {
       oldImages = [];
     }
-
+    // รวมรูปภาพเก่าและรูปภาพใหม่จาก req.fileUrls เข้าด้วยกัน
     postDoc.images = req.fileUrls ? [...oldImages, ...req.fileUrls] : oldImages;
 
     // รีเซ็ตสถานะเพื่อให้ admin ตรวจสอบใหม่

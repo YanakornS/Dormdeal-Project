@@ -6,7 +6,7 @@ require("dotenv").config();
 const secret = process.env.SECRET;
 
 exports.sign = async (req, res) => {
-  const { email } = req.body;
+  const { email, password } = req.body;
   if (!email) {
     return res.status(400).json({ message: "Email is required to sign in" });
   }
@@ -15,7 +15,20 @@ exports.sign = async (req, res) => {
   if (!user) {  
     return res.status(404).json({ message: "Email is not found" });
   }
-
+  
+  //ตรวจสอบรหัสผ่าน
+  // if (user.role === "mod") {
+  //   if (!password) {
+  //     return res.status(400).json({ message: "Password is required for moderators" });
+  //   }
+  //   //hasspassword ว่าตรงกับใน DB ไหม
+  //   const isPasswordValid = bcrypt.compareSync(password, user.password);
+  //   if (!isPasswordValid) {
+  //     return res.status(401).json({ message: "Invalid password" });
+  //   }
+  // }
+  
+   //ข้อมูลที่ต้องการส่งไปยัง JWT
   const token = jwt.sign({ id: user._id, email: user.email, role: user.role, displayName: user.displayName, photoURL: user.photoURL }, secret, {
     expiresIn: "1h",
   });

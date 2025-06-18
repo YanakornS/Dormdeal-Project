@@ -4,8 +4,9 @@ import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
 import ProfileAndMenu from "./ProfileAndMenu";
 
+//
 const Navbar = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);  // ดึงข้อมูลผู้ใช้จาก context
 
   return (
     <div className="section-container navbar bg-base-100 fixed top-0 w-full shadow-sm z-10">
@@ -77,11 +78,15 @@ const Navbar = () => {
       </li>
       <li><a>Item 3</a></li>
     </ul> */}
+    
       </div>
       <div className="navbar-end gap-4">
-        {user ? (
+        
+        {user ? ( 
+          // ถ้ามี user ล็อกอินอยู่ให้แสดงคอมโพเนนต์ ProfileAndMenu
           <ProfileAndMenu />
         ) : (
+          // เเต่ถ้ายังไม่ล็อกอินให้แสดงปุ่ม เข้าสู่ระบบ / สมัครสมาชิก
           <a
             className="btn-sign"
             onClick={() => document.getElementById("login").showModal()}

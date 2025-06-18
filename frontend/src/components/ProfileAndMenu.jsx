@@ -11,17 +11,18 @@ import { BiBell, BiMessageSquareDetail } from "react-icons/bi";
 import { LuPlus } from "react-icons/lu";
 
 const ProfileAndMenu = () => {
+  //ใช้ฟังก์ชันgetUserคืนข้อมูลผู้ใช้ละเอียดกว่า user
   const { user, logout, getUser } = useContext(AuthContext);
-  
 
+  //ใช้เพื่อนำผู้ใช้ไปยังหน้า /post และส่ง breadcrumb เพื่อบอกทางกลับ
   const handleGoToPost = () => {
     navigate("/post", { state: { breadcrumb: ["หน้าแรก"] } });
   };
 
   const userInfo = getUser();
-   console.log("User Object:", user);
-   console.log("User Role:", user?.role);
-   console.log("User Info:", userInfo);  
+  console.log("User Object:", user);
+  console.log("User Role:", user?.role);
+  console.log("User Info:", userInfo);
   const handleLogout = () => {
     logout();
   };
@@ -89,12 +90,14 @@ const ProfileAndMenu = () => {
             <li>
               <a href="/ManagePostStatus">จัดการโพสต์ประกาศ</a>
             </li>
+            {/* userInfo	เก็บผลลัพธ์จาก getUser() (เช่น _id) */}
             {userInfo?._id && (
-  <li>
-    <a href={`/ManagePost/${userInfo._id}`}>โพสต์ประกาศของฉัน</a>
-  </li>
-)}
-{/* sdfsfsefsefs */}
+              <li>
+                <a href={`/ManagePost/${userInfo._id}`}>โพสต์ประกาศของฉัน</a>
+              </li>
+            )}
+
+            {/* sdfsfsefsefs */}
             <li>
               <a href="/wishlish">รายการสินค้าที่สนใจ</a>
             </li>
