@@ -12,7 +12,8 @@ import { LuPlus } from "react-icons/lu";
 
 const ProfileAndMenu = () => {
   //ใช้ฟังก์ชันgetUserคืนข้อมูลผู้ใช้ละเอียดกว่า user
-  const { user, logout, getUser } = useContext(AuthContext);
+  const { user, logout, getUser } = useContext(AuthContext); 
+  //คือการ ดึงค่าตัวแปรหรือฟังก์ชันที่อยู่ใน Context มาใช้งานใน Component นั้นๆ ผ่าน useContext() ซึ่งทำงานแบบ Destructuring (แยกค่าออกจาก object) จาก AuthContext
 
   //ใช้เพื่อนำผู้ใช้ไปยังหน้า /post และส่ง breadcrumb เพื่อบอกทางกลับ
   const handleGoToPost = () => {
