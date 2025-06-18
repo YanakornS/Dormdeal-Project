@@ -87,29 +87,29 @@ const ManageCategories = () => {
     }
   };
 
-  // const handleAddSubCategory = async (mainCategoryId) => {
-  //   const subCategoryName = subNames[mainCategoryId];
-  //   if (!subCategoryName) {
-  //     Swal.fire("กรุณาใส่ชื่อหมวดย่อย", "", "warning");
-  //     return;
-  //   }
+  const handleAddSubCategory = async (mainCategoryId) => {
+    const subCategoryName = subNames[mainCategoryId];
+    if (!subCategoryName) {
+      Swal.fire("กรุณาใส่ชื่อหมวดย่อย", "", "warning");
+      return;
+    }
 
-  //   try {
-  //     await mainCategoryService.addSubCategory({
-  //       mainCategoryId,
-  //       subCategoryName,
-  //     });
-  //     Swal.fire("เพิ่มหมวดย่อยสำเร็จ", "", "success");
-  //     setSubNames((prev) => ({ ...prev, [mainCategoryId]: "" }));
-  //     fetchCategories();
-  //   } catch (err) {
-  //     Swal.fire(
-  //       "เกิดข้อผิดพลาด",
-  //       err?.response?.data?.message || err.message,
-  //       "error"
-  //     );
-  //   }
-  // };
+    try {
+      await mainCategoryService.addSubCategory({
+        mainCategoryId,
+        subCategoryName,
+      });
+      Swal.fire("เพิ่มหมวดย่อยสำเร็จ", "", "success");
+      setSubNames((prev) => ({ ...prev, [mainCategoryId]: "" }));
+      fetchCategories();
+    } catch (err) {
+      Swal.fire(
+        "เกิดข้อผิดพลาด",
+        err?.response?.data?.message || err.message,
+        "error"
+      );
+    }
+  };
 
   const handleEditCategory = (cat) => {
     setEditingId(cat._id);
@@ -293,7 +293,7 @@ const ManageCategories = () => {
                       className="input input-bordered w-full"
                     />
                     <button
-                      onClick={() => handleAddCategory(cat._id)}
+                      onClick={() => handleAddSubCategory(cat._id)}
                       className="btn btn-outline btn-primary"
                     >
                       เพิ่ม
