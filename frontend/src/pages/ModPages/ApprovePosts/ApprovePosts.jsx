@@ -68,8 +68,7 @@ const ApprovePosts = () => {
   const handleApproveStatus = async (status) => {
     try {
       let payloadrejected = { action: status };
-      
-      //  ถ้าสถานะคือ rejected ลบโพสต์
+      //  ถ้าสถานะคือ rejected ➜ ลบโพสต์
       if (status === "rejected") {
         const confirm = await Swal.fire({
           title: "ยืนยันการไม่อนุมัติโพสต์?",
@@ -103,9 +102,10 @@ const ApprovePosts = () => {
         return;
       }
 
+      // ถ้าเป็น approved หรือ needs_revision ➜ อัปเดตสถานะ
       let payload = { action: status };
 
-      //  ถ้าสถานะคือ needs_revision ต้องแก้ไข
+      // ถ้าเป็นสถานะ "ต้องแก้ไข" ให้ mod ใส่เหตุผลก่อนส่ง
       if (status === "needs_revision") {
         const { value: reason } = await Swal.fire({
           title: "เลือกเหตุผลให้ผู้ใช้แก้ไข",
@@ -144,7 +144,7 @@ const ApprovePosts = () => {
         payload.message = reason;
       }
 
-      // ถ้าสถานะคือ confirm ปกติ
+      // ยืนยันก่อนอัปเดตสถานะ
       const confirm = await Swal.fire({
         title: "ยืนยันการเปลี่ยนสถานะ?",
         // text: `คุณต้องการตั้งโพสต์นี้เป็น "${getStatusText(status)}" ใช่หรือไม่?`,

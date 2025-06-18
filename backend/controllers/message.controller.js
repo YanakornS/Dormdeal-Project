@@ -1,24 +1,10 @@
 const Message = require("../models/message.model.js");
-const User = require("../models/user.model.js");
+const ChatRoom = require("../models/chatroom.model.js");
 const cloudinary = require("../libs/cloudinary.js");
 const { getReceiverSocketId, io } = require("../libs/socket.js");
 
-exports.getUsersForSidebar = async (req, res) => {
-  try {
-    const loggedInUserId = req.userId;
-    const filteredUsers = await User.find({
-      _id: { $ne: loggedInUserId },
-    }).select("-password");
-    res.status(200).json(filteredUsers);
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ message: "Internal Server Error while getting users info" });
-  }
-};
-
 exports.sendMessage = async (req, res) => {
+  console.log("sendMessage called!!!!!!!!!")
   try {
     const { id: receiverId } = req.params;
     if (!receiverId) {
@@ -44,10 +30,20 @@ exports.sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    // ✅ Populate postId ก่อนส่งไป
     const populatedMessage = await newMessage.populate("postId");
 
-    // Real-time messaging
+    const chatroom = await ChatRoom.findOne({
+      participants: { $all: [senderId, receiverId] },
+    });
+
+    // เพิ่ม unreadCount ให้ receiver
+    if (chatroom) {
+      const current = chatroom.unreadCount.get(receiverId) || 0;
+      chatroom.unreadCount.set(receiverId, current + 1);
+      await chatroom.save();
+    }
+
+    // ส่ง real-time ไปยัง receiver
     const receiverSocketId = getReceiverSocketId(receiverId);
     if (receiverSocketId) {
       io.to(receiverSocketId).emit("newMessage", populatedMessage);
@@ -62,15 +58,18 @@ exports.sendMessage = async (req, res) => {
   }
 };
 
-
 exports.getMessages = async (req, res) => {
   const { id: userToChatId } = req.params;
   const myId = req.userId;
+
+  //หาข้อความ
   const messages = await Message.find({
     $or: [
       { senderId: myId, receiverId: userToChatId },
       { senderId: userToChatId, receiverId: myId },
     ],
   }).populate("postId");
+
   res.status(200).json(messages);
 };
+

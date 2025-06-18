@@ -9,6 +9,11 @@ const ChatRoomSchema = new Schema(
         ref: "User",
       }, 
     ],
+    unreadCount: {
+      type: Map,
+      of: Number, // userId จำนวนข้อความที่ยังไม่ได้อ่าน
+      default: {},
+    },
   },
   { timestamps: true }
 );

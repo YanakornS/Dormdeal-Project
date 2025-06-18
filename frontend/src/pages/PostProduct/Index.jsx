@@ -23,7 +23,6 @@ const Index = () => {
   });
 
   useEffect(() => {
-    // fetchCategories หลักออกมา
     const fetchCategories = async () => {
       try {
         const response = await CategorieService.getAllCategorie();
@@ -40,23 +39,23 @@ const Index = () => {
     // เมื่อหมวดหมู่หลักถูกเลือก ให้ดึงซับหมวดหมู่ที่เกี่ยวข้อง
     if (postProduct.category) {
       const selectedCategory = categories.find(
-        (category) => category._id === postProduct.category // เมื่อผู้ใช้เลือกแล้วจะไปหา  postProduct.category ที่ผู้ใช้เลือก
+        (category) => category._id === postProduct.category
       );
-      setSubCategories(selectedCategory?.subCategories || []); // อัปเดต state subCategories ด้วยหมวดหมู่ย่อยที่หาเจอ
+      setSubCategories(selectedCategory?.subCategories || []);
     }
   }, [postProduct.category, categories]);
 
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target; // Destructuring ดึง Property ออกมา
+    const { name, value, files } = e.target;
 
     if (name === "files") {
       const selectedFiles = Array.from(files);
 
       setPostProduct((prev) => ({
-        ...prev, // ต้อใช้Spread Operator เพื่อคัดลอก Property ทั้งหมดของ prev มายังออบเจกใหม่
-        files: [...prev.files, ...selectedFiles].slice(0, 4), //  จำกัดจำนวนไฟล์ในอาร์เรย์ไม่ให้เกิน 4 ไฟล์
+        ...prev,
+        files: [...prev.files, ...selectedFiles].slice(0, 4),
       }));
     } else {
       setPostProduct((prev) => ({ ...prev, [name]: value }));
@@ -73,7 +72,7 @@ const Index = () => {
     event.preventDefault();
 
     try {
-      const data = new FormData(); // สร้างอ็อบเจกต์ FormData ใหม่ เพื่อเตรียมข้อมูล
+      const data = new FormData();
       data.set("postType", postProduct.postType);
       data.set("productName", postProduct.productName);
       data.set("category", postProduct.category);
@@ -82,8 +81,6 @@ const Index = () => {
       data.set("description", postProduct.description);
       data.set("condition", postProduct.condition);
       data.set("postPaymentType", postProduct.postPaymentType);
-
-      // ตรวจสอบเงื่อนไขว่ามีไฟล์รูปภาพที่เลือกอยู่และมีอย่างน้อยหนึ่งไฟล์.
       if (postProduct.files && postProduct.files.length > 0) {
         postProduct.files.forEach((file) => {
           data.append("files", file);
@@ -202,7 +199,7 @@ const Index = () => {
               เลือกหมวดหมู่หลัก
             </h2>
             <select
-              className="select select-xl xl:w-100 border-gray-400 rounded-xl shadow-sm mt-2"
+            className="select select-xl xl:w-100 border-gray-400 rounded-xl shadow-sm mt-2"
               name="category"
               value={postProduct.category}
               onChange={handleChange}
@@ -223,7 +220,7 @@ const Index = () => {
                 เลือกหมวดหมู่ย่อย
               </h2>
               <select
-                className="select select-xl xl:w-100 border-gray-400 rounded-xl shadow-sm mt-2 appearance-none"
+              className="select select-xl xl:w-100 border-gray-400 rounded-xl shadow-sm mt-2 appearance-none"
                 name="subcategory"
                 value={postProduct.subcategory}
                 onChange={handleChange}

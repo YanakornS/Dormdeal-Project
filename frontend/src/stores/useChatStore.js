@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 export const useChatStore = create((set, get) => ({
   users: [],
   messages: [],
+  chatRooms: [],
   selectedUser: null,
   isMessageLoading: false,
   isUserLoading: false,
@@ -13,39 +14,61 @@ export const useChatStore = create((set, get) => ({
     set({ isUserLoading: true });
     try {
       const res = await api.post("/chatroom", { receiverId });
-  
-      if (socket) {
-        socket.emit("newChat", { to: receiverId });
-      }
-  
-      set({ selectedUser: res.data.partner });
+      set({ selectedUser: res.data.receiver });
     } catch (error) {
-      toast.error(error.response?.data?.message || "Error while creating chat room");
+      console.error(
+        error.response?.data?.message || "Error while creating chatroom"
+      );
     } finally {
       set({ isUserLoading: false });
     }
   },
-  
 
   getChatRooms: async () => {
     set({ isUserLoading: true });
     try {
       const res = await api.get("/chatroom");
-      set({ users: res.data });
+      set({ chatRooms: res.data });
     } catch (error) {
-      toast.error(error.response.data.message || "Error while fetching users");
+      console.error(
+        error.response.data.message || "Error while fetching chatrooms"
+      );
     } finally {
       set({ isUserLoading: false });
     }
   },
-  
+
+  markAsRead: async (receiverId) => {
+    try {
+      await api.post(`/chatroom/read/${receiverId}`);
+
+      // อัปเดตสถานะ unread เป็น 0 สำหรับห้องแชท
+      set((state) => {
+        const updatedRooms = state.chatRooms.map((room) => {
+          const isTarget = room.partner._id === receiverId;
+          return isTarget ? { ...room, unread: 0 } : room;
+        });
+
+        return { chatRooms: updatedRooms };
+      });
+    } catch (error) {
+      console.error("Failed to mark as read", error);
+    }
+  },
+
+  // รวม unread ทั้งหมด
+  getTotalUnread: () => {
+    const { chatRooms } = get();
+    return chatRooms.reduce((sum, room) => sum + room.unread, 0);
+  },
+
   getMessage: async (userId) => {
     set({ isMessageLoading: true });
     try {
       const res = await api.get(`/message/${userId}`);
       set({ messages: res.data });
     } catch (error) {
-      toast.error(
+      console.error(
         error.response.data.message || "Error while fetching messages"
       );
     } finally {
@@ -53,7 +76,7 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  sendMessage: async (messageData, socket) => {
+  sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
     set({ isSendingMessage: true });
     try {
@@ -61,32 +84,47 @@ export const useChatStore = create((set, get) => ({
         `/message/send/${selectedUser._id}`,
         messageData
       );
-      console.log(res.data);
-
-      set({ messages: [...messages, res.data] });
-      if (socket) {
-        socket.emit("newMessage", res.data);
-      }
+      set({ messages: [...messages, res.data] }); // แสดงทันที
     } catch (error) {
-      toast.error(error.response.data.message || "Error while sending message");
+      console.error(
+        error.response.data.message || "Error while sending message"
+      );
     } finally {
       set({ isSendingMessage: false });
     }
   },
 
+  // Subscribe to new messages updates
   subscribeToMessage: (socket) => {
-    const { selectedUser } = get();
-    if (!selectedUser || !socket) return;
-    socket.on("newMessage", (newMessage) => {
-      const isMessageSendFromSelectedUser =
-        newMessage.senderId === selectedUser._id;
-      if (!isMessageSendFromSelectedUser) return;
-      set({ messages: [...get().messages, newMessage] });
-    });
-  },
+    if (!socket) return;
 
-  unsubscribeFromMessage: (socket) => {
-    if (socket) socket.off("newMessage");
+    socket.on("newMessage", (message) => {
+      const { selectedUser, chatRooms, messages, markAsRead } = get();
+
+      // กันข้อความซ้ำ
+      const isDuplicate = messages.some((m) => m._id === message._id);
+      if (isDuplicate) return;
+
+      const senderId = message.senderId;
+
+      const isCurrentChat = selectedUser && selectedUser._id === senderId;
+
+      // เปิดแชท
+      if (isCurrentChat) {
+        set({ messages: [...messages, message] });
+        // ล้าง badge
+        markAsRead(senderId);
+        return;
+      }
+
+      // ไม่ได้เปิดแชท (เพิ่ม badge)
+      const updatedRooms = chatRooms.map((room) =>
+        room.partner._id === senderId
+          ? { ...room, unread: (room.unread || 0) + 1 }
+          : room
+      );
+      set({ chatRooms: updatedRooms });
+    });
   },
 
   // Subscribe to chat room updates
@@ -97,12 +135,16 @@ export const useChatStore = create((set, get) => ({
       getChatRooms();
     });
   },
-  
+
+  unsubscribeFromMessage: (socket) => {
+    if (!socket) return;
+    socket.off("newMessage");
+  },
+
   unsubscribeFromChatRoom: (socket) => {
     if (!socket) return;
     socket.off("newChat");
   },
-  
 
   setSelectedUser: (selectedUser) => set({ selectedUser }),
 }));

@@ -214,7 +214,7 @@ const UpdatePostProduct = () => {
         </h2>
         {/* เลือกข้อเสนอ */}
 
-        <div className="mt-2  shadow-md">
+        <div className="mt-2  ">
           
           {postProduct.modNote && (
             <div className="bg-red-200 text-red-800 px-7 py-4 rounded-lg mb-4">

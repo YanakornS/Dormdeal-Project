@@ -9,7 +9,6 @@ import {
   signOut,
   signInWithPopup,
   GoogleAuthProvider,
-  updateProfile,
 } from "firebase/auth";
 import UserService from "../services/user.service";
 
@@ -21,14 +20,16 @@ const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
-
+  
   const getUser = () => cookies.get("user") || null;
 
   const connectSocket = (userId) => {
+    //เช็ค Socket เชื่อมอยู่มั้ย
     if (socket?.connected || socket !== null) return;
 
-    const newSocket = io(import.meta.env.VITE_SOCKET_URL, {
-      query: { userId },
+    const socketURL = import.meta.env.VITE_SOCKET_URL;
+    const newSocket = io(socketURL, {
+      query: { userId }, // ส่ง userId ไป backend
       transports: ["websocket"],
     });
 
@@ -36,6 +37,7 @@ const AuthProvider = ({ children }) => {
       console.log("Socket connected:", newSocket.id);
     });
 
+    // เก็บ userId ใน onlineUsers
     newSocket.on("getOnlineUsers", (userIds) => setOnlineUsers(userIds));
     setSocket(newSocket);
   };
@@ -47,6 +49,7 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  // Login & Register With Google 
   const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ hd: "webmail.npru.ac.th" });
@@ -71,16 +74,17 @@ const AuthProvider = ({ children }) => {
 
       const userData = jwtResponse.data;
 
+      // Set Cookies + Connect Socket
       if (userData) {
         cookies.set("user", userData, {
           path: "/",
-          maxAge: 60 * 60 * 24,
+          maxAge: 60 * 60 * 24, // 1 day
         });
 
         connectSocket(userData.id);
       }
     } catch (error) {
-      console.log("การเข้าสู่ระบบล้มเหลว :", error);
+      console.log("Login failed:", error);
     }
   };
 
@@ -91,6 +95,7 @@ const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    // ตรวจสอบสถานะ
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setIsLoading(false);
@@ -98,9 +103,10 @@ const AuthProvider = ({ children }) => {
       const jwt = cookies.get("user");
       const userId = jwt?._id;
 
+      // มีทั้งคู่และเชื่อมต่อ Socket
       if (currentUser && userId && (!socket || !socket.connected)) {
         connectSocket(userId);
-        console.log("เชื่อมต่อซ็อกเก็ตใหม่ด้วย ID:", userId);
+        console.log("Reconnected socket with ID:", userId);
       }
 
       if (!currentUser) {

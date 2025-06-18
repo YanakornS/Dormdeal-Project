@@ -30,7 +30,7 @@ exports.sign = async (req, res) => {
   
    //ข้อมูลที่ต้องการส่งไปยัง JWT
   const token = jwt.sign({ id: user._id, email: user.email, role: user.role, displayName: user.displayName, photoURL: user.photoURL }, secret, {
-    expiresIn: "1h",
+    expiresIn: "24h",
   });
 
   const userInfo = {
