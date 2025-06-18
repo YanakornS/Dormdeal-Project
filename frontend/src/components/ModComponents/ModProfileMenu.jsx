@@ -6,7 +6,7 @@ import { IoBagCheckOutline } from "react-icons/io5";
 import { IoWarningOutline } from "react-icons/io5";
 
 const ModProfileMenu = () => {
-  const { user, logout, getUser, isLoading } = useContext(AuthContext);
+  const { user, logout, getUser, isLoading } = useContext(AuthContext); // ใช้ useContext เข้าถึง Fn ที่เก็บไว้ใน Authcontext
   const userInfo = getUser();
   console.log("User Object:", user);
   console.log("User Role:", user?.role);
@@ -74,7 +74,6 @@ const ModProfileMenu = () => {
             <span className="hidden lg:inline-block truncate">
               {user?.displayName || "ผู้ใช้"}
             </span>
-            
           </div>
 
           <ul

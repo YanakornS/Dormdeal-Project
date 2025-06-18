@@ -6,8 +6,6 @@ import ReportService from "../../../services/report.service";
 
 const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
   const { postId, reporter, reasons, details } = report;
- 
-
 
   const handleAction = async (action) => {
     try {
@@ -27,25 +25,25 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
 
         if (result.isConfirmed) {
           await PostService.deletePostProductByMod(postId._id);
-           await ReportService.deleteReport(report._id);
+          await ReportService.deleteReport(report._id);
           Swal.fire("ลบโพสต์สำเร็จ", "", "success");
-          onReportHandled(report._id); // ✅ แจ้งให้ parent ลบออกจากตาราง
+          onReportHandled(report._id);
         }
-
-
       } else if (action === "normal") {
         Swal.fire("จัดการสำเร็จ", "โพสต์นี้ถูกตั้งสถานะเป็นปกติ", "success");
-        await ReportService.deleteReport(report._id); // ✅ ลบ report ทิ้ง
+        await ReportService.deleteReport(report._id);
         onReportHandled(report._id);
 
         onClose();
-
       } else if (action === "go_to_post") {
         window.open(`/postproductdetail/${postId._id}`, "_blank");
       }
-
     } catch (err) {
-      Swal.fire("เกิดข้อผิดพลาด", err.message || "ไม่สามารถดำเนินการได้", "error");
+      Swal.fire(
+        "เกิดข้อผิดพลาด",
+        err.message || "ไม่สามารถดำเนินการได้",
+        "error"
+      );
     }
   };
 
@@ -66,7 +64,8 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
 
         <div className="bg-gray-100 p-4 rounded-lg mb-4">
           <p className="mb-2">
-            <strong>ผู้โพสต์:</strong> {postId?.owner?.displayName  || "ไม่ทราบผู้ขาย"}
+            <strong>ผู้โพสต์:</strong>{" "}
+            {postId?.owner?.displayName || "ไม่ทราบผู้ขาย"}
           </p>
           <p className="mb-2">
             <strong>ชื่อสินค้า:</strong> {postId?.productName || "ไม่ทราบชื่อ"}
@@ -77,13 +76,18 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
               ? postId.category?.name
               : postId?.category || "-"}
           </p>
-          
         </div>
 
         <div className="bg-red-50 border border-red-200 p-4 rounded-lg mb-4">
-          <p className="mb-2"><strong>ผู้รายงาน:</strong> {reporter?.displayName || "ไม่ทราบชื่อ"}</p>
-          <p className="mb-2"><strong>เหตุผล:</strong> {reasons?.join(", ")}</p>
-          <p><strong>รายละเอียดเพิ่มเติม:</strong> {details || "-"}</p>
+          <p className="mb-2">
+            <strong>ผู้รายงาน:</strong> {reporter?.displayName || "ไม่ทราบชื่อ"}
+          </p>
+          <p className="mb-2">
+            <strong>เหตุผล:</strong> {reasons?.join(", ")}
+          </p>
+          <p>
+            <strong>รายละเอียดเพิ่มเติม:</strong> {details || "-"}
+          </p>
         </div>
 
         <div className="mt-8 flex justify-between flex-wrap gap-2">

@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
-
+import { useEffect, useState } from "react";
 import ModService from "../../services/mod.service";
+import Swal from "sweetalert2";
 import { format } from "date-fns";
 import { BsTrash3 } from "react-icons/bs";
-import Swal from "sweetalert2";
 
 const ManagePostsByMod = () => {
   const [posts, setPosts] = useState([]);
-  // const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchPosts = async () => {
