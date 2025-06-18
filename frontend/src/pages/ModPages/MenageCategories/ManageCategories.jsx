@@ -18,10 +18,8 @@ const ManageCategories = () => {
   const [editingId, setEditingId] = useState(null);
   const [editingName, setEditingName] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
   const [editSubModalOpen, setEditSubModalOpen] = useState(false);
   const [selectedSub, setSelectedSub] = useState(null);
-
   const [editingImage, setEditingImage] = useState(null);
 
   useEffect(() => {
@@ -44,6 +42,8 @@ const ManageCategories = () => {
       Swal.fire("กรุณาใส่ชื่อและเลือกรูป", "", "warning");
       return;
     }
+
+    //FormData จะส่งผ่าน HTTP request
     const formData = new FormData();
     formData.append("name", newName);
     formData.append("file", image); // ชื่อ key file ตรงแล้ว
@@ -87,29 +87,29 @@ const ManageCategories = () => {
     }
   };
 
-  const handleAddSubCategory = async (mainCategoryId) => {
-    const subCategoryName = subNames[mainCategoryId];
-    if (!subCategoryName) {
-      Swal.fire("กรุณาใส่ชื่อหมวดย่อย", "", "warning");
-      return;
-    }
+  // const handleAddSubCategory = async (mainCategoryId) => {
+  //   const subCategoryName = subNames[mainCategoryId];
+  //   if (!subCategoryName) {
+  //     Swal.fire("กรุณาใส่ชื่อหมวดย่อย", "", "warning");
+  //     return;
+  //   }
 
-    try {
-      await mainCategoryService.addSubCategory({
-        mainCategoryId,
-        subCategoryName,
-      });
-      Swal.fire("เพิ่มหมวดย่อยสำเร็จ", "", "success");
-      setSubNames((prev) => ({ ...prev, [mainCategoryId]: "" }));
-      fetchCategories();
-    } catch (err) {
-      Swal.fire(
-        "เกิดข้อผิดพลาด",
-        err?.response?.data?.message || err.message,
-        "error"
-      );
-    }
-  };
+  //   try {
+  //     await mainCategoryService.addSubCategory({
+  //       mainCategoryId,
+  //       subCategoryName,
+  //     });
+  //     Swal.fire("เพิ่มหมวดย่อยสำเร็จ", "", "success");
+  //     setSubNames((prev) => ({ ...prev, [mainCategoryId]: "" }));
+  //     fetchCategories();
+  //   } catch (err) {
+  //     Swal.fire(
+  //       "เกิดข้อผิดพลาด",
+  //       err?.response?.data?.message || err.message,
+  //       "error"
+  //     );
+  //   }
+  // };
 
   const handleEditCategory = (cat) => {
     setEditingId(cat._id);
@@ -118,13 +118,15 @@ const ManageCategories = () => {
     setIsEditModalOpen(true);
   };
 
+
   const handleUpdateCategory = async () => {
     if (!editingName || !editingId) return;
 
+    //  สร้างอ็อบเจกต์ FormData
     const formData = new FormData();
-    formData.append("name", editingName);
+    formData.append("name", editingName); // บรรทัดนี้เพิ่มชื่อหมวดหมู่ที่แก้ไขแล้ว
     if (editingImage && typeof editingImage !== "string") {
-      formData.append("file", editingImage);
+      formData.append("file", editingImage); // บรรทัดนี้จะเพิ่มไฟล์รูปภาพใหม่
     }
 
     try {
@@ -148,6 +150,7 @@ const ManageCategories = () => {
   const handleUpdateSubCategory = async (newName) => {
     if (!selectedSub || !newName) return;
     try {
+      // ส่ง _id ของหมวดหมู่ย่อยที่เลือกและอ็อบ
       await mainCategoryService.updateSubCategory(selectedSub._id, {
         subCategoryName: newName,
       });
