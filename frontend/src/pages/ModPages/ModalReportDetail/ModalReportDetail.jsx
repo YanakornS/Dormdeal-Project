@@ -49,7 +49,7 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
 
   return (
     <dialog id="report_detail_modal" className="modal modal-open">
-      <div className="modal-box w-full max-w-2xl p-6 relative">
+      <div className="modal-box w-full max-w-2xl p-6 bg-base-100 border border-base-300 rounded-xl relative shadow-md">
         <button
           className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
           onClick={onClose}
@@ -57,12 +57,13 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
           ✕
         </button>
 
-        <h3 className="font-bold text-xl mb-6 flex items-center text-vivid">
+        <h3 className="font-bold text-xl mb-6 flex items-center text-primary">
           <MdOutlineReport className="mr-2" size={24} />
           รายละเอียดรายงานโพสต์
         </h3>
 
-        <div className="bg-gray-800 p-4 border rounded-lg mb-4">
+        {/* รายละเอียดโพสต์ */}
+        <div className="p-4 border border-base-300 bg-base-100 rounded-lg mb-4 shadow-sm">
           <p className="mb-2">
             <strong>ผู้โพสต์:</strong>{" "}
             {postId?.owner?.displayName || "ไม่ทราบผู้ขาย"}
@@ -78,7 +79,8 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
           </p>
         </div>
 
-        <div className="bg-gray-800  p-4 rounded-lg mb-4">
+        {/* รายละเอียดการรายงาน */}
+        <div className="p-4 border border-base-300 bg-base-100 rounded-lg mb-4 shadow-sm">
           <p className="mb-2">
             <strong>ผู้รายงาน:</strong> {reporter?.displayName || "ไม่ทราบชื่อ"}
           </p>
@@ -90,10 +92,11 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
           </p>
         </div>
 
-        <div className="mt-8 flex justify-between flex-wrap gap-2">
+        {/* ปุ่มแอคชัน */}
+        <div className="mt-8 flex flex-wrap justify-between gap-3">
           <button
             onClick={() => handleAction("delete")}
-            className="btn bg-red-500 text-white hover:bg-red-600 flex items-center px-6 py-2 rounded-xl"
+            className="btn bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl"
             type="button"
           >
             <FaTrashAlt className="mr-2" size={16} />
@@ -101,7 +104,7 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
           </button>
           <button
             onClick={() => handleAction("normal")}
-            className="btn bg-green-500 text-white hover:bg-green-600 flex items-center px-6 py-2 rounded-xl"
+            className="btn bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl"
             type="button"
           >
             <FaCheckCircle className="mr-2" size={16} />
@@ -109,7 +112,7 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
           </button>
           <button
             onClick={() => handleAction("go_to_post")}
-            className="btn bg-blue-500 text-white hover:bg-blue-600 flex items-center px-6 py-2 rounded-xl"
+            className="btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-xl"
             type="button"
           >
             <FaExternalLinkAlt className="mr-2" size={16} />
