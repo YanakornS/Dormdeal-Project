@@ -254,11 +254,11 @@ const ProductDetail = () => {
             disabled={isOwner}
             onClick={handleChat}
             className={`mt-4 flex items-center justify-center px-4 py-2 rounded-2xl w-full transition
-              ${
-                isOwner
-                  ? "  bg-gray-800 cursor-not-allowed opacity-50"
-                  : "bg-gray-500 hover:bg-gray-800 cursor-pointer"
-              }`}
+    ${
+      isOwner
+        ? "bg-base-200 cursor-not-allowed opacity-50"
+        : "bg-base-200 hover:bg-base-300 cursor-pointer"
+    }`}
           >
             <AiOutlineMessage size={20} className="mr-2" />
             แชท
