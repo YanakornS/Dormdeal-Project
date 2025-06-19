@@ -29,21 +29,22 @@ const ReportPosts = () => {
         <h2 className="text-3xl font-bold">แจ้งรายงานปัญหา</h2>
 
         <select
-          className="border border-gray-300 rounded px-3 py-2"
+          className="border rounded px-3 py-2"
           value={filterReason}
           onChange={(e) => setFilterReason(e.target.value)}
         >
-          <option value="ทั้งหมด">ทั้งหมด</option>
-          <option value="ข้อมูลสินค้าไม่ตรงตามที่ระบุ">
+          
+          <option className="text-black" value="ทั้งหมด">ทั้งหมด</option>
+          <option className="text-black" value="ข้อมูลสินค้าไม่ตรงตามที่ระบุ">
             ข้อมูลสินค้าไม่ตรงตามที่ระบุ
           </option>
-          <option value="โพสต์นี้น่าจะเป็นสแปมหรือโฆษณา">
+          <option className="text-black" value="โพสต์นี้น่าจะเป็นสแปมหรือโฆษณา">
             โพสต์นี้น่าจะเป็นสแปมหรือโฆษณา
           </option>
-          <option value="โพสต์นี้เป็นสินค้าผิดกฎหมาย">
+          <option className="text-black" value="โพสต์นี้เป็นสินค้าผิดกฎหมาย">
             โพสต์นี้เป็นสินค้าผิดกฎหมาย
           </option>
-          <option value="อื่นๆ">อื่นๆ</option>
+          <option className="text-black" value="อื่นๆ">อื่นๆ</option>
         </select>
       </div>
 
@@ -72,7 +73,7 @@ const ReportPosts = () => {
                     : report.reasons?.includes(filterReason)
                 )
                 .map((report) => (
-                  <tr key={report._id} className="hover:bg-gray-50">
+                  <tr key={report._id} className="hover:bg-gray-800">
                     <td className="px-4 py-3 text-left truncate">
                       {report.postId?.productName || "ไม่ทราบชื่อโพสต์"}
                     </td>

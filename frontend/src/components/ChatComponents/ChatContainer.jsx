@@ -90,7 +90,7 @@ const ChatContainer = () => {
                   />
 
                   <div className="flex flex-col justify-between flex-1">
-                    <h3 className="text-sm font-semibold text-zinc-800 leading-snug break-all overflow-hidden line-clamp-1">
+                    <h3 className="text-sm font-semibold  leading-snug break-all overflow-hidden line-clamp-1">
                       {message.postId.productName}
                     </h3>
                     <p className="text-green-600 font-bold text-sm mt-1">

@@ -49,14 +49,31 @@ const Index = () => {
   const navigate = useNavigate();
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target; // Destructuring ดึง Property ออกมา
+    const { name, value, files } = e.target;
 
     if (name === "files") {
       const selectedFiles = Array.from(files);
 
+      // ตรวจสอบประเภทไฟล์
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+      const validFiles = selectedFiles.filter((file) => {
+        if (allowedTypes.includes(file.type)) {
+          return true;
+        } else {
+          Swal.fire({
+            // แจ้งเตือนผู้ใช้หากมีไฟล์ที่ไม่ใช่รูปภาพ
+            title: "ไฟล์ไม่ถูกต้อง",
+            text: `ไฟล์ '${file.name}'ไม่ใช่ไฟล์รูปภาพที่รองรับ (รองรับเฉพาะ JPG, PNG, WebP)`,
+            icon: "warning",
+          });
+          return false;
+        }
+      });
+
       setPostProduct((prev) => ({
-        ...prev, // ต้อใช้Spread Operator เพื่อคัดลอก Property ทั้งหมดของ prev มายังออบเจกใหม่
-        files: [...prev.files, ...selectedFiles].slice(0, 4), //  จำกัดจำนวนไฟล์ในอาร์เรย์ไม่ให้เกิน 4 ไฟล์
+        ...prev,
+
+        files: [...prev.files, ...validFiles].slice(0, 4),
       }));
     } else {
       setPostProduct((prev) => ({ ...prev, [name]: value }));
@@ -133,12 +150,12 @@ const Index = () => {
   return (
     <div className="section-container-add-products pt-16">
       <form className="mb-4" onSubmit={handleSubmit}>
-        <h2 className="bg-card w-full pl-16  h-20 text-xl flex items-center">
+        <h2 className="bg-card w-full text-black rounded-xl pl-16  h-20 text-xl flex items-center">
           รายละเอียดสินค้า
         </h2>
         {/* เลือกข้อเสนอ */}
         <div className="mt-8">
-          <h2 className="text-xl font-semibold text-black">เลือกข้อเสนอ</h2>
+          <h2 className="text-xl font-semibold ">เลือกข้อเสนอ</h2>
 
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Want To Sell */}
@@ -184,7 +201,7 @@ const Index = () => {
 
           {/* ชื่อสินค้า */}
           <div className="mt-8">
-            <h2 className="text-xl font-semibold text-black">ชื่อสินค้า</h2>
+            <h2 className="text-xl font-semibold ">ชื่อสินค้า</h2>
             <input
               id="productName"
               name="productName"
@@ -198,9 +215,7 @@ const Index = () => {
 
           {/* เลือกหมวดหมู่ให้ตรงกับสินค้า */}
           <div className="mt-8">
-            <h2 className="text-xl font-semibold text-black">
-              เลือกหมวดหมู่หลัก
-            </h2>
+            <h2 className="text-xl font-semibold ">เลือกหมวดหมู่หลัก</h2>
             <select
               className="select select-xl xl:w-100 border-gray-400 rounded-xl shadow-sm mt-2"
               name="category"
@@ -219,9 +234,7 @@ const Index = () => {
           {/* เลือกซับหมวดหมู่ */}
           {subCategories.length > 0 && (
             <div className="mt-8">
-              <h2 className="text-xl font-semibold text-black">
-                เลือกหมวดหมู่ย่อย
-              </h2>
+              <h2 className="text-xl font-semibold ">เลือกหมวดหมู่ย่อย</h2>
               <select
                 className="select select-xl xl:w-100 border-gray-400 rounded-xl shadow-sm mt-2 appearance-none"
                 name="subcategory"
@@ -240,15 +253,16 @@ const Index = () => {
 
           {/* เลือกรูปภาพ */}
           <div className="mt-8">
-            <h2 className="text-xl font-semibold text-black">เลือกรูปภาพ</h2>
+            <h2 className="text-xl font-semibold ">เลือกรูปภาพ</h2>
 
             <div className="pt-2 flex flex-wrap gap-4">
               {/* ปุ่มเพิ่มรูปภาพ */}
               <label className="w-40 h-40 border-dashed border-1 border-black rounded-md cursor-pointer flex flex-col justify-center items-center text-lg hover:shadow-lg transition-shadow duration-300 overflow-hidden">
                 <AiOutlineCloudUpload className="w-24 h-12" />+ เพิ่มรูปภาพ
-                <span className="font-light text-sm pt-2 text-black/50">
+                <span className="font-light text-sm pt-2 /50">
                   สูงสุด 4 ภาพ
                 </span>
+                <span className="font-light text-sm pt-2 /50">(ขนาด 4 mb)</span>
                 <input
                   className="hidden"
                   type="file"
@@ -287,9 +301,7 @@ const Index = () => {
 
           {/* ราคาสินค้า */}
           <div className="mt-8">
-            <h2 className="text-xl font-semibold text-black">
-              ราคาสินค้า (บาท)
-            </h2>
+            <h2 className="text-xl font-semibold ">ราคาสินค้า (บาท)</h2>
             <input
               id="price"
               name="price"
@@ -299,14 +311,22 @@ const Index = () => {
               type="number"
               placeholder="กรอกราคา"
               onChange={handleChange}
+              onKeyDown={(e) => {
+                if (
+                  e.key === "-" ||
+                  e.key === "+" ||
+                  e.key === "e" || 
+                  e.key === "E"
+                ) {
+                  e.preventDefault();
+                }
+              }}
             />
           </div>
 
           {/* รายละเอียดสินค้า */}
           <div className="mt-8">
-            <h2 className="text-xl font-semibold text-black">
-              รายละเอียดสินค้า
-            </h2>
+            <h2 className="text-xl font-semibold ">รายละเอียดสินค้า</h2>
             <textarea
               id="description"
               name="description"
@@ -320,7 +340,7 @@ const Index = () => {
 
           {/* สภาพสินค้า */}
           <div className="mt-8">
-            <h2 className="text-xl font-semibold text-black">สภาพสินค้า</h2>
+            <h2 className="text-xl font-semibold ">สภาพสินค้า</h2>
 
             <div className="flex flex-col sm:flex-row flex-wrap gap-4">
               {/* มือสองสภาพดี */}
@@ -365,7 +385,7 @@ const Index = () => {
 
               {/* เลือกประเภทประกาศโพสต์ */}
               <div className="mt-8 ">
-                <h2 className="text-xl font-semibold text-black ">
+                <h2 className="text-xl font-semibold  ">
                   เลือกประเภทประกาศโพสต์
                 </h2>
 

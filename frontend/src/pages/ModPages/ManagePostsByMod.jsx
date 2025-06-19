@@ -46,7 +46,11 @@ const ManagePostsByMod = () => {
 
 
   return (
-    <div className="section-container overflow-x-auto rounded-box border border-base-content/5 bg-base-100 p-28">
+    <div className="section-container overflow-x-auto rounded-box border border-base-content/5 bg-base-100 p-22">
+      <div className="flex justify-between items-center mb-6">
+         <h2 className="text-3xl  font-bold ">อนุมัติโพสต์ซื้อขาย</h2>
+      </div>
+     
       <table className="table">
         {/* head */}
         <thead className="bg-base-200 text-base-content">
@@ -60,7 +64,7 @@ const ManagePostsByMod = () => {
         </thead>
         <tbody>
           {posts.map((post) => (
-            <tr key={post._id} className=" hover:bg-gray-100 transition-all">
+            <tr key={post._id} className=" hover:bg-gray-800 transition-all">
               <td className="px-4 py-3 text-left">{post.productName}</td>
               <td className="px-4 py-3 text-left">{post.owner?.displayName || "ไม่ทราบชื่อผู้ขาย"}</td> 
               <td className="px-4 py-3 text-left">{post.category?.name}</td>

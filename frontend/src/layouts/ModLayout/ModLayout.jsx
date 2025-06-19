@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import NavbarMod from "../../components/ModComponents/NavbarMod";
 import Footer from "../../components/Footer";
+import ThemeToggleFloating from "../../components/ThemeToggleFloating";
 
 const Main = () => {
   return (
@@ -8,6 +9,7 @@ const Main = () => {
       <NavbarMod />
       <div className="flex-grow pt-[height-of-navbar]">
         <Outlet />
+        <ThemeToggleFloating />
       </div>
       <Footer />
     </div>

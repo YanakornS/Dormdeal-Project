@@ -15,7 +15,7 @@ const ServiceSection = () => {
         
         {/* คอลัมน์ซ้าย: หัวข้อและคำอธิบาย */}
         <div className="md:w-1/3 text-center md:text-left">
-          <h2 className="text-3xl font-bold text-black leading-snug">
+          <h2 className="text-3xl font-bold leading-snug">
             DormDeals โพสต์ประกาศ <br />
             ซื้อ-ขายสินค้ามือสอง <br />
             สำหรับนักศึกษา <span className="text-red-500">“ฟรี”</span>

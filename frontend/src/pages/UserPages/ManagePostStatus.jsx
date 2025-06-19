@@ -119,7 +119,7 @@ const ManagePostStatus = () => {
             aria-label="close sidebar"
             className="drawer-overlay"
           ></label>
-          <ul className="menu text-black mt-10 gap-4 text-base w-80 p-4 items-end bg-white pr-9">
+          <ul className="menu  mt-10 gap-4 text-base w-80 p-4 items-end  pr-9">
             <li>
               <button onClick={() => setActiveTab("pending")}>
                 รอการตรวจสอบ ({pendingCount})

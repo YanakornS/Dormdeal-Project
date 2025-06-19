@@ -236,7 +236,7 @@ const ManageCategories = () => {
           {categories.map((cat, index) => (
             <div
               key={cat._id}
-              className="bg-white rounded-lg border border-gray-200 shadow px-4 py-3"
+              className=" rounded-lg border border-gray-500 shadow px-4 py-3"
             >
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div
@@ -300,7 +300,7 @@ const ManageCategories = () => {
                     </button>
                   </div>
 
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm ">
                     หมวดย่อย:
                     {cat.subCategories?.length > 0 ? (
                       <ul className="list-disc pl-5 mt-1 space-y-1">

@@ -7,7 +7,7 @@ const Breadcrumbs = ({ breadcrumbMenu }) => {
   console.log(breadcrumbMenu);
 
   return (
-    <nav className="text-sm text-gray-500 my-4">
+    <nav className="text-sm my-4">
       <ul className="flex space-x-2">
         {breadcrumbMenu.map((value, index) => {
           const isLast = index === breadcrumbMenu.length - 1; // เช็คว่าตัวสุดท้ายหรือไม่
@@ -15,7 +15,7 @@ const Breadcrumbs = ({ breadcrumbMenu }) => {
           return (
             <li key={value.link} className="flex items-center">
               {isLast ? (
-                <span className="text-gray-700">{value.name}</span>
+                <span className="">{value.name}</span>
               ) : (
                 <>
                   <Link

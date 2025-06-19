@@ -62,7 +62,7 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
           รายละเอียดรายงานโพสต์
         </h3>
 
-        <div className="bg-gray-100 p-4 rounded-lg mb-4">
+        <div className="bg-gray-800 p-4 border rounded-lg mb-4">
           <p className="mb-2">
             <strong>ผู้โพสต์:</strong>{" "}
             {postId?.owner?.displayName || "ไม่ทราบผู้ขาย"}
@@ -78,7 +78,7 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
           </p>
         </div>
 
-        <div className="bg-red-50 border border-red-200 p-4 rounded-lg mb-4">
+        <div className="bg-gray-800  p-4 rounded-lg mb-4">
           <p className="mb-2">
             <strong>ผู้รายงาน:</strong> {reporter?.displayName || "ไม่ทราบชื่อ"}
           </p>

@@ -14,7 +14,6 @@ import "yet-another-react-lightbox/styles.css";
 import Modal from "../../components/Login/Modal";
 import ProductCard from "../../components/ProductCard";
 
-
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { PiWarningCircle } from "react-icons/pi";
 
@@ -214,7 +213,7 @@ const ProductDetail = () => {
           <div className="flex items-center justify-between mt-4 pb-1">
             <p className="text-xl font-semibold mt-3">
               สภาพสินค้า -{" "}
-              <span className="text-xl text-gray-700">
+              <span className="text-xl text-gray-500">
                 {postProductDetail.condition}
               </span>
             </p>
@@ -227,7 +226,7 @@ const ProductDetail = () => {
             <ModalReport postId={postProductDetail._id} />
             {/* <ModalReport name="report_modal" /> */}
           </div>
-          <p className="text-gray-700 text-sm leading-relaxed mt-1">
+          <p className=" text-sm leading-relaxed mt-1">
             {postProductDetail.description}
           </p>
         </div>
@@ -246,7 +245,7 @@ const ProductDetail = () => {
                 {postProductDetail.owner?.displayName || "ไม่พบผู้ใช้"}
               </p>
             </div>
-            <a className="text-blue-600 font-medium hover:underline cursor-pointer">
+            <a className="underline-offset-8 font-medium hover:underline cursor-pointer">
               ดูโปรไฟล์
             </a>
           </div>
@@ -257,8 +256,8 @@ const ProductDetail = () => {
             className={`mt-4 flex items-center justify-center px-4 py-2 rounded-2xl w-full transition
               ${
                 isOwner
-                  ? "bg-gray-100 cursor-not-allowed opacity-50"
-                  : "bg-gray-200 hover:bg-gray-300 cursor-pointer"
+                  ? "  bg-gray-800 cursor-not-allowed opacity-50"
+                  : "bg-gray-500 hover:bg-gray-800 cursor-pointer"
               }`}
           >
             <AiOutlineMessage size={20} className="mr-2" />

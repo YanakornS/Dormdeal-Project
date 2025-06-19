@@ -19,16 +19,18 @@
 
 body {
   font-family: var(--font-family), sans-serif;
-  color: var(--color-black);
-  background-color: var(--color-white);
+  font-size: 18px; /* กำหนด font-size หลักเท่ากับ --text-base */
+  color: var(--base-content);
+  background-color: var(--base-100);
 }
 
+/* section container ให้ใช้ utility class ของ tailwind + daisyui ที่รองรับธีม */
 .section-container {
-  @apply max-w-screen  2xl:px-78 mx-auto xl:px-24 px-4 bg-white text-black;
+  @apply max-w-screen 2xl:px-78 mx-auto xl:px-24 px-4 bg-base-100 text-base-content;
 }
 
 .section-container-add-products {
-  @apply max-w-screen-lg  mx-auto lg:px-14 px-4 bg-white  text-black;
+  @apply max-w-screen-lg mx-auto lg:px-14 px-4 bg-base-100 text-base-content;
 }
 
 @layer components {
@@ -41,7 +43,7 @@ body {
   }
 
   .categories-card {
-    @apply flex justify-between bg-card shadow-lg rounded-xl px-4 py-2 transition-all hover:shadow-xl hover:scale-105 cursor-pointer overflow-hidden text-base font-semibold text-gray-900 truncate text-wrap text-start;
+    @apply flex justify-between shadow-lg rounded-xl px-4 py-2 transition-all hover:shadow-xl hover:scale-105 cursor-pointer overflow-hidden text-base font-semibold  truncate text-wrap text-start;
   }
 
   .products-card {
@@ -58,17 +60,6 @@ body {
 
   .btn-checkpost {
     @apply rounded-xl border border-vivid py-2 px-4 text-center text-sm transition-all text-vivid hover:text-white hover:bg-vivid hover:border-vivid cursor-pointer;
-  }
-
-
-  @layer base {
-    /* h1{
-      @apply ...  
-    }  
-  
-    p{
-      @apply ...
-    } */
   }
 }
 

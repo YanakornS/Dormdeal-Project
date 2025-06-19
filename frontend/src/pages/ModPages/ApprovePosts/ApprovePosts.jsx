@@ -68,7 +68,7 @@ const ApprovePosts = () => {
   const handleApproveStatus = async (status) => {
     try {
       let payloadrejected = { action: status };
-      
+
       //  ถ้าสถานะคือ rejected ลบโพสต์
       if (status === "rejected") {
         const confirm = await Swal.fire({
@@ -220,13 +220,15 @@ const ApprovePosts = () => {
             <p className="text-3xl font-bold">
               {formatPrice(postProductDetail.price)}
             </p>
-            <button className="text-gray-500 hover:text-red-500">
+            <button className="text-red-500 hover:text-red-500">
               <FaRegHeart size={24} />
             </button>
           </div>
           <p className="text-xl font-semibold mt-3">
             สภาพสินค้า -{" "}
-            <span className="text-gray-700">{postProductDetail.condition}</span>
+            <span className="text-xl text-gray-500">
+              {postProductDetail.condition}
+            </span>
           </p>
           <div className="border-b my-4" />
           <div className="flex items-center justify-between pb-2">
@@ -236,7 +238,7 @@ const ApprovePosts = () => {
               รายงานโพสต์
             </button>
           </div>
-          <p className="text-gray-700 text-sm leading-relaxed">
+          <p className=" text-sm leading-relaxed">
             {postProductDetail.description}
           </p>
         </div>
@@ -255,7 +257,7 @@ const ApprovePosts = () => {
                 {postProductDetail.owner?.displayName || "ไม่พบผู้ใช้"}
               </p>
             </div>
-            <a className="text-blue-600 font-medium hover:underline cursor-pointer">
+            <a className="underline-offset-8 font-medium hover:underline cursor-pointer">
               ดูโปรไฟล์
             </a>
           </div>
@@ -274,7 +276,7 @@ const ApprovePosts = () => {
         styles={{ container: { backgroundColor: "rgba(0, 0, 0, 0.2)" } }}
       />
 
-      <div className="flex justify-center items-center gap-4 mt-12 p-4 rounded-2xl bg-gray-100">
+      <div className="flex bg-gray-300 justify-center items-center gap-4 mt-12 p-4 rounded-2xl ">
         {/* ปุ่มไม่ผ่านการตรวจสอบ (ลบ) */}
         <button
           className="flex items-center justify-center px-6 py-3 w-full text-base rounded-xl border text-white bg-red-500 border-red-500 hover:bg-red-400 transition-all"

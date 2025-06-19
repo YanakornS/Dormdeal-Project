@@ -15,7 +15,7 @@ const ModalEditMainCategory = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-20 backdrop-blur-sm">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg relative">
+      <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-lg relative">
         <h2 className="text-xl font-bold mb-4">แก้ไขหมวดหมู่หลัก</h2>
 
         {/* input ชื่อหมวดหมู่ */}

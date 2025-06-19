@@ -86,7 +86,7 @@ const ProductCard = ({ product = false }) => {
           <h3 className="text-sm font-extralight min-h-[48px] line-clamp-2">
             {product.productName}
           </h3>
-          <p className="text-lg font-bold text-gray-900 mt-auto">
+          <p className="text-lg font-bold  mt-auto">
             {formatPrice(product.price)}
           </p>
         </div>

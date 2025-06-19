@@ -5,6 +5,7 @@ import Footer from "../../components/Footer";
 import { useChatStore } from "../../stores/useChatStore";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
+import ThemeToggleFloating from "../../components/ThemeToggleFloating";
 
 const UserLayout = () => {
 const { getChatRooms, subscribeToMessage, unsubscribeFromMessage } = useChatStore();
@@ -24,6 +25,7 @@ useEffect(() => {
       <Navbar />
       <div className="flex-grow pt-[height-of-navbar]">
         <Outlet />
+          <ThemeToggleFloating />
       </div>
       <Footer />
     </div>

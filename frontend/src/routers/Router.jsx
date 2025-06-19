@@ -21,8 +21,11 @@ import ReportPosts from "../pages/ModPages/ReportPosts/ReportPosts";
 import ManageCategories from "../pages/ModPages/MenageCategories/ManageCategories";
 import UpdatePostProduct from "../pages/UserPages/UpdatePost/UpdatePostProduct";
 
+
 const router = createBrowserRouter([
+  
   {
+    
     path: "/",
     element: <MainLayout />,
     children: [

@@ -46,7 +46,7 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
   console.log("modNote:", post.modNote);
 
   return (
-    <div className="relative flex items-center justify-between w-full max-w-4xl bg-white rounded-xl p-4 shadow-sm">
+    <div className="relative flex items-center justify-between w-full max-w-4xl  rounded-xl p-4 shadow-sm">
       {/* 🔥 Badge โฆษณา */}
       {post.postPaymentType === "Paid" && (
         <div className="absolute top-3 left-4">
@@ -67,7 +67,7 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
           <h2 className="text-sm font-semibold break-words leading-snug">
             {post.productName}
           </h2>
-          <p className="text-base font-bold text-black mt-2">
+          <p className="text-base font-bold  mt-2">
             ฿ {post.price?.toLocaleString()}
           </p>
           <div>

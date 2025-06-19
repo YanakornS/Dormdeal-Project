@@ -123,7 +123,7 @@ const ShoppingCart = () => {
          
           {/* หมวดหมู่ย่อย */}
           <select
-            className="select select-bordered rounded-lg w-full sm:w-36 bg-white"
+            className="select select-bordered rounded-lg w-full sm:w-36 "
             value={selectedSubCategory}
             onChange={(e) => setSelectedSubCategory(e.target.value)}
             disabled={!selectedCategory || subCategories.length === 0}
@@ -138,7 +138,7 @@ const ShoppingCart = () => {
 
           {/* จัดเรียงตาม */}
           <select
-            className="select select-bordered rounded-lg w-full sm:w-36 bg-white"
+            className="select select-bordered rounded-lg w-full sm:w-36 "
             value={selectedSort}
             onChange={(e) => setSelectedSort(e.target.value)}
           >
@@ -152,7 +152,7 @@ const ShoppingCart = () => {
 
           {/* สภาพสินค้า */}
           <select
-            className="select select-bordered rounded-lg w-full sm:w-36 bg-white"
+            className="select select-bordered rounded-lg w-full sm:w-36 "
             value={selectedCondition}
             onChange={(e) => setSelectedCondition(e.target.value)}
           >
@@ -163,7 +163,7 @@ const ShoppingCart = () => {
 
           <button
             onClick={handleClearFilters}
-            className="btn btn-outline rounded-lg w-full sm:w-auto bg-white"
+            className="btn  rounded-lg w-full sm:w-auto "
           >
             ล้างค่า
           </button>
@@ -176,7 +176,7 @@ const ShoppingCart = () => {
             placeholder="ค้นหาสินค้า..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input input-bordered w-full sm:w-64 bg-white"
+            className="input input-bordered w-full sm:w-64 "
           />
         </div>
       </div>

@@ -26,7 +26,7 @@ const ModProfileMenu = () => {
           >
             <div className="indicator flex items-center gap-2">
               <IoWarningOutline className="w-6 h-6" />
-              <span className="text-sm font-light text-l">
+              <span className="hidden 2xl:inline text-sm font-light">
                 ตรวจสอบรายงานปัญหา
               </span>
             </div>
@@ -41,7 +41,7 @@ const ModProfileMenu = () => {
           >
             <div className="indicator flex items-center gap-2">
               <IoBagCheckOutline className="w-6 h-6" />
-              <span className="text-sm font-light text-l">
+              <span className="hidden 2xl:inline text-sm font-light">
                 ตรวจสอบโพสต์ซื้อขาย
               </span>
             </div>
@@ -56,7 +56,7 @@ const ModProfileMenu = () => {
           >
             <div className="indicator flex items-center gap-2">
               <BiCategory className="w-6 h-6" />
-              <span className="text-sm font-light text-l">
+              <span className="hidden 2xl:inline text-sm font-light">
                 จัดการหมวดหมู่สินค้า
               </span>
             </div>
@@ -71,7 +71,7 @@ const ModProfileMenu = () => {
             aria-label="Profile Button"
           >
             <CiUser className="w-6 h-6" />
-            <span className="hidden lg:inline-block truncate">
+            <span className="hidden lg:inline truncate">
               {user?.displayName || "ผู้ใช้"}
             </span>
           </div>
