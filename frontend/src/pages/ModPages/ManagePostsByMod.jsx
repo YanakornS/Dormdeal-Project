@@ -64,7 +64,7 @@ const ManagePostsByMod = () => {
         </thead>
         <tbody>
           {posts.map((post) => (
-            <tr key={post._id} className=" hover:bg-gray-800 transition-all">
+            <tr key={post._id} className=" transition-all">
               <td className="px-4 py-3 text-left">{post.productName}</td>
               <td className="px-4 py-3 text-left">{post.owner?.displayName || "ไม่ทราบชื่อผู้ขาย"}</td> 
               <td className="px-4 py-3 text-left">{post.category?.name}</td>

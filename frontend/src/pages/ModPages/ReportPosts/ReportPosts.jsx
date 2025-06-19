@@ -73,7 +73,7 @@ const ReportPosts = () => {
                     : report.reasons?.includes(filterReason)
                 )
                 .map((report) => (
-                  <tr key={report._id} className="hover:bg-gray-800">
+                  <tr key={report._id} className="">
                     <td className="px-4 py-3 text-left truncate">
                       {report.postId?.productName || "ไม่ทราบชื่อโพสต์"}
                     </td>
