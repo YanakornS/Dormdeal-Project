@@ -12,7 +12,7 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
   const navigate = useNavigate();
 
   const handleEditPost = () => {
-   navigate(`/updatepost/${post._id}`);
+    navigate(`/updatepost/${post._id}`);
   };
 
   const handleDeletePost = async (id) => {
@@ -57,7 +57,7 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
       )}
 
       {/* ซ้าย: รูป + ข้อมูลสินค้า */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 flex-1">
         <img
           src={post.images?.[0]}
           alt={post.productName}
@@ -76,6 +76,19 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
             )}
           </div>
         </div>
+      </div>
+
+      {/* 🔧 ปุ่มฝั่งขวา */}
+      <div className="flex items-center gap-2">
+        {/* ปุ่มลบอันแรก: สำหรับ pending_review หรือ rejected */}
+        {(post.status === "pending_review" || post.status === "rejected") && (
+          <button
+            onClick={() => handleDeletePost(post._id)}
+            className="btn btn-outline btn-sm px-3 rounded-lg text-black-600"
+          >
+            <FaTrashAlt />
+          </button>
+        )}
       </div>
 
       {/* ปุ่มลบ + แก้ไข (เฉพาะ status: needs_revision) */}
