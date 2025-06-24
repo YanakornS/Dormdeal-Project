@@ -1,11 +1,11 @@
 import { useRef, useState, useEffect } from "react";
 import { IoArrowDownCircleOutline } from "react-icons/io5";
 
-const TermOfServiceModal = ({ onAccept, onCancel }) => {
+const TermOfServiceModal = ({ isOpen, onAccept, onCancel  }) => {
   const bottomRef = useRef(null);
   const contentRef = useRef(null);
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
-
+  if (!isOpen) return null;
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -33,7 +33,9 @@ const TermOfServiceModal = ({ onAccept, onCancel }) => {
   };
 
   return (
-    <div className=" fixed inset-0 flex items-center justify-center bg-opacity-40 z-50 pt-100">
+
+    <dialog id="termofservice_modal" className="modal modal-open">
+    <div className=" fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 ">
       <div className="bg-base-100 border border-base-300 rounded-xl shadow-md max-w-4xl w-full max-h-[70vh] flex flex-col relative p-6 ">
         <h1 className="text-2xl font-bold text-primary mb-6">
           นโยบายความเป็นส่วนตัวและข้อกำหนดการใช้งาน
@@ -200,6 +202,7 @@ const TermOfServiceModal = ({ onAccept, onCancel }) => {
         </div>
       </div>
     </div>
+    </dialog>
   );
 };
 

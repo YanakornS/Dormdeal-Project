@@ -31,13 +31,13 @@ const Modal = ({ name }) => {
       });
   };
 
- const handleClickLogin = () => {
+  const handleClickLogin = () => {
     const accepted = localStorage.getItem("acceptedTerms");
     if (accepted === "true") {
       googleSignUp();
     } else {
       setShowTerms(true);
-      document.getElementById(name).close(); 
+      document.getElementById(name).close();
     }
   };
 
@@ -90,9 +90,9 @@ const Modal = ({ name }) => {
         </form>
       </dialog>
 
-      
       {showTerms && (
         <TermOfServiceModal
+          isOpen={showTerms}
           onAccept={handleAcceptTerms}
           onCancel={handleCancelTerms}
         />
