@@ -261,7 +261,7 @@ const ApprovePosts = () => {
               ดูโปรไฟล์
             </a>
           </div>
-          <button className="mt-4 flex items-center justify-center bg-gray-200 text-black px-4 py-2 rounded-2xl w-full border border-gray-300 hover:bg-gray-300 cursor-pointer">
+          <button className="mt-4 flex items-center justify-center bg-base-200  px-4 py-2 rounded-2xl w-full border border-base-300 hover:bg-base-300 cursor-pointer">
             <AiOutlineMessage size={20} className="mr-2" /> แชท
           </button>
         </div>
@@ -276,10 +276,10 @@ const ApprovePosts = () => {
         styles={{ container: { backgroundColor: "rgba(0, 0, 0, 0.2)" } }}
       />
 
-      <div className="flex bg-gray-300 justify-center items-center gap-4 mt-12 p-4 rounded-2xl ">
+      <div className="flex bg-base-300 justify-center items-center gap-4 mt-12 p-4 rounded-2xl ">
         {/* ปุ่มไม่ผ่านการตรวจสอบ (ลบ) */}
         <button
-          className="flex items-center justify-center px-6 py-3 w-full text-base rounded-xl border text-white bg-red-500 border-red-500 hover:bg-red-400 transition-all"
+          className="flex items-center cursor-pointer justify-center px-6 py-3 w-full text-base rounded-xl border text-white bg-red-500 border-red-500 hover:bg-red-400 transition-all"
           // onClick={handleRejectPost}
           onClick={() => handleApproveStatus("rejected")}
         >
@@ -289,7 +289,7 @@ const ApprovePosts = () => {
 
         {/* ปุ่มต้องแก้ไข */}
         <button
-          className="flex items-center justify-center px-6 py-3 w-full text-base rounded-xl border text-white bg-gray-700 border-gray-400 hover:bg-gray-400 transition-all"
+          className="flex items-center cursor-pointer justify-center px-6 py-3 w-full text-base rounded-xl text-white bg-gray-700 border-gray-400 hover:bg-gray-400 transition-all"
           onClick={() => handleApproveStatus("needs_revision")}
         >
           <FaRegEdit className="text-white w-8 h-8 mr-2" />
@@ -298,7 +298,7 @@ const ApprovePosts = () => {
 
         {/* ปุ่มผ่านการตรวจสอบ */}
         <button
-          className="flex items-center justify-center px-6 py-3 w-full text-base rounded-xl border text-white bg-green-500 border-green-500 hover:bg-green-400 transition-all"
+          className="flex items-center cursor-pointer justify-center px-6 py-3 w-full text-base rounded-xl border text-white bg-green-500 border-green-500 hover:bg-green-400 transition-all"
           onClick={() => handleApproveStatus("approved")}
         >
           <FaRegCheckCircle className="text-white w-8 h-8 mr-2" />

@@ -18,12 +18,20 @@ const ModalReport = ({ postId }) => {
 
   const handleSubmit = async () => {
     if (!selectedReason || !otherReason.trim()) {
-      Swal.fire("กรุณากรอกข้อมูลให้ครบ", "เลือกเหตุผลและกรอกรายละเอียด", "warning");
+      Swal.fire(
+        "กรุณากรอกข้อมูลให้ครบ",
+        "เลือกเหตุผลและกรอกรายละเอียด",
+        "warning"
+      );
       return;
     }
 
     if (!user || !user._id) {
-      Swal.fire("คุณยังไม่ได้เข้าสู่ระบบ", "กรุณาเข้าสู่ระบบก่อนรายงาน", "error");
+      Swal.fire(
+        "คุณยังไม่ได้เข้าสู่ระบบ",
+        "กรุณาเข้าสู่ระบบก่อนรายงาน",
+        "error"
+      );
       return;
     }
 
@@ -34,7 +42,6 @@ const ModalReport = ({ postId }) => {
       details: otherReason.trim(),
     };
 
-
     try {
       await ReportService.createReport(payload);
       Swal.fire("ส่งรายงานสำเร็จ", "ขอบคุณที่ช่วยแจ้งปัญหา", "success");
@@ -43,7 +50,11 @@ const ModalReport = ({ postId }) => {
       document.getElementById("report_modal").close();
     } catch (error) {
       console.error("ไม่สามารถรีพอร์ตได้:", error);
-      Swal.fire("เกิดข้อผิดพลาด", error.response?.data?.message || "ไม่สามารถส่งรายงานได้", "error");
+      Swal.fire(
+        "เกิดข้อผิดพลาด",
+        error.response?.data?.message || "ไม่สามารถส่งรายงานได้",
+        "error"
+      );
     }
   };
 
@@ -51,7 +62,7 @@ const ModalReport = ({ postId }) => {
     <>
       <button
         onClick={() => document.getElementById("report_modal").showModal()}
-        className="flex items-center bg-vivid text-white px-4 py-2 rounded-lg border border-blue-500 hover:bg-blue-200"
+        className="btn-report"
       >
         <MdOutlineReport size={20} className="mr-2" />
         รายงานโพสต์
@@ -60,10 +71,14 @@ const ModalReport = ({ postId }) => {
       <dialog id="report_modal" className="modal">
         <div className="modal-box w-full max-w-lg p-6">
           <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+              ✕
+            </button>
           </form>
 
-          <h3 className="font-bold text-lg mb-6">แจ้งปัญหาเกี่ยวกับโพสต์ขายสินค้า</h3>
+          <h3 className="font-bold text-lg mb-6">
+            แจ้งปัญหาเกี่ยวกับโพสต์ขายสินค้า
+          </h3>
 
           <div className="space-y-4">
             {[
@@ -72,7 +87,10 @@ const ModalReport = ({ postId }) => {
               "โพสต์นี้เป็นสินค้าผิดกฎหมาย",
               "อื่นๆ",
             ].map((reason) => (
-              <label key={reason} className="flex items-center space-x-3 cursor-pointer">
+              <label
+                key={reason}
+                className="flex items-center space-x-3 cursor-pointer"
+              >
                 <input
                   type="checkbox"
                   checked={selectedReason === reason}
@@ -86,7 +104,8 @@ const ModalReport = ({ postId }) => {
 
           <div className="mt-6">
             <label className="block text-sm font-medium">
-              กรอกเหตุผลที่แจ้งรายงาน (ระบุให้ชัดเจน) <span className="text-red-600">*</span>
+              กรอกเหตุผลที่แจ้งรายงาน (ระบุให้ชัดเจน){" "}
+              <span className="text-red-600">*</span>
             </label>
             <textarea
               className="textarea rounded-2xl textarea-bordered w-full mt-2 h-24"

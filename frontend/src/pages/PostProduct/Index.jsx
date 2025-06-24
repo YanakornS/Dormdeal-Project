@@ -53,17 +53,14 @@ const Index = () => {
 
     if (name === "files") {
       const selectedFiles = Array.from(files);
-
-      // ตรวจสอบประเภทไฟล์
       const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
       const validFiles = selectedFiles.filter((file) => {
         if (allowedTypes.includes(file.type)) {
           return true;
         } else {
           Swal.fire({
-            // แจ้งเตือนผู้ใช้หากมีไฟล์ที่ไม่ใช่รูปภาพ
             title: "ไฟล์ไม่ถูกต้อง",
-            text: `ไฟล์ '${file.name}'ไม่ใช่ไฟล์รูปภาพที่รองรับ (รองรับเฉพาะ JPG, PNG, WebP)`,
+            text: `ไฟล์ '${file.name}' ไม่ใช่ไฟล์รูปภาพที่รองรับ (JPG, PNG, WebP)`,
             icon: "warning",
           });
           return false;
@@ -72,9 +69,25 @@ const Index = () => {
 
       setPostProduct((prev) => ({
         ...prev,
-
         files: [...prev.files, ...validFiles].slice(0, 4),
       }));
+    } else if (name === "price") {
+      let onlyNums = value.replace(/[^0-9]/g, ""); // กรองเฉพาะตัวเลข
+      let limitedNums = onlyNums.slice(0, 7); // จำกัดความยาวไม่เกิน 7 หลัก
+
+      // ถ้าเป็นเลข 0 หรือตัวเลขนำหน้าด้วย 0 เช่น 000000
+      if (/^0+$/.test(limitedNums)) {
+        limitedNums = ""; // เคลียร์ค่า
+        Swal.fire({
+          title: "ราคาต้องมากกว่า 0",
+          text: "กรุณากรอกราคาที่ถูกต้อง",
+          icon: "warning",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+
+      setPostProduct((prev) => ({ ...prev, [name]: limitedNums }));
     } else {
       setPostProduct((prev) => ({ ...prev, [name]: value }));
     }
@@ -111,7 +124,7 @@ const Index = () => {
       if (response.status === 200) {
         Swal.fire({
           title: "กรุณารอเจ้าหน้าที่ตรวจสอบ!",
-          text: "โพสต์แบบฟรี",
+          text: "ตัวเลือก : โพสต์แบบฟรี",
           icon: "success",
           showConfirmButton: false,
           timer: 2500,
@@ -145,6 +158,22 @@ const Index = () => {
         icon: "error",
       });
     }
+  };
+
+  const handleCancel = () => {
+    Swal.fire({
+      title: "ยืนยันการยกเลิก",
+      text: "คุณต้องการยกเลิกและกลับหน้าหลักใช่หรือไม่?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "ใช่, ยกเลิก",
+      cancelButtonText: "ไม่, อยู่หน้านี้",
+      reverseButtons: true,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        navigate("/");
+      }
+    });
   };
 
   return (
@@ -310,13 +339,15 @@ const Index = () => {
               className="mt-1 p-4 text-base xl:w-100 border-gray-400 rounded-xl shadow-sm"
               type="number"
               placeholder="กรอกราคา"
+              value={postProduct.price} // ผูก state
               onChange={handleChange}
               onKeyDown={(e) => {
                 if (
                   e.key === "-" ||
                   e.key === "+" ||
-                  e.key === "e" || 
-                  e.key === "E"
+                  e.key === "e" ||
+                  e.key === "E" ||
+                  e.key === "."
                 ) {
                   e.preventDefault();
                 }
@@ -448,9 +479,13 @@ const Index = () => {
 
               {/* ปุ่ม submit */}
               <div className="mt-6 flex justify-center items-center w-full">
-                <a className="cursor-pointer transition-all duration-300 text-red-500 items-center justify-center flex border-red-500 hover:bg-red-500 hover:text-white border-2 rounded-xl text-lg w-48 h-18 m-2">
+                <button
+                  onClick={handleCancel}
+                  className="cursor-pointer transition-all duration-300 text-red-500 items-center justify-center flex border-red-500 hover:bg-red-500 hover:text-white border-2 rounded-xl text-lg w-48 h-18 m-2"
+                >
                   ยกเลิก
-                </a>
+                </button>
+
                 <button
                   type="submit"
                   className="cursor-pointer transition-all duration-300 items-center justify-center flex text-vivid hover:bg-vivid border-vivid hover:text-white border-2 rounded-xl text-lg w-48 h-18 m-2"

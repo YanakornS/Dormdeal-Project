@@ -20,12 +20,11 @@ import Profile from "../pages/UserPages/Profile";
 import ReportPosts from "../pages/ModPages/ReportPosts/ReportPosts";
 import ManageCategories from "../pages/ModPages/MenageCategories/ManageCategories";
 import UpdatePostProduct from "../pages/UserPages/UpdatePost/UpdatePostProduct";
-
+import TermOfService from "../components/TermOfService";
+import TermOfServiceModal from "../components/TermOfServiceModal";
 
 const router = createBrowserRouter([
-  
   {
-    
     path: "/",
     element: <MainLayout />,
     children: [
@@ -72,6 +71,14 @@ const router = createBrowserRouter([
       {
         path: "/updatepost/:id",
         element: <UpdatePostProduct />,
+      },
+      {
+        path: "/termofservice",
+        element: <TermOfService />,
+      },
+      {
+        path: "/termofservicemodal",
+        element: <TermOfServiceModal />,
       },
     ],
   },

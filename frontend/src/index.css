@@ -24,7 +24,6 @@ body {
   background-color: var(--base-100);
 }
 
-/* section container ให้ใช้ utility class ของ tailwind + daisyui ที่รองรับธีม */
 .section-container {
   @apply max-w-screen 2xl:px-78 mx-auto xl:px-24 px-4 bg-base-100 text-base-content;
 }
@@ -51,11 +50,11 @@ body {
   }
 
   .btn-profile {
-    @apply rounded-xl border bg-vivid py-2 px-4 text-center text-sm transition-all text-white cursor-pointer;
+    @apply rounded-xl  bg-vivid py-2 px-4 text-center text-sm transition-all text-white cursor-pointer;
   }
 
   .btn-report {
-    @apply rounded-xl border bg-vivid py-2 px-4 text-center text-sm transition-all text-white cursor-pointer;
+    @apply flex items-center bg-vivid text-white px-4 py-2 rounded-lg border border-blue-500 cursor-pointer;
   }
 
   .btn-checkpost {

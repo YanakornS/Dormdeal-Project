@@ -7,7 +7,6 @@ import { BsTrash3 } from "react-icons/bs";
 const ManagePostsByMod = () => {
   const [posts, setPosts] = useState([]);
 
-
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -24,18 +23,18 @@ const ManagePostsByMod = () => {
 
   const handleDeletePost = (id) => {
     Swal.fire({
-      title: "Delete",
-      text: "Do you want to deltete this post?",
+      title: "ลบโพสต์",
+      text: "คุณต้องการลบโพสต์นี้หรือไม่?",
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
+      confirmButtonText: "ใช่",
+      cancelButtonText: "ไม่",
     }).then((result) => {
       if (result.isConfirmed) {
         ModService.deletePostProductByMod(id);
         Swal.fire({
-          title: "Delete Post",
-          text: "Delete successfully",
+          title: "ลบโพสต์สำเร็จ",
+          text: "โพสต์ถูกลบเรียบร้อยแล้ว",
           icon: "success",
         }).then(() => {
           window.location.reload();
@@ -44,13 +43,12 @@ const ManagePostsByMod = () => {
     });
   };
 
-
   return (
     <div className="section-container overflow-x-auto rounded-box border border-base-content/5 bg-base-100 p-22">
       <div className="flex justify-between items-center mb-6">
-         <h2 className="text-3xl  font-bold ">อนุมัติโพสต์ซื้อขาย</h2>
+        <h2 className="text-3xl  font-bold ">อนุมัติโพสต์ซื้อขาย</h2>
       </div>
-     
+
       <table className="table">
         {/* head */}
         <thead className="bg-base-200 text-base-content">
@@ -66,7 +64,9 @@ const ManagePostsByMod = () => {
           {posts.map((post) => (
             <tr key={post._id} className=" transition-all">
               <td className="px-4 py-3 text-left">{post.productName}</td>
-              <td className="px-4 py-3 text-left">{post.owner?.displayName || "ไม่ทราบชื่อผู้ขาย"}</td> 
+              <td className="px-4 py-3 text-left">
+                {post.owner?.displayName || "ไม่ทราบชื่อผู้ขาย"}
+              </td>
               <td className="px-4 py-3 text-left">{post.category?.name}</td>
               <td className="px-4 py-3 text-left">
                 {format(new Date(post.createdAt), "yyyy-MM-dd")}
@@ -78,7 +78,12 @@ const ManagePostsByMod = () => {
                 >
                   <BsTrash3 className="h-5 w-5" />
                 </button>
-                <a href={`mod/approveposts/${post._id}`} className="btn-checkpost">ตรวจสอบโพสต์</a>
+                <a
+                  href={`mod/approveposts/${post._id}`}
+                  className="btn-checkpost"
+                >
+                  ตรวจสอบโพสต์
+                </a>
               </td>
             </tr>
           ))}
