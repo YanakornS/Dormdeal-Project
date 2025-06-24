@@ -33,8 +33,8 @@ const TermOfServiceModal = ({ onAccept, onCancel }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center  bg-opacity-40 z-50 pt-120 ">
-      <div className="bg-base-100 border border-base-300 rounded-xl shadow-md max-w-4xl w-full max-h-[80vh] flex flex-col relative p-6 ">
+    <div className=" fixed inset-0 flex items-center justify-center bg-opacity-40 z-50 pt-100">
+      <div className="bg-base-100 border border-base-300 rounded-xl shadow-md max-w-4xl w-full max-h-[70vh] flex flex-col relative p-6 ">
         <h1 className="text-2xl font-bold text-primary mb-6">
           นโยบายความเป็นส่วนตัวและข้อกำหนดการใช้งาน
         </h1>
