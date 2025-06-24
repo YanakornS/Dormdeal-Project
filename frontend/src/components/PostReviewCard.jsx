@@ -46,11 +46,11 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
   console.log("modNote:", post.modNote);
 
   return (
-    <div className="relative flex items-center justify-between w-full max-w-4xl  rounded-xl p-4 shadow-sm">
+    <div className="relative flex flex-col sm:flex-row   items-start sm:items-center justify-between w-full max-w-4xl rounded-xl p-4 pt-2  gap-3">
       {/* 🔥 Badge โฆษณา */}
       {post.postPaymentType === "Paid" && (
-        <div className="absolute top-3 left-4">
-          <span className="badge badge-warning px-1 py-1 text-xs font-semibold">
+        <div className="absolute top-1.5 left-2.5">
+          <span className="badge badge-warning px-1 py-1 text-xs font-semibold sm:items-center  justify-between w-full max-w-4xl rounded-xl p-2 ">
             🔥 โฆษณา
           </span>
         </div>
