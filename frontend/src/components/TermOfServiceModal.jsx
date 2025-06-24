@@ -34,9 +34,9 @@ const TermOfServiceModal = ({ isOpen, onAccept, onCancel  }) => {
 
   return (
 
-    <dialog id="termofservice_modal" className="modal modal-open">
-    <div className=" fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50 ">
-      <div className="bg-base-100 border border-base-300 rounded-xl shadow-md max-w-4xl w-full max-h-[70vh] flex flex-col relative p-6 ">
+   
+    <div className=" fixed inset-0 flex items-center justify-center z-50 mt-85">
+      <div className="bg-base-100 border border-base-300 rounded-xl shadow-md max-w-4xl w-full max-h-[60vh] flex flex-col relative p-6 ">
         <h1 className="text-2xl font-bold text-primary mb-6">
           นโยบายความเป็นส่วนตัวและข้อกำหนดการใช้งาน
         </h1>
@@ -202,7 +202,7 @@ const TermOfServiceModal = ({ isOpen, onAccept, onCancel  }) => {
         </div>
       </div>
     </div>
-    </dialog>
+    
   );
 };
 
