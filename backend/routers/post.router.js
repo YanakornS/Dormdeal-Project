@@ -5,7 +5,13 @@ const authJwt = require("../middlewares/auth.middleware");
 const { uploads, uploadsToFirebase } = require("../middlewares/file.midleware");
 
 //http://localhost:5000/api/v1/post
-router.post("/", authJwt.verifyToken, uploads, uploadsToFirebase, postController.createPost);
+router.post(
+  "/",
+  authJwt.verifyToken,
+  uploads,
+  uploadsToFirebase,
+  postController.createPost
+);
 
 //http://localhost:5000/api/v1/post
 router.get("", postController.getAllPosts);
@@ -19,12 +25,19 @@ router.get("/owner/:id", postController.getPostByOwner);
 //http://localhost:5000/api/v1/post/id
 router.get("/:id", postController.getPostById);
 
-
-
 //http://localhost:5000/api/v1/post/id
-router.put("/:id", authJwt.verifyToken, uploads, uploadsToFirebase, postController.updatePost);
+router.put(
+  "/:id",
+  authJwt.verifyToken,
+  uploads,
+  uploadsToFirebase,
+  postController.updatePost
+);
 
 //http://localhost:5000/api/v1/post/id
 router.delete("/:id", authJwt.verifyToken, postController.deletePostByOwner);
+
+//http://localhost:5000/api/v1/post/id/mark-sold
+router.patch("/:id/mark-sold", authJwt.verifyToken, postController.closeSale);
 
 module.exports = router;
