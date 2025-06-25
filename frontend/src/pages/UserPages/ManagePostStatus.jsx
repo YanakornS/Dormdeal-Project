@@ -10,6 +10,7 @@ import { AuthContext } from "../../context/AuthContext";
 
 //imporn icon
 import { CgMenuRound } from "react-icons/cg";
+import { BsPostcard } from "react-icons/bs";
 
 const ManagePostStatus = () => {
   const breadcrumbMenu = [
@@ -151,7 +152,13 @@ const ManagePostStatus = () => {
         {/* เนื้อหาหลัก */}
         <div className="flex-1 flex px-6 py-4  flex-col gap-2">
           {filteredPosts.length === 0 ? (
-            <p className="text-gray-500">ไม่มีโพสต์ในหมวดนี้</p>
+            <div className="col-span-full  text-center   text-gray-500 min-h-[25vh] flex flex-col items-center justify-center">
+              <BsPostcard className="text-gray-700 mb-2" size={64} />
+              <h4 className="text-lg font-bold text-gray-600">
+                ไม่พบโพสต์ในหมวดนี้
+              </h4>
+              <p>ลองเลือกหมวดหมู่อื่น</p>
+            </div>
           ) : (
             filteredPosts.map((post) => (
               <PostReviewCard
