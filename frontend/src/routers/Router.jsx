@@ -13,6 +13,7 @@ import ManagePostsByMod from "../pages/ModPages/ManagePostsByMod";
 import ManagePostStatus from "../pages/UserPages/ManagePostStatus";
 import ApprovePosts from "../pages/ModPages/ApprovePosts/ApprovePosts";
 import AdminRoute from "../pages/ProtectPage/AdminRouter";
+import UserProtectPage from "../pages/ProtectPage/UserProtectPage";
 import NotAllowed from "../pages/ProtectPage/NotAllowed";
 import Wishlists from "../pages/UserPages/Wishlists";
 import Profile from "../pages/UserPages/Profile";
@@ -42,11 +43,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/post",
-        element: <AddProduct />,
+        element:<UserProtectPage><AddProduct /></UserProtectPage> ,
       },
       {
         path: "/chat",
-        element: <Chat />,
+        element: <UserProtectPage><Chat /></UserProtectPage> ,
       },
       {
         path: "/ManagePost/:id",
@@ -54,7 +55,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/ManagePostStatus",
-        element: <ManagePostStatus />,
+        element:<UserProtectPage><ManagePostStatus /></UserProtectPage> ,
       },
       {
         path: "/notallowed",
@@ -62,15 +63,15 @@ const router = createBrowserRouter([
       },
       {
         path: "/profile",
-        element: <Profile />,
+        element: <UserProtectPage> <Profile /> </UserProtectPage> ,
       },
       {
         path: "/wishlish",
-        element: <Wishlists />,
+        element: <UserProtectPage><Wishlists /></UserProtectPage>,
       },
       {
         path: "/updatepost/:id",
-        element: <UpdatePostProduct />,
+        element:<UserProtectPage><UpdatePostProduct /></UserProtectPage> ,
       },
       {
         path: "/termofservice",
