@@ -3,6 +3,7 @@ import { AuthContext } from "../../context/AuthContext"; // หรือ path �
 import { useContext } from "react";
 import { useChatStore } from "../../stores/useChatStore";
 import { useNavigate } from "react-router";
+import toast, { Toaster } from "react-hot-toast";
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
@@ -58,10 +59,34 @@ const ProductDetail = () => {
     }
     try {
       await WishListService.toggleWishlist(id);
-      setIsHeartFilled(!isHeartFilled); // Toggle UI ตาม backend
+      setIsHeartFilled(!isHeartFilled); 
+
+      toast.success(
+        !isHeartFilled
+          ? "เพิ่มเข้ารายการโปรดสำเร็จ"
+          : "ลบออกจากรายการโปรดแล้ว",
+        {
+          icon: isHeartFilled ? "💔" : "❤️",
+          style: {
+            borderRadius: "10px",
+            background: !isHeartFilled ? "#ecfdf5" : "#fef2f2",
+            color: !isHeartFilled ? "#065f46" : "#b91c1c",
+            border: !isHeartFilled ? "1px solid #a7f3d0" : "1px solid #fecaca",
+            boxShadow: "none",
+          },
+        }
+      );
     } catch (err) {
       console.error("ไม่สามารถ toggle wishlist ได้", err);
-      Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
+      toast.error("เกิดข้อผิดพลาด ลองใหม่อีกครั้ง", {
+        style: {
+          borderRadius: "10px",
+          background: "#fef2f2",
+          color: "#b91c1c",
+          border: "1px solid #fecaca",
+          boxShadow: "none",
+        },
+      });
     }
   };
 
@@ -156,6 +181,7 @@ const ProductDetail = () => {
 
   return (
     <div className="section-container sm:mt-7 mt-6 px-6 py-14">
+      <Toaster position="buttom-center" />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="flex flex-col">
           {/* Main Image */}

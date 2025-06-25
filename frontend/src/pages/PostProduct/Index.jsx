@@ -270,7 +270,7 @@ const Index = () => {
                 value={postProduct.subcategory}
                 onChange={handleChange}
               >
-                <option value="">เลือกซับหมวดหมู่</option>
+                <option value="">เลือกหมวดหมู่ย่อย</option>
                 {subCategories.map((subCategory) => (
                   <option key={subCategory._id} value={subCategory._id}>
                     {subCategory.subCategoryName}

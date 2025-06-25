@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import mainCategoryService from "../../../services/mainCategory.service";
 import { FaPlus, FaTrash } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
+import toast, { Toaster } from "react-hot-toast";
 import Swal from "sweetalert2";
-
 import ModalEditMainCategory from "./ModalEditMainCategory";
 import ModalEditSubCategory from "./ModalEditSubCategory";
 
@@ -31,7 +31,7 @@ const ManageCategories = () => {
       const res = await mainCategoryService.getAllMainCategories();
       setCategories(res.data);
     } catch (err) {
-      console.error("Error loading categories:", err);
+      toast.error("โหลดข้อมูลหมวดหมู่ล้มเหลว");
     } finally {
       setLoading(false);
     }
@@ -39,28 +39,23 @@ const ManageCategories = () => {
 
   const handleAddCategory = async () => {
     if (!newName || !image) {
-      Swal.fire("กรุณาใส่ชื่อและเลือกรูป", "", "warning");
+      toast.error("กรุณาใส่ชื่อและเลือกรูป");
       return;
     }
 
-    //FormData จะส่งผ่าน HTTP request
     const formData = new FormData();
     formData.append("name", newName);
-    formData.append("file", image); // ชื่อ key file ตรงแล้ว
+    formData.append("file", image);
 
     setAdding(true);
     try {
       await mainCategoryService.addMainCategory(formData);
-      Swal.fire("เพิ่มหมวดหมู่สำเร็จ", "", "success");
+      toast.success("เพิ่มหมวดหมู่สำเร็จ");
       setNewName("");
       setImage(null);
       fetchCategories();
     } catch (err) {
-      Swal.fire(
-        "เกิดข้อผิดพลาด",
-        err?.response?.data?.message || err.message,
-        "error"
-      );
+      toast.error(err?.response?.data?.message || err.message);
     } finally {
       setAdding(false);
     }
@@ -69,9 +64,11 @@ const ManageCategories = () => {
   const handleDeleteCategory = async (id) => {
     const result = await Swal.fire({
       title: "ยืนยันการลบ?",
-      text: "หมวดหมู่จะถูกลบถาวร",
+      text: "หมวดหมู่หลักจะถูกลบถาวร",
       icon: "warning",
       showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
       confirmButtonText: "ใช่, ลบเลย",
       cancelButtonText: "ยกเลิก",
     });
@@ -79,10 +76,10 @@ const ManageCategories = () => {
     if (result.isConfirmed) {
       try {
         await mainCategoryService.deleteMainCategory(id);
-        Swal.fire("ลบสำเร็จ", "", "success");
+        toast.success("ลบหมวดหมู่หลักสำเร็จ");
         fetchCategories();
       } catch (err) {
-        Swal.fire("เกิดข้อผิดพลาด", err.message || "", "error");
+        toast.error(err?.response?.data?.message || err.message);
       }
     }
   };
@@ -90,7 +87,7 @@ const ManageCategories = () => {
   const handleAddSubCategory = async (mainCategoryId) => {
     const subCategoryName = subNames[mainCategoryId];
     if (!subCategoryName) {
-      Swal.fire("กรุณาใส่ชื่อหมวดย่อย", "", "warning");
+      toast.error("กรุณาใส่ชื่อหมวดหมู่ย่อย");
       return;
     }
 
@@ -99,15 +96,11 @@ const ManageCategories = () => {
         mainCategoryId,
         subCategoryName,
       });
-      Swal.fire("เพิ่มหมวดย่อยสำเร็จ", "", "success");
+      toast.success("เพิ่มหมวดหมู่ย่อยสำเร็จ");
       setSubNames((prev) => ({ ...prev, [mainCategoryId]: "" }));
       fetchCategories();
     } catch (err) {
-      Swal.fire(
-        "เกิดข้อผิดพลาด",
-        err?.response?.data?.message || err.message,
-        "error"
-      );
+      toast.error(err?.response?.data?.message || err.message);
     }
   };
 
@@ -118,27 +111,25 @@ const ManageCategories = () => {
     setIsEditModalOpen(true);
   };
 
-
   const handleUpdateCategory = async () => {
     if (!editingName || !editingId) return;
 
-    //  สร้างอ็อบเจกต์ FormData
     const formData = new FormData();
-    formData.append("name", editingName); // บรรทัดนี้เพิ่มชื่อหมวดหมู่ที่แก้ไขแล้ว
+    formData.append("name", editingName);
     if (editingImage && typeof editingImage !== "string") {
-      formData.append("file", editingImage); // บรรทัดนี้จะเพิ่มไฟล์รูปภาพใหม่
+      formData.append("file", editingImage);
     }
 
     try {
       await mainCategoryService.updateMainCategory(editingId, formData);
-      Swal.fire("อัปเดตหมวดหมู่สำเร็จ", "", "success");
+      toast.success("อัปเดตหมวดหมู่หลักสำเร็จ");
       setEditingId(null);
       setEditingName("");
       setEditingImage(null);
       setIsEditModalOpen(false);
       fetchCategories();
     } catch (err) {
-      Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
+      toast.error(err.message);
     }
   };
 
@@ -150,29 +141,26 @@ const ManageCategories = () => {
   const handleUpdateSubCategory = async (newName) => {
     if (!selectedSub || !newName) return;
     try {
-      // ส่ง _id ของหมวดหมู่ย่อยที่เลือกและอ็อบ
       await mainCategoryService.updateSubCategory(selectedSub._id, {
         subCategoryName: newName,
       });
-      Swal.fire("อัปเดตหมวดย่อยสำเร็จ", "", "success");
+      toast.success("อัปเดตหมวดหมู่ย่อยสำเร็จ");
       setEditSubModalOpen(false);
       setSelectedSub(null);
       fetchCategories();
     } catch (err) {
-      Swal.fire(
-        "เกิดข้อผิดพลาด",
-        err?.response?.data?.message || err.message,
-        "error"
-      );
+      toast.error(err?.response?.data?.message || err.message);
     }
   };
 
   const handleDeleteSubCategory = async (id) => {
     const result = await Swal.fire({
       title: "ยืนยันการลบ?",
-      text: "หมวดย่อยจะถูกลบถาวร",
+      text: "หมวดหมู่ย่อยจะถูกลบถาวร",
       icon: "warning",
       showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
       confirmButtonText: "ใช่, ลบเลย",
       cancelButtonText: "ยกเลิก",
     });
@@ -180,12 +168,10 @@ const ManageCategories = () => {
     if (result.isConfirmed) {
       try {
         await mainCategoryService.deleteSubCategory(id);
-        Swal.fire("ลบสำเร็จ", "", "success");
-        setTimeout(() => {
-          fetchCategories();
-        }, 500);
+        toast.success("ลบหมวดหมู่ย่อยสำเร็จ");
+        fetchCategories();
       } catch (err) {
-        Swal.fire("เกิดข้อผิดพลาด", err.message, "error");
+        toast.error(err?.response?.data?.message || err.message);
       }
     }
   };
@@ -193,9 +179,11 @@ const ManageCategories = () => {
   const toggleExpand = (index) => {
     setExpanded(index === expanded ? null : index);
   };
-
   return (
     <div className="section-container-add-products pt-22 w-full max-w-[846px] mx-auto px-4 py-6">
+      <div className="fixed top-0 right-0 w-auto z-50 p-4">
+        <Toaster position="top-center	" />
+      </div>
       <h2 className="text-2xl font-bold mb-6">จัดการหมวดหมู่สินค้า</h2>
 
       <div className="mb-6 flex flex-col md:flex-row items-center gap-2">

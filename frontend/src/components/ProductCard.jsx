@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import WishListService from "../services/wishlist.service";
 import { AuthContext } from "../context/AuthContext"; // ถ้าใช้ context user
+import toast, { Toaster } from "react-hot-toast";
 
 const ProductCard = ({ product = false }) => {
   const [isHeartFilled, setIsHeartFilled] = useState(false);
@@ -18,7 +19,7 @@ const ProductCard = ({ product = false }) => {
         const inWishlist = wishlistArray.some(
           (item) => item._id === product._id
         );
-        
+
         setIsHeartFilled(inWishlist);
       } catch (err) {
         console.error("โหลด wishlist ล้มเหลว", err);
@@ -32,16 +33,35 @@ const ProductCard = ({ product = false }) => {
 
   const handleHeartClick = async (e) => {
     e.preventDefault();
+
     if (!user) {
-      alert("กรุณาเข้าสู่ระบบก่อนเพิ่มรายการโปรด");
+      toast.error("กรุณาเข้าสู่ระบบก่อนเพิ่มรายการโปรด");
       return;
     }
 
     try {
       await WishListService.toggleWishlist(product._id);
-      setIsHeartFilled(!isHeartFilled); // toggle ตามที่ backend ทำ
+      setIsHeartFilled(!isHeartFilled);
+
+      toast.success(
+        isHeartFilled
+          ? `ลบออกจากรายการโปรดแล้ว`
+          : `เพิ่มเข้ารายการโปรดสำเร็จ`,
+        {
+          icon: isHeartFilled ? "💔" : "❤️",
+          style: {
+            
+            borderRadius: "10px",
+            background: isHeartFilled ? "#fef2f2" : "#ecfdf5",
+            color: isHeartFilled ? "#b91c1c" : "#065f46",
+            border: isHeartFilled ? "1px solid #fecaca" : "1px solid #a7f3d0",
+            boxShadow: 'none'
+          },
+        }
+      );
     } catch (err) {
       console.error("ไม่สามารถเพิ่ม/ลบ Wishlist ได้", err);
+      toast.error("เกิดข้อผิดพลาด ลองใหม่อีกครั้ง");
     }
   };
 
@@ -55,7 +75,9 @@ const ProductCard = ({ product = false }) => {
   };
 
   return (
+    
     <div className="card shadow-lg flex flex-col h-full relative">
+      <Toaster position="bottom-center" />
       <a href={`/postproductdetail/${product._id}`} className="block">
         <figure className="relative">
           <img
