@@ -4,6 +4,8 @@ import PostService from "../services/postproduct.service";
 import MainCategoryService from "../services/mainCategory.service";
 import { useLocation } from "react-router";
 
+import { LuPackageSearch } from "react-icons/lu";
+
 const ShoppingCart = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -76,9 +78,9 @@ const ShoppingCart = () => {
     if (selectedSubCategory) {
       result = result.filter((p) =>
         // กรณี p.subcategory เป็น object หรือ id
-        (typeof p.subcategory === "string"
+        typeof p.subcategory === "string"
           ? p.subcategory === selectedSubCategory
-          : p.subcategory?._id === selectedSubCategory)
+          : p.subcategory?._id === selectedSubCategory
       );
     }
     // Filter by condition
@@ -108,7 +110,7 @@ const ShoppingCart = () => {
 
   const filteredProducts = getFilteredAndSortedProducts();
 
-    const handleClearFilters = () => {
+  const handleClearFilters = () => {
     setSearchQuery("");
     setSelectedSort("");
     setSelectedCondition("");
@@ -119,8 +121,6 @@ const ShoppingCart = () => {
       {/* Filter + Search */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between flex-wrap gap-y-4 mb-6">
         <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full sm:w-auto">
-         
-         
           {/* หมวดหมู่ย่อย */}
           <select
             className="select select-bordered rounded-lg w-full sm:w-36 "
@@ -170,13 +170,13 @@ const ShoppingCart = () => {
         </div>
 
         {/* ค้นหา */}
-        <div className="w-full sm:w-auto">
+        <div className="w-full sm:w-auto rounded-3xl  ">
           <input
             type="text"
             placeholder="ค้นหาสินค้า..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input input-bordered w-full sm:w-64 "
+            className="input input-bordered w-full sm:w-64 rounded-3xl "
           />
         </div>
       </div>
@@ -188,7 +188,11 @@ const ShoppingCart = () => {
             <ProductCard key={product._id} product={product} />
           ))
         ) : (
-          <p className="text-gray-500">ไม่พบสินค้าตามเงื่อนไขที่เลือก</p>
+          <div className="col-span-full  text-center   text-gray-500 min-h-[40vh] flex flex-col items-center justify-center">
+            <LuPackageSearch className="text-gray-700 mb-4" size={64} />
+            <h4 className="text-lg font-bold text-gray-600">ไม่พบผลการค้นหา</h4>
+            <p>ลองใช้คำอื่นที่แตกต่างหรือคำอื่นที่มีความหมายกว่านี้</p>
+          </div>
         )}
       </div>
     </div>
