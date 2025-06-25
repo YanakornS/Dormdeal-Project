@@ -73,3 +73,24 @@ exports.addUser = async (req, res) => {
   }
 };
 
+
+// ตัวอย่าง updatePhotoURL controller
+exports.updatePhotoByEmail = async (req, res) => {
+  const { email, photoURL } = req.body;
+
+  try {
+    const user = await UserModel.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!photoURL) return res.status(400).json({ message: "Photo URL is required" });
+    // อัปเดต photoURL ของผู้ใช้
+    user.photoURL = photoURL;
+    await user.save();
+
+
+    res.status(200).json({ message: "Photo updated successfully", photoURL });
+  } catch (error) {
+    console.error("Update photo error:", error);
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+

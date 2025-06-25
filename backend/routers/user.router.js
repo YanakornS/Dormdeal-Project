@@ -6,5 +6,7 @@ const userController = require("../controllers/user.controller");
 router.post("/sign", userController.sign);
 //http://localhost:5000/api/v1/user/
 router.post("/", userController.addUser);
+//http://localhost:5000/api/v1/user/userId
+router.put("/photo", userController.updatePhotoByEmail);
 
 module.exports = router;

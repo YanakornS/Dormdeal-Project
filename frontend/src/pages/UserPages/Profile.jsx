@@ -3,11 +3,15 @@ import { getAuth, onAuthStateChanged, updateProfile } from "firebase/auth";
 import { FaCamera } from "react-icons/fa";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import toast, { Toaster } from "react-hot-toast";
+import UserService from "../../services/user.service";
+
+
 
 const Profile = () => {
   const auth = getAuth();
   const fileInputRef = useRef(null);
   const [user, setUser] = useState(null);
+ 
 
   const [initialData, setInitialData] = useState({
     name: "",
@@ -15,33 +19,47 @@ const Profile = () => {
     imageURL: "",
   });
 
+  console.log("Sending photoURL update:", {
+  userId: user,
+  
+});
+
+
   console.log("Data User:", user);
   const [selectedImg, setSelectedImg] = useState(null);
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const file = e.target.files[0];
+  if (!file) return;
 
-    try {
-      const storage = getStorage();
-      const fileimages = `SE-Shop/DormDeals/imageUserProfile/${
-        user.uid
-      }-${Date.now()}`;
-      const storageRef = ref(storage, fileimages);
+  try {
+    const storage = getStorage();
+    const fileimages = `SE-Shop/DormDeals/imageUserProfile/${
+      user.uid
+    }-${Date.now()}`;
+    const storageRef = ref(storage, fileimages);
 
-      await uploadBytes(storageRef, file);
-      const imageURL = await getDownloadURL(storageRef);
+    await uploadBytes(storageRef, file);
+    const imageURL = await getDownloadURL(storageRef);
 
-      await updateProfile(auth.currentUser, { photoURL: imageURL });
-      toast.success("เปลี่ยนรูปโปรไฟล์สำเร็จ");
+    //  อัปเดต Firebase Auth 
+    await updateProfile(auth.currentUser, { photoURL: imageURL });
 
-      setInitialData((prev) => ({ ...prev, imageURL }));
-      setSelectedImg(imageURL);
-    } catch (error) {
-      console.error("อัปโหลดรูปผิดพลาด:", error);
-      toast.error("ไม่สามารถเปลี่ยนรูปโปรไฟล์ได้");
-    }
-  };
+    //  อัปเดต MongoDBให้PhothoURLเปลี่ยนตาม
+    await UserService.updateUserPhoto(user.email, imageURL);
+
+    console.log("อัปโหลดรูปสำเร็จ:", imageURL);
+
+    //  Update state
+    setInitialData((prev) => ({ ...prev, imageURL }));
+    setSelectedImg(imageURL);
+    toast.success("เปลี่ยนรูปโปรไฟล์สำเร็จ");
+
+  } catch (error) {
+    console.error("อัปโหลดรูปผิดพลาด:", error);
+    toast.error("ไม่สามารถเปลี่ยนรูปโปรไฟล์ได้");
+  }
+};
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
