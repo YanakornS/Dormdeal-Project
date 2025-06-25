@@ -8,11 +8,8 @@ import { useContext } from "react";
 
 import { AuthContext } from "../../context/AuthContext";
 
-
-
 //imporn icon
 import { CgMenuRound } from "react-icons/cg";
-
 
 const ManagePostStatus = () => {
   const breadcrumbMenu = [
@@ -88,12 +85,12 @@ const ManagePostStatus = () => {
       {/* ปุ่มเปิดเมนู (แสดงบนจอเล็ก) */}
       <div className="block md:hidden mb-4">
         <button
-  className="btn btn-sm  btn-outline flex items-center bg-base-100    gap-2 rounded-xl border-1  hover:bg-base-200"
-  onClick={() => setShowMenu((prev) => !prev)}
->
-  <CgMenuRound className="text-2xl" />
-  <span>เมนู</span>
-</button>
+          className="btn btn-sm  btn-outline flex items-center bg-base-100    gap-2 rounded-xl border-1  hover:bg-base-200"
+          onClick={() => setShowMenu((prev) => !prev)}
+        >
+          <CgMenuRound className="text-2xl" />
+          <span>เมนู</span>
+        </button>
       </div>
 
       <div className="flex flex-col lg:flex-row  gap-4">

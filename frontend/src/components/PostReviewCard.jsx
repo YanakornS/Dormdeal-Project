@@ -49,7 +49,7 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
     <div className="relative flex flex-col sm:flex-row   items-start sm:items-center justify-between w-full max-w-4xl rounded-xl p-4 pt-2  gap-3">
       {/* 🔥 Badge โฆษณา */}
       {post.postPaymentType === "Paid" && (
-        <div className="absolute top-1.5 left-2.5">
+        <div className="absolute top-1 left-4">
           <span className="badge badge-warning px-1 py-1 text-xs font-semibold sm:items-center  justify-between w-full max-w-4xl rounded-xl p-2 ">
             🔥 โฆษณา
           </span>
@@ -79,7 +79,7 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
       </div>
 
       {/* 🔧 ปุ่มฝั่งขวา */}
-      <div className="flex items-center gap-2">
+<div className="flex items-center gap-2 self-end sm:self-auto">
         {/* ปุ่มลบอันแรก: สำหรับ pending_review หรือ rejected */}
         {(post.status === "pending_review" || post.status === "rejected") && (
           <button
