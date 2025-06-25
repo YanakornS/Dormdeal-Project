@@ -80,28 +80,28 @@ const ManagePostStatus = () => {
   const filteredPosts = posts.filter((p) => p.status === statusMap[activeTab]);
   //คือการ กรองโพสต์ (posts) ให้เหลือเฉพาะโพสต์ที่มี status ตรงกับ แท็บที่ผู้ใช้เลือกอยู่ (activeTab)
   return (
-    <div className="section-container mt-20">
+    <div className="section-container   mt-20">
       <Breadcrumbs breadcrumbMenu={breadcrumbMenu} />
 
       {/* ปุ่มเปิดเมนู (แสดงบนจอเล็ก) */}
-      <div className="block md:hidden mb-4">
+      <div className="block  md:hidden   mb-4">
         <button
-          className="btn btn-sm  btn-outline flex items-center bg-base-100    gap-2 rounded-xl border-1  hover:bg-base-200"
+          className="btn btn-sm  btn-outline  flex items-center bg-base-100    gap-2 rounded-xl border-1  hover:bg-base-200"
           onClick={() => setShowMenu((prev) => !prev)}
         >
-          <CgMenuRound className="text-2xl" />
+          <CgMenuRound className="text-2xl " />
           <span>เมนู</span>
         </button>
       </div>
 
-      <div className="flex flex-col lg:flex-row  gap-4">
+      <div className="flex  flex-col lg:flex-row border-t border-gray-300  gap-4">
         {/* Sidebar เมนู */}
         <div
           className={`${
             showMenu ? "block" : "hidden"
-          } md:block w-full lg:w-64 bg-base-100 p-2 -m-3  rounded`}
+          } md:block w-full lg:w-64 bg-base-100  p-2   rounded `}
         >
-          <ul className="menu gap-3 text-base ho flex flex-col">
+          <ul className="menu  gap-3 text-base border-r border-gray-300  ho flex flex-col">
             <li>
               <button
                 onClick={() => {
