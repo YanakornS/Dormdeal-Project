@@ -75,11 +75,17 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
               <p className="text-sm text-red-500 mt-1">{post.modNote}</p>
             )}
           </div>
+          <div>
+            {(post.status === "sold" || post.status === "sold") &&
+              post.modNote && (
+                <p className="text-sm text-green-600 mt-1">{post.modNote}</p>
+              )}
+          </div>
         </div>
       </div>
 
       {/* 🔧 ปุ่มฝั่งขวา */}
-<div className="flex items-center gap-2 self-end sm:self-auto">
+      <div className="flex items-center gap-2 self-end sm:self-auto">
         {/* ปุ่มลบอันแรก: สำหรับ pending_review หรือ rejected */}
         {(post.status === "pending_review" || post.status === "rejected") && (
           <button

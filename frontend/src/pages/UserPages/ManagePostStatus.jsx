@@ -66,14 +66,14 @@ const ManagePostStatus = () => {
   const rejectedCount = posts.filter((p) => p.status === "rejected").length;
   // นับจำนวนโพสต์ที่ปิดการขาย
   // โดยใช้ filter เพื่อกรองโพสต์ที่มีสถานะ "sold-out"
-  const soldOutCount = posts.filter((p) => p.status === "sold-out").length;
+  const soldOutCount = posts.filter((p) => p.status === "sold").length;
 
   // แสดงเฉพาะโพสต์ที่มีสถานะตรงกับแท็บที่ผู้ใช้เลือก
   const statusMap = {
     pending: "pending_review",
     revision: "needs_revision",
     rejected: "rejected",
-    soldOut: "sold-out",
+    soldOut: "sold",
   };
 
   // กรองโพสต์ตามสถานะที่เลือก
