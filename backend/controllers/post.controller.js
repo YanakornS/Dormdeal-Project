@@ -4,8 +4,9 @@ const UserModel = require("../models/user.model");
 //createPost
 exports.createPost = async (req, res) => {
   if (!req.files) {
-    return res.status(400).json({ message: "Image is required" });
+    return res.status(400).json({ message: "กรุณาอัปโหลดรูปภาพประกอบโพสต์" });
   }
+
   //const firebaseUrl = req.files.firebaseUrl;
   const owner = req.userId;
   //สลายโครงสร้าง
@@ -29,52 +30,60 @@ exports.createPost = async (req, res) => {
     !condition ||
     !postPaymentType
   ) {
-    return res.status(400).json({ message: "All Fields is requires" });
+    return res.status(400).json({ message: "กรุณากรอกข้อมูลให้ครบทุกช่องก่อนโพสต์" });
   }
   try {
     const userDoc = await UserModel.findById(owner);
     if (!userDoc) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "ไม่พบข้อมูลผู้ใช้" });
     }
+
+    const userPostCount = await PostModel.countDocuments({ owner });
+    if (userPostCount >= 5) {
+      return res.status(403).json({
+        message: "คุณไม่สามารถลงประกาศได้มากกว่า 5 รายการ กรุณาจัดการโพสต์ประกาศของคุณก่อน",
+      });
+    }
+
     if (userDoc.userStatus !== "normal") {
-      return res.status(403).json({ message: "User is banned or outof " });
+      return res.status(403).json({ message: "บัญชีของคุณถูกระงับการหรืออยู้ในสถานะพ้นสภาพนักศึกษา " });
     }
     const categoryDoc = await MainCategory.findById(category);
     if (!categoryDoc)
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: "ไม่พบหมวดหมู่ที่เลือก" });
 
+    // method find ใช้หาสมาชิกตัวเเรกของarray
     const matchedSub = categoryDoc.subCategories.find(
       (sub) => sub._id.toString() === subcategory
     );
     if (!matchedSub)
-      return res.status(404).json({ message: "Subcategory not found" });
+      return res.status(404).json({ message: "ไม่พบหมวดหมู่ย่อยที่เลือก" });
+
 
     const postDoc = await PostModel.create({
       owner,
       postType,
       productName,
       category: categoryDoc._id,
-      subcategory: matchedSub._id, // ✅ ใช้ _id จาก subCategories array
+      subcategory: matchedSub._id, 
       images: req.fileUrls,
       price,
       description,
       condition,
       postPaymentType,
     });
-    if (!postDoc) {
-      res.status(400).send({
-        message: "Cannot Create new Post",
-      });
-      return;
-    }
-    res.json(postDoc);
+    
+    res.json(postDoc);({
+    message: "โพสต์ถูกสร้างเรียบร้อยแล้ว"
+});
+    
   } catch (error) {
     res.status(500).send({
-      message:
-        error.message || "Something error occurred while creating a new Post.",
+      message:"เกิดข้อผิดพลาดระหว่างการสร้างโพสต์ กรุณาลองใหม่ภายหลัง",
     });
   }
 };
+
 // getAllPost
 exports.getAllPosts = async (req, res) => {
   try {
@@ -92,10 +101,8 @@ exports.getAllPosts = async (req, res) => {
     res.json(posts);
   } catch (error) {
 
-
-
     res.status(500).send({
-      message: "An error occurred while fetching posts",
+      message: "ไม่สามารถโหลดโพสต์ได้ในขณะนี้ กรุณาลองใหม่ภายหลัง",
     });
   }
 };
@@ -104,25 +111,17 @@ exports.getAllPosts = async (req, res) => {
 exports.getPostById = async (req, res) => {
   const { id } = req.params;
   try {
-    const postDoc = await PostModel.findById(id).populate("owner", [
-      "displayName",
-      "photoURL",
-      "category",
-      "name",
-      "subcategory",
-      "subCategoryName",
-    ]);
+    const postDoc = await PostModel.findById(id)
+    .populate("owner", ["displayName", "photoURL"])
+    .populate("category", ["name"]);
     if (!postDoc) {
-      res.status(404).send({
-        message: "Post not found",
-      });
+      res.status(404).send({message: "ไม่พบโพสต์ที่ต้องการ",});
       return;
     }
     res.json(postDoc);
   } catch (error) {
-    console.log(error.message);
     res.status(500).send({
-      message: "Something error occurred while getting post Details",
+      message: "เกิดข้อผิดพลาดระหว่างโหลดข้อมูลโพสต์",
     });
   }
 };
@@ -134,28 +133,23 @@ exports.deletePostByOwner = async (req, res) => {
 
   try {
     const postDoc = await PostModel.findById(id);
-
     if (!postDoc) {
       return res.status(404).send({
-        message: "Post not found",
+        message: "ไม่พบโพสต์ที่ต้องการลบ"
       });
     }
-
     if (ownerId !== postDoc.owner.toString()) {
       return res.status(403).send({
-        message: "You are not authorized to delete this post",
+        message: "คุณไม่มีสิทธิ์ลบโพสต์นี้ เพราะคูณไม่ใช่เจ้าของโพสต์นี้",
       });
     }
-
     await PostModel.findByIdAndDelete(id);
-
     res.status(200).send({
-      message: "Post deleted successfully",
+      message: "ลบโพสต์เรียบร้อยแล้ว",
     });
   } catch (error) {
-    console.error(error.message);
     res.status(500).send({
-      message: error.message || "An error occurred while deleting the post",
+      message:  "เกิดข้อผิดพลาดระหว่างการลบโพสต์",
     });
   }
 };
@@ -166,22 +160,21 @@ exports.getPostByOwner = async (req, res) => {
   try {
     // ค้นหาโพสต์ทั้งหมดที่เจ้าของเป็น `id` ที่ได้รับจาก URL
     const postDoc = await PostModel.find({ owner: id })
-      // ใช้ populate เพื่อดึงข้อมูลเจ้าของโพสต์ (เช่น ชื่อผู้ใช้)
+      // ใช้ populate เพื่อดึงข้อมูลเจ้าของโพสต์
       .populate("owner");
 
     // ถ้าไม่พบโพสต์ที่มีเจ้าของ `id` นี้
     if (!postDoc) {
       res.status(404).send({
-        message: "Post not found",
+        message: "ไม่พบโพสต์ของผู้ใช้นี้",
       });
       return;
     }
     // ส่งข้อมูลโพสต์ทั้งหมดที่พบกลับไปยัง client
     res.json(postDoc);
   } catch (error) {
-    console.log(error.message);
     res.status(500).send({
-      message: "Something error occurred while getting post by author",
+      message: "เกิดข้อผิดพลาดระหว่างการโหลดโพสต์ของผู้ใช้นี้",
     });
   }
 };
@@ -191,18 +184,18 @@ exports.updatePost = async (req, res) => {
   const { id } = req.params;
   const ownerId = req.userId;
 
-  if (!id) return res.status(404).json({ message: "Post id is not Provided" });
+  if (!id) return res.status(404).json({ message: "ไม่พบ ID ของโพสต์" });
 
   try {
     const postDoc = await PostModel.findById(id);
 
     if (!postDoc) {
-      return res.status(404).json({ message: "Post not found" });
+      return res.status(404).json({ message: "ไม่พบโพสต์ที่ต้องการอัปเดต" });
     }
 
     if (ownerId !== postDoc.owner.toString()) {
       return res.status(403).send({
-        message: "You cannot update this post",
+        message: "คุณไม่มีสิทธิ์แก้ไขโพสต์นี้ เพราะคุณไม่ใช่เจ้าของโพสต์นี้",
       });
     }
 
@@ -215,7 +208,6 @@ exports.updatePost = async (req, res) => {
       condition,
       postType,
       postPaymentType,
-      existingImages,
     } = req.body;
 
     if (
@@ -228,7 +220,7 @@ exports.updatePost = async (req, res) => {
       !postType ||
       !postPaymentType
     ) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ message: "กรุณากรอกข้อมูลให้ครบทุกช่อง" });
     }
 
     // อัปเดตฟิลด์
@@ -241,119 +233,65 @@ exports.updatePost = async (req, res) => {
     postDoc.postType = postType;
     postDoc.postPaymentType = postPaymentType;
 
-    //แปลง existingImages จาก JSON เป็น Array
-    let oldImages = [];
-    try {
-      oldImages = JSON.parse(existingImages);
-    } catch (e) {
-      oldImages = [];
-    }
-    // รวมรูปภาพเก่าและรูปภาพใหม่จาก req.fileUrls เข้าด้วยกัน
-    postDoc.images = req.fileUrls ? [...oldImages, ...req.fileUrls] : oldImages;
-
-    // รีเซ็ตสถานะเพื่อให้ admin ตรวจสอบใหม่
     postDoc.status = "pending_review";
     postDoc.modNote = null;
 
     await postDoc.save();
-    res.json(postDoc);
+     res.json(postDoc);
   } catch (error) {
-    console.error(error.message);
     res.status(500).send({
       message:
-        error.message || "Something error occurred while updating a post",
+        "เกิดข้อผิดพลาดระหว่างการอัปเดตโพสต์ กรุณาลองใหม่",
     });
   }
 };
 
-// getAllPostByMod
-// exports.getAllPostsByMod = async (req, res) => {
-//   try {
-//     const posts = await PostModel.find()
-//       .populate("category", ["name"])
-//       .populate("owner", ["displayName"])
-//       .sort({
-//         postPaymentType: -1,
-//         createdAt: 1,
-//       });
+exports.closeSale = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.userId;
+  const { buyerId } = req.body;
 
-//     res.json(posts);
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(500).send({
-//       message: "An error occurred while fetching posts",
-//     });
-//   }
-// };
+  try {
+    const post = await PostModel.findById(id);
 
-// exports.deletePostByMod = async (req, res) => {
-//   const { id } = req.params;
+    if (!post) {
+      return res.status(404).json({ message: "ไม่พบโพสต์ที่ต้องการปิดการขาย" });
+    }
 
-//   try {
-//     const postDoc = await PostModel.findById(id);
 
-//     if (!postDoc) {
-//       return res.status(404).send({
-//         message: "Post not found",
-//       });
-//     }
+    if (post.owner.toString() !== userId) {
+      return res.status(403).json({ message: "คุณไม่มีสิทธิ์ปิดการขายของโพสต์นี้" });
+    }
 
-//     await PostModel.findByIdAndDelete(id);
+    if (post.status === "sold") {
+    return res.status(400).json({ message: "โพสต์นี้ถูกปิดการขายไปแล้ว" });
+    }
 
-//     res.status(200).send({
-//       message: "Post deleted successfully",
-//     });
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(500).send({
-//       message: error.message || "An error occurred while deleting the post",
-//     });
-//   }
-// };
+    if (post.status !== "approved") {
+    return res.status(400).json({
+    message: "โพสต์นี้ยังไม่ได้รับการอนุมัติ ไม่สามารถปิดการขายได้",
+    });
+}
+    if (buyerId) {
+      const buyer = await UserModel.findById(buyerId);
+      if (!buyer) {
+        return res.status(404).json({ message: "ไม่พบผู้ซื้อ" });
+      }
+      post.buyer = buyerId;
+    }
+    // อัปเดตสถานะเป็น 'sold'
+    post.status = "sold";
+    await post.save();
 
-// approve or reject post by mod
-// exports.reviewPost = async (req, res) => {
-//   const { id } = req.params;
-//   const { action, message } = req.body;
+    res.status(200).json({
+      message: "โพสต์ถูกปิดการขายเรียบร้อยแล้ว",
+    });
 
-//   try {
-//     const postDoc = await PostModel.findById(id);
-//     const validActions = ["approved", "rejected", "needs_revision"];
+  } catch (error) {
+    res.status(500).json({
+      message: "เกิดข้อผิดพลาดระหว่างการปิดการขาย กรุณาลองใหม่ภายหลัง",
+    });
+  }
+};
 
-//     if (!postDoc) {
-//       return res.status(404).json({ message: "Post not found." });
-//     }
 
-//     if (!validActions.includes(action)) {
-//       return res.status(400).json({ message: "Invalid action." });
-//     }
-
-//     postDoc.status = action;
-//     if (action === "needs_revision") {
-//       if (!message || message.trim() === "") {
-//         return res.status(400).json({ message: "Revision message is required." });
-//       }
-//       postDoc.modNote = message;
-//     } else {
-//       postDoc.modNote = null;
-//     }
-
-//     await postDoc.save();
-//       // const responsePost = postDoc.toObject();
-//       // if (responsePost.status !== "needs_revision") {
-//       //   delete responsePost.modNote;
-//       // }
-//     res.json({
-//       message: `Post status updated to '${action}'.`,
-//       // post: responsePost,
-//       post: postDoc,
-//     });
-
-//   } catch (error) {
-//     console.error(error.message);
-//     res.status(500).json({
-//       message: "An error occurred while reviewing the post.",
-//       error: error.message,
-//     });
-//   }
-// };
