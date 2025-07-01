@@ -5,6 +5,7 @@ const authJwt = require("../middlewares/auth.middleware");
 const { uploads, uploadsToFirebase } = require("../middlewares/file.midleware");
 
 //http://localhost:5000/api/v1/post
+<<<<<<< HEAD
 router.post(
   "/",
   authJwt.verifyToken,
@@ -12,6 +13,9 @@ router.post(
   uploadsToFirebase,
   postController.createPost
 );
+=======
+router.post("/", authJwt.verifyToken, uploads,uploadsToFirebase, postController.createPost)
+>>>>>>> AdminAndSold
 
 //http://localhost:5000/api/v1/post
 router.get("", postController.getAllPosts);

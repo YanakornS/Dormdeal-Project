@@ -10,6 +10,7 @@ const userRouter = require("./routers/user.router");
 const postRouter = require("./routers/post.router");
 const reportRouter = require("./routers/report.router")
 const modRouter = require("./routers/mod.router")
+const adminRouter = require("./routers/admin.router")
 const maincategoryRouter = require("./routers/maincategory.router")
 const subcategoryRouter = require("./routers/subcategory.router")
 const wishlistRouter = require("./routers/wishlist.router");
@@ -35,6 +36,7 @@ app.use("/api/v1/maincategory", maincategoryRouter);
 app.use("/api/v1/subcategory", subcategoryRouter);
 app.use("/api/v1/report", reportRouter);
 app.use("/api/v1/mod", modRouter);
+app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/wishlist", wishlistRouter);
 app.use("/api/v1/message", messageRouter);
 app.use("/api/v1/chatroom", chatroomRouter);
