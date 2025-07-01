@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { IoArrowDownCircleOutline } from "react-icons/io5";
 
-const TermOfServiceModal = ({ isOpen, onAccept, onCancel  }) => {
+const TermOfServiceModal = ({ isOpen, onAccept, onCancel }) => {
   const bottomRef = useRef(null);
   const contentRef = useRef(null);
   const [hasScrolledToBottom, setHasScrolledToBottom] = useState(false);
@@ -33,8 +33,6 @@ const TermOfServiceModal = ({ isOpen, onAccept, onCancel  }) => {
   };
 
   return (
-
-   
     <div className=" fixed inset-0 flex items-center justify-center z-50 mt-85">
       <div className="bg-base-100 border border-base-300 rounded-xl shadow-md max-w-4xl w-full max-h-[60vh] flex flex-col relative p-6 ">
         <h1 className="text-2xl font-bold text-primary mb-6">
@@ -46,6 +44,7 @@ const TermOfServiceModal = ({ isOpen, onAccept, onCancel  }) => {
           className="absolute right-6 top-6 text-primary hover:text-blue-600"
           title="เลื่อนลง"
           type="button"
+          data-test="scroll-bottom"
         >
           <IoArrowDownCircleOutline size={30} />
         </button>
@@ -191,6 +190,7 @@ const TermOfServiceModal = ({ isOpen, onAccept, onCancel  }) => {
             disabled={!hasScrolledToBottom}
             type="button"
             aria-disabled={!hasScrolledToBottom}
+            data-test="accept-button"
             title={
               !hasScrolledToBottom
                 ? "กรุณาเลื่อนอ่านเนื้อหาจนจบก่อน"
@@ -202,7 +202,6 @@ const TermOfServiceModal = ({ isOpen, onAccept, onCancel  }) => {
         </div>
       </div>
     </div>
-    
   );
 };
 
