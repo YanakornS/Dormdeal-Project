@@ -16,7 +16,7 @@ exports.sign = async (req, res) => {
     return res.status(404).json({ message: "Email is not found" });
   }
   
-  //ตรวจสอบรหัสผ่านยังไมได้ใช้ bcrypt
+  //#OXE ตรวจสอบรหัสผ่านยังไมได้ใช้ bcrypt
   // if (user.role === "mod") {
   //   if (!password) {
   //     return res.status(400).json({ message: "Password is required for moderators" });
