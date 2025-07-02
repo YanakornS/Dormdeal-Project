@@ -237,7 +237,7 @@ const ProductDetail = () => {
           <div className="flex items-center justify-between mt-4 pb-1">
             <p className="text-xl font-semibold mt-3">
               สภาพสินค้า -{" "}
-              <span className="text-xl text-gray-500">
+              <span className="text-xl text-base-500">
                 {postProductDetail.condition}
               </span>
             </p>
@@ -250,7 +250,7 @@ const ProductDetail = () => {
             <ModalReport postId={postProductDetail._id} />
             {/* <ModalReport name="report_modal" /> */}
           </div>
-          <p className="text-sm leading-relaxed mt-2 text-gray-800 whitespace-pre-line">
+          <p className="text-sm leading-relaxed mt-2 text-base-800 whitespace-pre-line">
             {postProductDetail.description}
           </p>
         </div>
@@ -287,7 +287,7 @@ const ProductDetail = () => {
             <AiOutlineMessage size={20} className="mr-2" />
             แชท
           </button>
-        </div>
+        </div>            
       </div>
 
       {/* Lightbox */}

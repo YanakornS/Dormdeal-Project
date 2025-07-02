@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import PostService from "../../../services/postproduct.service";
-import ProductCard from "../../../components/ProductCard";
-
+import PostProfileCard from "../../../components/PostProfileCard";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
+
+//imporn icon
 import { LuEye } from "react-icons/lu";
 import { FiBox } from "react-icons/fi";
 import { LuStar } from "react-icons/lu";
@@ -20,10 +21,11 @@ const Index = () => {
 
   const auth = getAuth();
   const user = auth.currentUser;
+  const [soldCount, setSoldCount] = useState(0);
 
   //ตรวจสอบผู้ใช้ผ่าน  Auth
   //เมื่อมีการเปลี่ยนแปลงสถานะการล็อกอิน จะเก็บข้อมูลผู้ใช้ไว้ใน currentUser เเละใช้ onAuthStateChanged ของ Firebase
-  
+
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -33,7 +35,6 @@ const Index = () => {
     return () => unsubscribe();
   }, []);
   //onAuthStateChanged จะทำงานเรียก callback ทุกครั้งที่สถานะการล็อกอินเปลี่ยนแปลงเช่น ล็อกอินสำเร็จ, ออกจากระบบ
-
 
   //ดึงโพสต์จากเจ้าของ ตาม id
   useEffect(() => {
@@ -45,8 +46,14 @@ const Index = () => {
         const approvedPosts = response.data
           .filter((post) => post.status === "approved")
           .slice(0, 5); //  จำกัดจำนวนไม่เกิน 5 โพสต์
-        
+
         setProducts(approvedPosts); //เก็บลงใน products เฉพาะโพสต์ที่ approved หรือผ่่านการอนุมัติแล้ว
+        // นับจำนวนโพสต์ที่มีสถานะ sold
+        //  ใช้ filter เพื่อกรองโพสต์ที่มีสถานะ sold
+        const soldPosts = response.data.filter(
+          (post) => post.status === "sold"
+        );
+        setSoldCount(soldPosts.length); // เก็บจำนวนสินค้า sold
       } catch (error) {
         console.error("Error fetching products:", error);
       }
@@ -82,7 +89,9 @@ const Index = () => {
           </span>
           <span className="flex items-center justify-center md:justify-start">
             <FiBox />
-            <span className="ml-2">จำนวนสินค้าที่ปิดการขายสำเร็จ :</span>
+            <span className="ml-2">
+              จำนวนสินค้าที่ปิดการขายสำเร็จ : {soldCount} รายการ
+            </span>
           </span>
           <span className="flex items-center justify-center md:justify-start">
             <LuStar />
@@ -93,11 +102,14 @@ const Index = () => {
 
       {/* รายการสินค้า */}
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
-        
-        {products.map((product) => (//คือวนลูปในรายการสินค้าใน products
-          <ProductCard key={product._id} product={product} />
-          //ใช้ ProductCard แสดงแต่ละสินค้า
-        ))}
+        {products.map(
+          (
+            product //คือวนลูปในรายการสินค้าใน products
+          ) => (
+            <PostProfileCard key={product._id} product={product} />
+            //ใช้ PostProfileCard แสดงแต่ละสินค้า
+          )
+        )}
       </div>
     </div>
   );

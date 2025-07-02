@@ -84,7 +84,7 @@ const PostReviewCard = ({ post, onDelete = () => {} }) => {
         </div>
       </div>
 
-      {/* 🔧 ปุ่มฝั่งขวา */}
+      {/*  ปุ่มฝั่งขวา */}
       <div className="flex items-center gap-2 self-end sm:self-auto">
         {/* ปุ่มลบอันแรก: สำหรับ pending_review หรือ rejected */}
         {(post.status === "pending_review" || post.status === "rejected") && (
