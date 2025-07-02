@@ -8,7 +8,11 @@ const UserSchema = new Schema({
   role: { type: String, enum: ["admin", "mod", "user"], default: "user" },
   userStatus: { type: String, enum: ["normal", "Banned", "outof"], default: "normal" },
   wishlist: [{ type: Schema.Types.ObjectId, ref: "Post" }],
-  photoURL: { type: String}
+  photoURL: { type: String},
+  rating: {
+    score: { type: Number, default: 0 },           
+    count: { type: Number, default: 0 },          
+  }
 }, {
   timestamps: true
 });

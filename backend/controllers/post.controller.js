@@ -100,10 +100,6 @@ exports.getAllPosts = async (req, res) => {
 
     res.json(posts);
   } catch (error) {
-<<<<<<< HEAD
-=======
-
->>>>>>> AdminAndSold
     res.status(500).send({
       message: "ไม่สามารถโหลดโพสต์ได้ในขณะนี้ กรุณาลองใหม่ภายหลัง",
     });
@@ -261,7 +257,7 @@ exports.closeSale = async (req, res) => {
       return res.status(404).json({ message: "ไม่พบโพสต์ที่ต้องการปิดการขาย" });
     }
 
-<<<<<<< HEAD
+
     if (post.owner.toString() !== userId) {
       return res
         .status(403)
@@ -291,7 +287,7 @@ exports.closeSale = async (req, res) => {
     res.status(200).json({
       message: "โพสต์ถูกปิดการขายเรียบร้อยแล้ว",
     });
-=======
+
 
     if (post.owner.toString() !== userId) {
       return res.status(403).json({ message: "คุณไม่มีสิทธิ์ปิดการขายของโพสต์นี้" });
@@ -321,15 +317,10 @@ exports.closeSale = async (req, res) => {
       message: "โพสต์ถูกปิดการขายเรียบร้อยแล้ว",
     });
 
->>>>>>> AdminAndSold
+
   } catch (error) {
     res.status(500).json({
       message: "เกิดข้อผิดพลาดระหว่างการปิดการขาย กรุณาลองใหม่ภายหลัง",
     });
   }
 };
-<<<<<<< HEAD
-=======
-
-
->>>>>>> AdminAndSold
