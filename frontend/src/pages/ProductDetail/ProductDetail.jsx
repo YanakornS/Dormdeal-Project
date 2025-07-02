@@ -59,12 +59,10 @@ const ProductDetail = () => {
     }
     try {
       await WishListService.toggleWishlist(id);
-      setIsHeartFilled(!isHeartFilled); 
+      setIsHeartFilled(!isHeartFilled);
 
       toast.success(
-        !isHeartFilled
-          ? "เพิ่มเข้ารายการโปรดสำเร็จ"
-          : "ลบออกจากรายการโปรดแล้ว",
+        !isHeartFilled ? "เพิ่มเข้ารายการโปรดสำเร็จ" : "ลบออกจากรายการโปรดแล้ว",
         {
           icon: isHeartFilled ? "💔" : "❤️",
           style: {
@@ -252,7 +250,7 @@ const ProductDetail = () => {
             <ModalReport postId={postProductDetail._id} />
             {/* <ModalReport name="report_modal" /> */}
           </div>
-          <p className=" text-sm leading-relaxed mt-1">
+          <p className="text-sm leading-relaxed mt-2 text-gray-800 whitespace-pre-line">
             {postProductDetail.description}
           </p>
         </div>
