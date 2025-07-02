@@ -3,7 +3,7 @@ import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
 
 const TermOfService = () => {
-  const { user } = useContext(AuthContext); // ดึงข้อมูลผู้ใช้จาก context
+  const { user } = useContext(AuthContext); // ดึงข้อมูลผู้ใช้จาก contextเเละUserที่Loginอยู่
   return (
     <div className="max-w-4xl mx-auto p-6 bg-base-100 rounded-xl shadow-md border border-base-300 my-10 mt-22">
       <h1 className="text-2xl font-bold text-primary mb-6">

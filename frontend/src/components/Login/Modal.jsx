@@ -60,6 +60,7 @@ const Modal = ({ name }) => {
           <button
             className="flex items-center justify-center btn-sign rounded-lg mt-8"
             onClick={handleClickLogin}
+            data-test="LoginNpru-button"
             type="button"
           >
             <img
