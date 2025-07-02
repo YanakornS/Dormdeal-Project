@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import ReportService from "../../../services/report.service";
 import ModalReportDetail from "../ModalReportDetail/ModalReportDetail";
 
@@ -6,13 +7,18 @@ const ReportPosts = () => {
   const [reports, setReports] = useState([]);
   const [selectedReport, setSelectedReport] = useState(null);
   const [filterReason, setFilterReason] = useState("ทั้งหมด");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const reportsPerPage = 10;
 
   useEffect(() => {
     const fetchReports = async () => {
       try {
         const res = await ReportService.getAllReports();
         setReports(res.data);
-      } catch {}
+      } catch (err) {
+        console.error(err);
+      }
     };
 
     fetchReports();
@@ -22,6 +28,34 @@ const ReportPosts = () => {
     setReports((prev) => prev.filter((r) => r._id !== reportId));
     setSelectedReport(null);
   };
+
+  const filteredReports = reports.filter((report) =>
+    filterReason === "ทั้งหมด"
+      ? true
+      : report.reasons?.includes(filterReason)
+  );
+
+  const totalPages = Math.ceil(filteredReports.length / reportsPerPage);
+  const startIndex = (currentPage - 1) * reportsPerPage;
+  const currentReports = filteredReports.slice(
+    startIndex,
+    startIndex + reportsPerPage
+  );
+
+  const handlePrev = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  useEffect(() => {
+    // ถ้ากรองแล้วมีข้อมูลหน้าน้อยกว่าหน้าปัจจุบัน ให้กลับไปหน้าแรก
+    if (currentPage > totalPages) {
+      setCurrentPage(1);
+    }
+  }, [filterReason, totalPages]);
 
   return (
     <div className="section-container sm:mt-7 mt-6 px-6 py-14">
@@ -33,7 +67,6 @@ const ReportPosts = () => {
           value={filterReason}
           onChange={(e) => setFilterReason(e.target.value)}
         >
-          
           <option className="text-black" value="ทั้งหมด">ทั้งหมด</option>
           <option className="text-black" value="ข้อมูลสินค้าไม่ตรงตามที่ระบุ">
             ข้อมูลสินค้าไม่ตรงตามที่ระบุ
@@ -59,51 +92,75 @@ const ReportPosts = () => {
             </tr>
           </thead>
           <tbody>
-            {reports.length === 0 ? (
+            {currentReports.length === 0 ? (
               <tr>
                 <td colSpan="4" className="text-center py-6 text-gray-500">
                   ไม่มีรายงาน
                 </td>
               </tr>
             ) : (
-              reports
-                .filter((report) =>
-                  filterReason === "ทั้งหมด"
-                    ? true
-                    : report.reasons?.includes(filterReason)
-                )
-                .map((report) => (
-                  <tr key={report._id} className="">
-                    <td className="px-4 py-3 text-left truncate">
-                      {report.postId?.productName || "ไม่ทราบชื่อโพสต์"}
-                    </td>
-                    <td className="px-4 py-3 text-left truncate">
-                      {report.reasons?.join(", ")}
-                    </td>
-                    <td className="px-4 py-3 text-left truncate">
-                      {report.reporter?.displayName || "ไม่ทราบชื่อผู้รายงาน"}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <button
-                        onClick={() => setSelectedReport(report)}
-                        className="btn-checkpost bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
-                      >
-                        ดูรายงานปัญหา
-                      </button>
-                    </td>
-                    {selectedReport && selectedReport._id === report._id && (
-                      <ModalReportDetail
-                        report={selectedReport}
-                        onClose={() => setSelectedReport(null)}
-                        onReportHandled={handleReportHandled}
-                      />
-                    )}
-                  </tr>
-                ))
+              currentReports.map((report) => (
+                <tr key={report._id}>
+                  <td className="px-4 py-3 truncate">
+                    {report.postId?.productName || "ไม่ทราบชื่อโพสต์"}
+                  </td>
+                  <td className="px-4 py-3 truncate">
+                    {report.reasons?.join(", ")}
+                  </td>
+                  <td className="px-4 py-3 truncate">
+                    {report.reporter?.displayName || "ไม่ทราบชื่อผู้รายงาน"}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <button
+                      onClick={() => setSelectedReport(report)}
+                      className="btn-checkpost bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                    >
+                      ดูรายงานปัญหา
+                    </button>
+                  </td>
+                  {selectedReport && selectedReport._id === report._id && (
+                    <ModalReportDetail
+                      report={selectedReport}
+                      onClose={() => setSelectedReport(null)}
+                      onReportHandled={handleReportHandled}
+                    />
+                  )}
+                </tr>
+              ))
             )}
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <button
+            onClick={handlePrev}
+            disabled={currentPage === 1}
+            className={`p-2 rounded-full ${
+              currentPage === 1
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-base-200 hover:bg-base-300"
+            }`}
+          >
+            <IoChevronBack size={20} />
+          </button>
+          <span className="text-base">
+            หน้า {currentPage} / {totalPages}
+          </span>
+          <button
+            onClick={handleNext}
+            disabled={currentPage === totalPages}
+            className={`p-2 rounded-full ${
+              currentPage === totalPages
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-base-200 hover:bg-base-300"
+            }`}
+          >
+            <IoChevronForward size={20} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

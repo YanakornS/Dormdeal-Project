@@ -3,38 +3,38 @@ const MainCategory = require("../models/maincategory.model")
 exports.addSubCategory = async (req, res) => {
   const { mainCategoryId, subCategoryName } = req.body;
 
+  
   if (!mainCategoryId || !subCategoryName) {
     return res
       .status(400)
-      .json({ message: "Main category ID and subcategory name are required" });
+      .json({ message: "กรุณาระบุหมวดหมู่หลักและชื่อหมวดย่อย" });
   }
 
   try {
-    // ค้นหา MainCategory
+    
     const mainCategory = await MainCategory.findById(mainCategoryId);
     if (!mainCategory) {
-      return res.status(404).json({ message: "Main category not found" });
+      return res.status(404).json({ message: "ไม่พบหมวดหมู่หลัก" });
     }
-
-    // include ไส้ตรวจสอบ subname 
-    const subexits = mainCategory.subCategories.includes(subCategoryName);
-    if (subexits) {
-      return res.status(409).json({ message: "subcategory already" });
+    const newName = subCategoryName.trim().toLowerCase();
+    const isDuplicate = mainCategory.subCategories.some(
+      (sub) => sub.subCategoryName.trim().toLowerCase() === newName
+    );
+    if (isDuplicate) {
+      return res.status(409).json({ message: "มีหมวดย่อยนี้อยู่แล้ว" });
     }
-    console.log(subCategoryName);
-
-    // เพิ่ม SubCategory ไปที่ MainCategory 
-    mainCategory.subCategories.push({ subCategoryName: subCategoryName });
-    console.log(mainCategory);
-
+    mainCategory.subCategories.push({ subCategoryName: subCategoryName.trim() });
     await mainCategory.save();
+
     res.status(201).json(mainCategory);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error adding subcategory", error: error.message });
+    res.status(500).json({
+      message: "เกิดข้อผิดพลาดขณะเพิ่มหมวดย่อย",
+      error: error.message,
+    });
   }
 };
+
 
 exports.getSubCategories = async(req,res) =>{
   try{
@@ -42,7 +42,7 @@ exports.getSubCategories = async(req,res) =>{
     res.json(subcategories);
   } catch (error) {
     res.status(500).send({
-      message: "An error occurred while fetching subcategories ",
+      message: "เกิดข้อผิดพลาดขณะดึงข้อมูลหมวดย่อย",
     });
   }
 }
@@ -53,13 +53,13 @@ exports.getSubCategoryById = async(req,res)=>{
   try{
     const subcategory = await MainCategory.findById(id);
     if(!subcategory){
-      res.status(404).send({message:"SubCategory not found"})
+      res.status(404).send({message:"ไม่พบหมวดย่อย"})
       return
     }
     res.json(subcategory)
   }catch(error){
     res.status(500).send({
-      message:"An error occurred while fetching subcategory"
+      message:"เกิดข้อผิดพลาดขณะดึงข้อมูลหมวดย่อย"
     })
   }
 }
@@ -89,11 +89,11 @@ exports.getSubCategoryById = async(req,res)=>{
 
 //Edit by Kays
 exports.updateSubCategory = async (req, res) => {
-  const { id } = req.params; // id คือ _id ของ subcategory
+  const { id } = req.params; 
   const { subCategoryName } = req.body;
 
   if (!subCategoryName) {
-    return res.status(400).json({ message: "Subcategory name is required" });
+    return res.status(400).json({ message: "กรุณาระบุชื่อหมวดย่อยที่จะแก้ไข" });
   }
 
   try {
@@ -103,7 +103,7 @@ exports.updateSubCategory = async (req, res) => {
     });
 
     if (!mainCategory) {
-      return res.status(404).json({ message: "Subcategory not found" });
+      return res.status(404).json({ message: "ไม่พบหมวดย่อย" });
     }
 
     // method id ใช้ดึงค่าในelement 
@@ -111,11 +111,10 @@ exports.updateSubCategory = async (req, res) => {
     sub.subCategoryName = subCategoryName;
 
     await mainCategory.save();
-
-    res.status(200).json({ message: "Update subcategory successfully" });
+    res.status(200).json({ message: "อัปเดตหมวดย่อยเรียบร้อยแล้ว" });
   } catch (error) {
     res.status(500).json({
-      message: "An error occurred while updating subcategory",
+      message: "เกิดข้อผิดพลาดขณะอัปเดตหมวดย่อย",
       error: error.message,
     });
   }
@@ -147,21 +146,20 @@ exports.deleteSubCategory = async (req, res) => {
     });
 
     if (!mainCategory) {
-      return res.status(404).json({ message: "SubCategory not found" });
+      return res.status(404).json({ message: "ไม่พบหมวดย่อย" });
     }
-
-    // ใช้ filter ตัด subCategory ออก
+    
     mainCategory.subCategories = mainCategory.subCategories.filter(
       (sub) => sub._id.toString() !== id
     );
 
     await mainCategory.save();
 
-    res.status(200).json({ message: "Delete SubCategory successfully" });
+    res.status(200).json({ message: "ลบหมวดย่อยเรียบร้อยแล้ว" });
   } catch (error) {
-    console.error("DELETE ERROR:", error);
+
     res.status(500).json({
-      message: "An error occurred while deleting subcategory",
+      message: "เกิดข้อผิดพลาดขณะลบหมวดย่อย",
       error: error.message,
     });
   }

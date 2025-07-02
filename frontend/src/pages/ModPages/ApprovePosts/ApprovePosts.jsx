@@ -238,7 +238,10 @@ const ApprovePosts = () => {
               รายงานโพสต์
             </button>
           </div>
-          <p className=" text-sm leading-relaxed">
+          <p className="text-sm leading-relaxed mt-2 text-base-800 whitespace-pre-line">
+            {postProductDetail.description}
+          </p>
+          <p className="text-sm leading-relaxed mt-2 text-base-800 whitespace-pre-line">
             {postProductDetail.description}
           </p>
         </div>

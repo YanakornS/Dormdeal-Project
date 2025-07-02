@@ -4,23 +4,26 @@ const MainCategory = require("../models/maincategory.model");
 exports.addCategory = async (req, res) => {
   const { name } = req.body;
   if (!name) {
-    return res.status(400).json({ message: "Category name  is required" });
+    return res.status(400).json({ message: "กรุณาระบุชื่อหมวดหมู่" });
   }
   if (!req.file || !req.file.firebaseUrl)
-    return res.status(400).json({ message: "Image is required" });
+    return res.status(400).json({ message: "กรุณาอัปโหลดรูปภาพ" });
 
   try {
+     const existingCategory = await MainCategory.findOne({ name: name.trim() });
+    if (existingCategory) {
+      return res.status(409).json({ message: "ชื่อหมวดหมู่มีอยู่แล้ว" });
+    }
     const newCategory = new MainCategory({
-      name,
+      name: name.trim(),
       image: req.file.firebaseUrl,
-      subCategories: [], // ตั้งค่า default ไว้ก่อน
+      subCategories: [],
     });
     await newCategory.save();
     res.status(201).json(newCategory);
   } catch (error) {
-    console.log("CATEGORY CREATE ERROR:", error); // log error
     res.status(500).json({
-      message: "Something went wrong while creating the category",
+      message: "เกิดข้อผิดพลาดระหว่างการสร้างหมวดหมู่",
       error: error.message,
     });
   }
@@ -33,7 +36,7 @@ exports.getCategory = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "An error occurred while fetching categories" });
+      .json({ message: "เกิดข้อผิดพลาดระหว่างการดึงหมวดหมู่" });
   }
 };
 
@@ -43,14 +46,14 @@ exports.getCategoryById = async (req, res) => {
     const categories = await MainCategory.findById(id);
     if (!categories) {
       res.status(404).send({
-        message: "categories not found",
+        message: "ไม่พบหมวดหมู่ที่ระบุ",
       });
       return;
     }
     res.json(categories);
   } catch (error) {
     res.status(500).send({
-      message: "Something error occurred while getting category",
+      message: "เกิดข้อผิดพลาดระหว่างการดึงหมวดหมู่",
     });
   }
 };
@@ -58,8 +61,8 @@ exports.getCategoryById = async (req, res) => {
 exports.updateCategory = async (req, res) => {
   try {
     const { name } = req.body;
-
     const updateData = {};
+    
     if (name) updateData.name = name;
 
     if (req.file?.firebaseUrl) {
@@ -75,15 +78,14 @@ exports.updateCategory = async (req, res) => {
     );
 
     if (!updated) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: "ไม่พบหมวดหมู่ที่ระบุ" });
     }
 
     res.json(updated);
   } catch (error) {
-    console.error("Update failed:", error);
     res
       .status(500)
-      .json({ message: "เกิดข้อผิดพลาดในการอัปเดต", error: error.message });
+      .json({ message: "เกิดข้อผิดพลาดในการอัปเดต" });
   }
 };
 
@@ -92,14 +94,14 @@ exports.deleteCategory = async (req, res) => {
   try {
     const category = await MainCategory.findByIdAndDelete(id);
     if (!category) {
-      return res.status(404).json({ message: "Category not found" });
+      return res.status(404).json({ message: "ไม่พบหมวดหมู่ที่ระบุ" });
     }
     return res
       .status(200)
-      .send({ message: "Deleted MainCategory successfully" });
+      .send({ message: "ลบหมวดหมู่เรียบร้อยแล้ว" });
   } catch (error) {
     res.status(500).json({
-      message: "Something went wrong while deleted the category",
+      message: "เกิดข้อผิดพลาดระหว่างการลบหมวดหมู่",
       error: error.message,
     });
   }
