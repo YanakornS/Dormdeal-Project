@@ -1,8 +1,5 @@
 const Report = require("../models/report.model");
 
-
-
-
 //เเก้โดย Oxe
 // Create new report
 exports.createReport = async (req, res) => {
@@ -10,7 +7,9 @@ exports.createReport = async (req, res) => {
     const { postId, reporter, reasons, details } = req.body;
 
     if (!postId || !reporter || !reasons || !details || reasons.length === 0) {
-      return res.status(400).json({ message: "All fields are required." });
+      return res
+        .status(400)
+        .json({ message: "กรุณากรอกข้อมูลให้ครบทุกช่องก่อนส่งรายงาน" });
     }
 
     const report = new Report({
@@ -23,7 +22,9 @@ exports.createReport = async (req, res) => {
     res.status(201).json(report);
   } catch (error) {
     res.status(500).json({
-      message: error.message || "An error occurred while creating the report.",
+      message:
+        error.message ||
+        "เกิดข้อผิดพลาดระหว่างการสร้างรายงาน กรุณาลองใหม่อีกครั้ง",
     });
   }
 };
@@ -63,7 +64,10 @@ exports.getAllReports = async (req, res) => {
 
     res.json(reports);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch reports." });
+    res.status(500).json({
+      message:
+        "ไม่สามารถดึงข้อมูลรายงานได้ในขณะนี้ กรุณาลองใหม่อีกครั้งภายหลัง",
+    });
   }
 };
 
@@ -75,11 +79,14 @@ exports.getReportById = async (req, res) => {
       "displayName",
     ]);
     if (!report) {
-      return res.status(404).json({ message: "Report not found." });
+      return res.status(404).json({ message: "ไม่พบรายงานที่คุณต้องการ" });
     }
     res.json(report);
   } catch (error) {
-    res.status(500).json({ message: "Failed to fetch report details." });
+    res.status(500).json({
+      message:
+        "เกิดข้อผิดพลาดระหว่างการดึงรายละเอียดรายงาน กรุณาลองใหม่อีกครั้ง",
+    });
   }
 };
 
@@ -91,15 +98,15 @@ exports.deleteReport = async (req, res) => {
     const report = await Report.findById(id);
 
     if (!report) {
-      return res.status(404).json({ message: "Report not found." });
+      return res.status(404).json({ message: "ไม่พบรายงานที่ต้องการลบ" });
     }
 
     await Report.findByIdAndDelete(id);
 
-    res.status(200).json({ message: "Report deleted successfully." });
+    res.status(200).json({ message: "ลบรายงานเรียบร้อยแล้ว" });
   } catch (error) {
     res.status(500).json({
-      message: error.message || "Failed to delete report.",
+      message: "เกิดข้อผิดพลาดระหว่างการลบรายงาน กรุณาลองใหม่อีกครั้ง",
     });
   }
 };

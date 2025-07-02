@@ -12,10 +12,10 @@ exports.sign = async (req, res) => {
   }
 
   const user = await UserModel.findOne({ email });
-  if (!user) {  
+  if (!user) {
     return res.status(404).json({ message: "Email is not found" });
   }
-  
+
   //#OXE ตรวจสอบรหัสผ่านยังไมได้ใช้ bcrypt
   // if (user.role === "mod") {
   //   if (!password) {
@@ -27,11 +27,21 @@ exports.sign = async (req, res) => {
   //     return res.status(401).json({ message: "Invalid password" });
   //   }
   // }
-  
-   //ข้อมูลที่ต้องการส่งไปยัง JWT
-  const token = jwt.sign({ id: user._id, email: user.email, role: user.role, displayName: user.displayName, photoURL: user.photoURL }, secret, {
-    expiresIn: "24h",
-  });
+
+  //ข้อมูลที่ต้องการส่งไปยัง JWT
+  const token = jwt.sign(
+    {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+      displayName: user.displayName,
+      photoURL: user.photoURL,
+    },
+    secret,
+    {
+      expiresIn: "24h",
+    }
+  );
 
   const userInfo = {
     token: token,
@@ -42,37 +52,32 @@ exports.sign = async (req, res) => {
     photoURL: user.photoURL,
   };
   res.status(200).json(userInfo);
-  console.log(userInfo);
-  
 };
 
 exports.addUser = async (req, res) => {
   try {
-    const { email, displayName, photoURL} = req.body;
-    if (!email ) {
-      return res.status(400).json({ message: "Email are required" });
+    const { email, displayName, photoURL, role } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "กรุณาระบุอีเมล" });
     }
 
-    // ตรวจสอบว่าผู้ใช้มีอยู่แล้วหรือไม่
     const existedUser = await UserModel.findOne({ email });
     if (existedUser) {
-      return res.status(200).json({ message: "User already exists" });
+      return res.status(200).json({ message: "มีผู้ใช้นี้อยู่ในระบบแล้ว" });
     }
 
-    // สร้างผู้ใช้ใหม่
-    const newUser = new UserModel({ displayName, email, photoURL });
+    const newUser = new UserModel({ displayName, email, photoURL, role });
     await newUser.save();
 
-    //res.status(201).json({ message: "User added successfully" });
     res.status(201).send(newUser);
   } catch (error) {
     res.status(500).json({
-      message: "Something error occurred while adding a new user",
+      message: "เกิดข้อผิดพลาดขณะเพิ่มผู้ใช้ใหม่",
       error: error.message,
     });
   }
 };
-
 
 // ตัวอย่าง updatePhotoURL controller
 exports.updatePhotoByEmail = async (req, res) => {
@@ -81,16 +86,17 @@ exports.updatePhotoByEmail = async (req, res) => {
   try {
     const user = await UserModel.findOne({ email });
     if (!user) return res.status(404).json({ message: "User not found" });
-    if (!photoURL) return res.status(400).json({ message: "Photo URL is required" });
+    if (!photoURL)
+      return res.status(400).json({ message: "Photo URL is required" });
     // อัปเดต photoURL ของผู้ใช้
     user.photoURL = photoURL;
     await user.save();
 
-
     res.status(200).json({ message: "Photo updated successfully", photoURL });
   } catch (error) {
     console.error("Update photo error:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 };
-

@@ -5,12 +5,10 @@ const MainCategorySchema = new Schema({
   name: {
     type: String,
     required: true,
-    unique: true, 
+    unique: true,
   },
   image: { type: String, required: true },
-  subCategories: [
-    { subCategoryName: { type: String } },
-  ],
+  subCategories: [{ subCategoryName: { type: String } }],
 });
 
 const MainCategoryModel = model("MainCategory", MainCategorySchema);

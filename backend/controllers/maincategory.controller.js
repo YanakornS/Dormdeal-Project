@@ -10,7 +10,7 @@ exports.addCategory = async (req, res) => {
     return res.status(400).json({ message: "กรุณาอัปโหลดรูปภาพ" });
 
   try {
-     const existingCategory = await MainCategory.findOne({ name: name.trim() });
+    const existingCategory = await MainCategory.findOne({ name: name.trim() });
     if (existingCategory) {
       return res.status(409).json({ message: "ชื่อหมวดหมู่มีอยู่แล้ว" });
     }
@@ -22,6 +22,7 @@ exports.addCategory = async (req, res) => {
     await newCategory.save();
     res.status(201).json(newCategory);
   } catch (error) {
+    console.error("Error creating category:", error);
     res.status(500).json({
       message: "เกิดข้อผิดพลาดระหว่างการสร้างหมวดหมู่",
       error: error.message,
@@ -34,9 +35,7 @@ exports.getCategory = async (req, res) => {
     const categories = await MainCategory.find().populate("subCategories");
     res.json(categories);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "เกิดข้อผิดพลาดระหว่างการดึงหมวดหมู่" });
+    res.status(500).json({ message: "เกิดข้อผิดพลาดระหว่างการดึงหมวดหมู่" });
   }
 };
 
@@ -62,7 +61,7 @@ exports.updateCategory = async (req, res) => {
   try {
     const { name } = req.body;
     const updateData = {};
-    
+
     if (name) updateData.name = name;
 
     if (req.file?.firebaseUrl) {
@@ -83,9 +82,7 @@ exports.updateCategory = async (req, res) => {
 
     res.json(updated);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "เกิดข้อผิดพลาดในการอัปเดต" });
+    res.status(500).json({ message: "เกิดข้อผิดพลาดในการอัปเดต" });
   }
 };
 
@@ -96,9 +93,7 @@ exports.deleteCategory = async (req, res) => {
     if (!category) {
       return res.status(404).json({ message: "ไม่พบหมวดหมู่ที่ระบุ" });
     }
-    return res
-      .status(200)
-      .send({ message: "ลบหมวดหมู่เรียบร้อยแล้ว" });
+    return res.status(200).send({ message: "ลบหมวดหมู่เรียบร้อยแล้ว" });
   } catch (error) {
     res.status(500).json({
       message: "เกิดข้อผิดพลาดระหว่างการลบหมวดหมู่",

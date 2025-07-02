@@ -16,7 +16,7 @@ exports.getAllPostsByMod = async (req, res) => {
   } catch (error) {
     console.error(error.message);
     res.status(500).send({
-      message: "An error occurred while fetching posts",
+      message: "เกิดข้อผิดพลาดในการดึงข้อมูลโพสต์",
     });
   }
 };
@@ -30,7 +30,7 @@ exports.getPostByIdMod = async (req, res) => {
     ]);
     if (!postDoc) {
       res.status(404).send({
-        message: "Post not found",
+        message: "ไม่พบโพสต์ที่ระบุ",
       });
       return;
     }
@@ -38,7 +38,7 @@ exports.getPostByIdMod = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     res.status(500).send({
-      message: "Something error occurred while getting post Details",
+      message: "เกิดข้อผิดพลาดขณะดึงรายละเอียดโพสต์",
     });
   }
 };
@@ -51,17 +51,17 @@ exports.deletePostByMod = async (req, res) => {
 
     if (!postDoc) {
       return res.status(404).send({
-        message: "Post not found",
+        message: "ไม่พบโพสต์ที่ระบุ",
       });
     }
     await PostModel.findByIdAndUpdate(id, { status: "rejected" });
     res.status(200).send({
-      message: "Post deleted successfully",
+      message: "โพสต์ถูกตั้งสถานะเป็น 'rejected' เรียบร้อยแล้",
     });
   } catch (error) {
     console.error(error.message);
     res.status(500).send({
-      message: error.message || "An error occurred while deleting the post",
+      message: error.message || "เกิดข้อผิดพลาดขณะลบโพสต์",
     });
   }
 };
@@ -79,7 +79,7 @@ exports.getPostByOwner = async (req, res) => {
     res.json(postDocs);
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({ message: "Error fetching posts by owner" });
+    res.status(500).json({ message: "เกิดข้อผิดพลาดในการดึงโพสต์ของเจ้าของ" });
   }
 };
 
@@ -92,19 +92,19 @@ exports.reviewPost = async (req, res) => {
     const validActions = ["approved", "rejected", "needs_revision"];
 
     if (!postDoc) {
-      return res.status(404).json({ message: "Post not found." });
+      return res.status(404).json({ message: "ไม่พบโพสต์ที่ระบุ." });
     }
 
     if (!validActions.includes(action)) {
-      return res.status(400).json({ message: "Invalid action." });
+      return res.status(400).json({ message: "การดำเนินการไม่ถูกต้อง." });
     }
 
     postDoc.status = action;
     if (["needs_revision", "rejected"].includes(action)) {
       if (!message || message.trim() === "") {
-        return res
-          .status(400)
-          .json({ message: "modNote message is required." });
+        return res.status(400).json({
+          message: "กรุณาระบุข้อความสำหรับหมายเหตุของผู้ตรวจสอบ (modNote)",
+        });
       }
       postDoc.modNote = message;
     } else {
@@ -117,15 +117,14 @@ exports.reviewPost = async (req, res) => {
     //   delete responsePost.modNote;
     // }
     res.json({
-      message: `Post status updated to '${action}'.`,
+      message: `สถานะโพสต์ถูกเปลี่ยนเป็น '${action}' เรียบร้อยแล้ว'.`,
       // post: responsePost,
       post: postDoc,
     });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({
-      message: "An error occurred while reviewing the post.",
-      error: error.message,
+      message: "เกิดข้อผิดพลาดขณะตรวจสอบโพสต์",
     });
   }
 };
