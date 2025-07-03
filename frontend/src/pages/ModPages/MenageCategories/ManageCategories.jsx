@@ -54,6 +54,7 @@ const ManageCategories = () => {
       setNewName("");
       setImage(null);
       fetchCategories();
+      window.location.reload()
     } catch (err) {
       toast.error(err?.response?.data?.message || err.message);
     } finally {
