@@ -84,6 +84,7 @@ const UserNavbar = () => {
         ) : (
           <a
             className="btn-sign"
+            data-test="login-sign"
             onClick={() => document.getElementById("login").showModal()}
           >
             เข้าสู่ระบบ / สมัครสมาชิก

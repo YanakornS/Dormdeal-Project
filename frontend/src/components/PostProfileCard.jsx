@@ -4,18 +4,14 @@ import { MdOutlineSell } from "react-icons/md";
 import { AuthContext } from "../context/AuthContext"; // ถ้าใช้ context user
 import toast, { Toaster } from "react-hot-toast";
 import PostService from "../services/postproduct.service";
-import Swal from "sweetalert2"; 
-import { useNavigate } from "react-router"; 
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router";
 const PostProfileCard = ({ product, onDelete = () => {} }) => {
-    const [isLiked, setIsLiked] = useState(false);
-const { user } = useContext(AuthContext); // ต้องมี user ถึงเรียกได้
-const navigate = useNavigate();
+  const [isLiked, setIsLiked] = useState(false);
+  const { user } = useContext(AuthContext); // ต้องมี user ถึงเรียกได้
+  const navigate = useNavigate();
 
-
-
-
-
-    const handleEditPost = () => {
+  const handleEditPost = () => {
     navigate(`/updatepost/${product._id}`);
   };
 
@@ -47,10 +43,6 @@ const navigate = useNavigate();
     }
   };
 
-
- 
-  
-
   const formatPrice = (price) => {
     return new Intl.NumberFormat("th-TH", {
       style: "currency",
@@ -61,11 +53,9 @@ const navigate = useNavigate();
   };
 
   return (
-    
-     <div className="card shadow-md flex flex-col h-full relative rounded-xl overflow-hidden">
+    <div className="card shadow-md flex flex-col h-full relative rounded-xl overflow-hidden">
       <Toaster position="bottom-center" />
 
-        
       <figure className="relative">
         <img
           src={product.images}

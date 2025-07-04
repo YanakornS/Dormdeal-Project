@@ -31,6 +31,7 @@ const UserMenu = () => {
           <a
             onClick={handleGoToPost}
             href="/post"
+            data-test="post-button"
             role="button"
             className="btn btn-ghost flex items-center"
           >
