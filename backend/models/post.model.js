@@ -62,6 +62,7 @@ const PostSchema = new Schema(
       ref: "User",
       default: null,
     },
+    buyers: [{ type: Schema.Types.ObjectId, ref: "User" }] 
   },
   {
     timestamps: true,

@@ -387,7 +387,7 @@ exports.closePostAndNotify = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error in closePostAndNotify:', error);
+
     return res.status(500).json({ 
       success: false, 
       message: "เกิดข้อผิดพลาด กรุณาลองใหม่" 
