@@ -41,7 +41,12 @@ router.put(
 //http://localhost:5000/api/v1/post/id
 router.delete("/:id", authJwt.verifyToken, postController.deletePostByOwner);
 
-//http://localhost:5000/api/v1/post/id/mark-sold
-router.patch("/:id/mark-sold", authJwt.verifyToken, postController.closeSale);
+router.get('/:postId/interested-users', authJwt.verifyToken, postController.getInterestedUsers);
+
+// ปิดการขายและแจ้งเตือน
+router.patch('/:postId/close', authJwt.verifyToken, postController.closePostAndNotify);
+
+// ให้คะแนนผู้ขาย
+router.post('/:postId/rate', authJwt.verifyToken, postController.rateSeller);
 
 module.exports = router;

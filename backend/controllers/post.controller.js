@@ -1,6 +1,9 @@
 const PostModel = require("../models/post.model");
 const MainCategory = require("../models/maincategory.model");
 const UserModel = require("../models/user.model");
+const NotificationModel = require("../models/notification.model")
+const MessageModel = require("../models/message.model")
+const RatingModel = require("../models/rating.model");
 //createPost
 exports.createPost = async (req, res) => {
   if (!req.files) {
@@ -38,12 +41,15 @@ exports.createPost = async (req, res) => {
       return res.status(404).json({ message: "ไม่พบข้อมูลผู้ใช้" });
     }
 
-    const userPostCount = await PostModel.countDocuments({ owner });
-    if (userPostCount >= 5) {
-      return res.status(403).json({
-        message: "คุณไม่สามารถลงประกาศได้มากกว่า 5 รายการ กรุณาจัดการโพสต์ประกาศของคุณก่อน",
-      });
-    }
+    const userPostCount = await PostModel.countDocuments({
+    owner,
+    postStatus: { $in: ["pending_review", "approved", "needs_revision"] }
+});
+  if (userPostCount >= 5) {
+  return res.status(403).json({
+    message: "คุณไม่สามารถลงประกาศได้มากกว่า 5 รายการ กรุณาจัดการโพสต์ประกาศของคุณก่อน",
+  });
+}
 
     if (userDoc.userStatus !== "normal") {
       return res.status(403).json({ message: "บัญชีของคุณถูกระงับการหรืออยู้ในสถานะพ้นสภาพนักศึกษา " });
@@ -245,82 +251,259 @@ exports.updatePost = async (req, res) => {
   }
 };
 
-exports.closeSale = async (req, res) => {
-  const { id } = req.params;
-  const userId = req.userId;
-  const { buyerId } = req.body;
-
+exports.getInterestedUsers = async (req, res) => {
   try {
-    const post = await PostModel.findById(id);
+    const { postId } = req.params;
+    const sellerId = req.userId;
 
+    // ตรวจสอบว่าเป็นเจ้าของโพสต์
+    const post = await PostModel.findById(postId);
     if (!post) {
-      return res.status(404).json({ message: "ไม่พบโพสต์ที่ต้องการปิดการขาย" });
-    }
-
-
-    if (post.owner.toString() !== userId) {
-      return res
-        .status(403)
-        .json({ message: "คุณไม่มีสิทธิ์ปิดการขายของโพสต์นี้" });
-    }
-
-    if (post.status === "sold") {
-      return res.status(400).json({ message: "โพสต์นี้ถูกปิดการขายไปแล้ว" });
-    }
-
-    if (post.status !== "approved") {
-      return res.status(400).json({
-        message: "โพสต์นี้ยังไม่ได้รับการอนุมัติ ไม่สามารถปิดการขายได้",
+      return res.status(404).json({ 
+        message: "ไม่พบโพสต์นี้" 
       });
     }
-    if (buyerId) {
-      const buyer = await UserModel.findById(buyerId);
-      if (!buyer) {
-        return res.status(404).json({ message: "ไม่พบผู้ซื้อ" });
+
+    if (post.owner.toString() !== sellerId) {
+      return res.status(403).json({ 
+        success: false, 
+        message: "ไม่มีสิทธิ์เข้าถึงข้อมูลนี้" 
+      });
+    }
+
+    // หา user ที่เคยส่งข้อความเกี่ยวกับโพสต์นี้
+    const messages = await MessageModel.find({ 
+      postId,
+      senderId: { $ne: sellerId } 
+    }).populate('senderId', 'displayName photoURL rating')
+      .sort({ createdAt: -1 });
+
+    // สร้างรายชื่อที่ไม่ซ้ำกัน
+    const interestedUsers = [];
+    const userIds = new Set();
+
+    messages.forEach(msg => {
+      if (!userIds.has(msg.senderId._id.toString())) {
+        userIds.add(msg.senderId._id.toString());
+        interestedUsers.push({
+          userId: msg.senderId._id,
+          displayName: msg.senderId.displayName,
+          // photoURL: msg.senderId.photoURL,
+          // rating: msg.senderId.rating,
+          // lastMessage: msg.text || 'ส่งรูปภาพ',
+          // lastMessageTime: msg.createdAt
+        });
       }
-      post.buyer = buyerId;
-    }
-    // อัปเดตสถานะเป็น 'sold'
-    post.status = "sold";
-    await post.save();
-
-    res.status(200).json({
-      message: "โพสต์ถูกปิดการขายเรียบร้อยแล้ว",
     });
 
-
-    if (post.owner.toString() !== userId) {
-      return res.status(403).json({ message: "คุณไม่มีสิทธิ์ปิดการขายของโพสต์นี้" });
-    }
-
-    if (post.status === "sold") {
-    return res.status(400).json({ message: "โพสต์นี้ถูกปิดการขายไปแล้ว" });
-    }
-
-    if (post.status !== "approved") {
-    return res.status(400).json({
-    message: "โพสต์นี้ยังไม่ได้รับการอนุมัติ ไม่สามารถปิดการขายได้",
-    });
-}
-    if (buyerId) {
-      const buyer = await UserModel.findById(buyerId);
-      if (!buyer) {
-        return res.status(404).json({ message: "ไม่พบผู้ซื้อ" });
+    return res.json({
+      success: true,
+      data: {
+        post: {
+          id: post._id,
+          productName: post.productName,
+          price: post.price,
+          status: post.status
+        },
+        interestedUsers,
+        totalInterested: interestedUsers.length
       }
-      post.buyer = buyerId;
-    }
-    // อัปเดตสถานะเป็น 'sold'
-    post.status = "sold";
-    await post.save();
-
-    res.status(200).json({
-      message: "โพสต์ถูกปิดการขายเรียบร้อยแล้ว",
     });
-
-
   } catch (error) {
-    res.status(500).json({
-      message: "เกิดข้อผิดพลาดระหว่างการปิดการขาย กรุณาลองใหม่ภายหลัง",
+    return res.status(500).json({ 
+      message: "เกิดข้อผิดพลาด กรุณาลองใหม่" 
     });
   }
 };
+
+
+exports.closePostAndNotify = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const sellerId = req.userId;
+    const { buyerIds } = req.body;
+
+    // ตรวจสอบข้อมูลที่ส่งมา
+    if (!buyerIds || !Array.isArray(buyerIds) || buyerIds.length === 0) {
+      return res.status(400).json({ 
+        message: "กรุณาระบุผู้ซื้ออย่างน้อยหนึ่งคน" 
+      });
+    }
+
+    // หาโพสต์ที่ต้องการปิดขาย
+    const post = await PostModel.findById(postId);
+    if (!post) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "ไม่พบโพสต์นี้" 
+      });
+    }
+
+    // ตรวจสอบว่าเป็นเจ้าของโพสต์
+    if (post.owner.toString() !== sellerId) {
+      return res.status(403).json({ 
+        success: false, 
+        message: "ไม่มีสิทธิ์ปิดการขายโพสต์นี้" 
+      });
+    }
+
+    // ตรวจสอบว่าโพสต์ยังไม่ได้ปิดขาย
+    if (post.status === "sold") {
+      return res.status(400).json({ 
+        success: false, 
+        message: "โพสต์นี้ถูกปิดการขายแล้ว" 
+      });
+    }
+
+    // เปลี่ยนสถานะโพสต์เป็น sold
+    post.status = "sold";
+    post.buyers = buyerIds;
+    post.buyer = buyerIds[0]; // เก็บผู้ซื้อคนแรก
+    await post.save();
+
+    // แจ้งเตือนเฉพาะผู้ซื้อ
+    const notifications = buyerIds.map(userId => ({
+      recipient: userId,
+      message: `ยินดีด้วย! คุณได้ซื้อสินค้า "${post.productName}" เรียบร้อยแล้ว กรุณาให้คะแนนผู้ขาย`,
+      type: "purchase_success",
+      post: post._id,
+      seller: sellerId,
+      requiresRating: true
+    }));
+
+    if (notifications.length > 0) {
+      await NotificationModel.insertMany(notifications);
+    }
+
+    return res.json({ 
+      success: true,
+      message: "ปิดการขายและแจ้งเตือนผู้ซื้อสำเร็จ",
+      data: {
+        postId: post._id,
+        productName: post.productName,
+        notifiedUsers: buyerIds.length,
+        buyers: buyerIds.length,
+        buyerNotifications: buyerIds.length,
+      }
+    });
+  } catch (error) {
+    console.error('Error in closePostAndNotify:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: "เกิดข้อผิดพลาด กรุณาลองใหม่" 
+    });
+  }
+};
+
+
+exports.rateSeller = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const buyerId = req.userId;
+    const { rating } = req.body;
+
+    // ตรวจสอบคะแนน
+    if (!rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ 
+        message: "กรุณาให้คะแนนระหว่าง 1-5" 
+      });
+    }
+
+    // แปลงคะแนนเป็นตัวเลข
+    const numRating = parseFloat(rating);
+    if (isNaN(numRating)) {
+      return res.status(400).json({ 
+        message: "คะแนนต้องเป็นตัวเลข" 
+      });
+    }
+
+    // หาโพสต์และตรวจสอบว่าเป็นผู้ซื้อจริง
+    const post = await PostModel.findById(postId).populate('owner', 'displayName rating');
+    if (!post) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "ไม่พบโพสต์นี้" 
+      });
+    }
+
+    if (post.status !== "sold") {
+      return res.status(400).json({ 
+        success: false, 
+        message: "โพสต์นี้ยังไม่ได้ปิดการขาย" 
+      });
+    }
+
+    
+    if (!post.buyer || post.buyer.toString() !== buyerId) {
+  return res.status(403).json({ 
+    success: false, 
+    message: "คุณไม่ได้เป็นผู้ซื้อสินค้าชิ้นนี้" 
+  });
+}
+
+    // ตรวจสอบว่าได้ให้คะแนนแล้วหรือยัง
+    const existingRating = await RatingModel.findOne({
+      post: postId,
+      rater: buyerId
+    });
+
+    if (existingRating) {
+      return res.status(400).json({ 
+        message: "คุณได้ให้คะแนนสินค้าชิ้นนี้แล้ว" 
+      });
+    }
+
+    // บันทึกคะแนน
+    const newRating = new RatingModel({
+      post: postId,
+      seller: post.owner._id,
+      rater: buyerId,
+      rating: numRating,
+    });
+
+    await newRating.save();
+
+    // คำนวณคะแนนเฉลี่ยใหม่ของผู้ขาย
+    const sellerRatings = await RatingModel.find({ seller: post.owner._id });
+    const totalRating = sellerRatings.reduce((sum, r) => sum + r.rating, 0);
+    const averageRating = totalRating / sellerRatings.length;
+
+    // อัปเดตคะแนนของผู้ขาย
+    await UserModel.findByIdAndUpdate(post.owner._id, {
+      'rating.score': Math.round(averageRating * 10) / 10,
+      'rating.count': sellerRatings.length
+    });
+
+    // สร้างแจ้งเตือนให้ผู้ขาย
+    const sellerNotification = new NotificationModel({
+      recipient: post.owner._id,
+      message: `คุณได้รับคะแนน ${numRating} ดาว จากการขายสินค้า "${post.productName}"`,
+      type: "rating_received",
+      post: postId,
+      seller: post.owner._id,
+      requiresRating: false
+    });
+
+    await sellerNotification.save();
+
+    return res.json({
+      message: "ให้คะแนนสำเร็จ",
+      data: {
+        postId: post._id,
+        productName: post.productName,
+        givenRating: numRating,
+        sellerNewRating: {
+          score: Math.round(averageRating * 10) / 10,
+          count: sellerRatings.length
+        }
+      }
+    });
+  } catch (error) {
+    console.error('Error in rateSeller:', error);
+    return res.status(500).json({ 
+      message: "เกิดข้อผิดพลาด กรุณาลองใหม่" 
+    });
+  }
+};
+
+

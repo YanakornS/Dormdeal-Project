@@ -16,6 +16,8 @@ const subcategoryRouter = require("./routers/subcategory.router")
 const wishlistRouter = require("./routers/wishlist.router");
 const messageRouter = require("./routers/message.router")
 const chatroomRouter = require("./routers/chatroom.router");
+const notificationRouter = require("./routers/notification.router");
+const ratingRouter = require("./routers/rating.router")
 
 try {
   mongoose.connect(DB_URL);
@@ -34,6 +36,8 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/post", postRouter);
 app.use("/api/v1/maincategory", maincategoryRouter);
 app.use("/api/v1/subcategory", subcategoryRouter);
+app.use("/api/v1/notification", notificationRouter);
+app.use("/api/v1/rating", ratingRouter);
 app.use("/api/v1/report", reportRouter);
 app.use("/api/v1/mod", modRouter);
 app.use("/api/v1/admin", adminRouter);

@@ -12,8 +12,14 @@ const UserSchema = new Schema({
   rating: {
     score: { type: Number, default: 0 },           
     count: { type: Number, default: 0 },          
-  }
-}, {
+  },
+  buyer: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    default: null,
+  },
+  buyers: [{ type: Schema.Types.ObjectId, ref: "User" }] 
+},  {
   timestamps: true
 });
 
