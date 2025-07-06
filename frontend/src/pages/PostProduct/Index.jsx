@@ -128,6 +128,12 @@ const Index = () => {
           icon: "success",
           showConfirmButton: false,
           timer: 2500,
+          didOpen: () => {
+            const title = document.querySelector(".swal2-title");
+            if (title) {
+              title.setAttribute("data-test", "swal-post-success");
+            }
+          },
         }).then(() => {
           setPostProduct({
             postType: "",
@@ -147,6 +153,17 @@ const Index = () => {
           title: "Error",
           text: "Something went wrong. Please try again.",
           icon: "error",
+          didOpen: () => {
+            const title = document.querySelector(".swal2-error");
+            const content = document.querySelector(".swal2-error");
+
+            if (title) {
+              title.setAttribute("data-test", "swal-error");
+            }
+            if (content) {
+              content.setAttribute("data-test", "swal-text");
+            }
+          },
         });
       }
     } catch (error) {
@@ -194,7 +211,6 @@ const Index = () => {
               name="postType"
               value="WTS"
               className="hidden"
-              
               onChange={handleChange}
             />
             <label
@@ -216,7 +232,6 @@ const Index = () => {
               name="postType"
               value="WTB"
               className="hidden"
-              
               onChange={handleChange}
             />
             <label
@@ -248,7 +263,9 @@ const Index = () => {
 
           {/* เลือกหมวดหมู่ให้ตรงกับสินค้า */}
           <div className="mt-8">
-            <h2 data-test="category-header" className="text-xl font-semibold ">เลือกหมวดหมู่หลัก</h2>
+            <h2 data-test="category-header" className="text-xl font-semibold ">
+              เลือกหมวดหมู่หลัก
+            </h2>
             <select
               className="select select-xl xl:w-100 border-gray-400 rounded-xl shadow-sm mt-2"
               name="category"
@@ -268,7 +285,12 @@ const Index = () => {
           {/* เลือกซับหมวดหมู่ */}
           {subCategories.length > 0 && (
             <div className="mt-8">
-              <h2 data-test="subcategory-header" className="text-xl font-semibold ">เลือกหมวดหมู่ย่อย</h2>
+              <h2
+                data-test="subcategory-header"
+                className="text-xl font-semibold "
+              >
+                เลือกหมวดหมู่ย่อย
+              </h2>
               <select
                 className="select select-xl xl:w-100 border-gray-400 rounded-xl shadow-sm mt-2 appearance-none"
                 name="subcategory"
@@ -292,7 +314,10 @@ const Index = () => {
 
             <div className="pt-2 flex flex-wrap gap-4">
               {/* ปุ่มเพิ่มรูปภาพ */}
-              <label data-test="image-upload" className="w-40 h-40 border-dashed border-1 border-black rounded-md cursor-pointer flex flex-col justify-center items-center text-lg hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+              <label
+                data-test="image-upload"
+                className="w-40 h-40 border-dashed border-1 border-black rounded-md cursor-pointer flex flex-col justify-center items-center text-lg hover:shadow-lg transition-shadow duration-300 overflow-hidden"
+              >
                 <AiOutlineCloudUpload className="w-24 h-12" />+ เพิ่มรูปภาพ
                 <span className="font-light text-sm pt-2 /50">
                   สูงสุด 4 ภาพ
@@ -377,7 +402,9 @@ const Index = () => {
 
           {/* สภาพสินค้า */}
           <div className="mt-8">
-            <h2 data-test="condition"  className="text-xl font-semibold ">สภาพสินค้า</h2>
+            <h2 data-test="condition" className="text-xl font-semibold ">
+              สภาพสินค้า
+            </h2>
 
             <div className="flex flex-col sm:flex-row flex-wrap gap-4">
               {/* มือสองสภาพดี */}
@@ -431,7 +458,8 @@ const Index = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div
-                    data-test="postfree" className={`flex flex-col items-center justify-center p-4 border-2 rounded-xl transition-colors ${
+                    data-test="postfree"
+                    className={`flex flex-col items-center justify-center p-4 border-2 rounded-xl transition-colors ${
                       postProduct.postPaymentType === "Free"
                         ? "bg-vivid text-white"
                         : "border-vivid hover:bg-vivid hover:text-white"
@@ -497,6 +525,7 @@ const Index = () => {
 
                 <button
                   type="submit"
+                  data-test="submit-post"
                   className="cursor-pointer transition-all duration-300 items-center justify-center flex text-vivid hover:bg-vivid border-vivid hover:text-white border-2 rounded-xl text-lg w-48 h-18 m-2"
                 >
                   ยืนยันการโพสต์
