@@ -55,7 +55,32 @@ const ModRegister = () => {
       });
     }
   };
-  //
+
+// Loginเเบบไม่ใช้Gmail firebase
+  // const handleRegister = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     await AdminService.createMod(
+  //       { email, password, displayName },
+  //     );
+  //     Swal.fire({
+  //       icon: "success",
+  //       title: "สมัครสมาชิกสำเร็จ",
+  //       text: "สามารถเข้าสู่ระบบผู้ดูแลระบบได้แล้ว",
+  //       timer: 2000,
+  //       showConfirmButton: false,
+  //     });
+  //     navigate("/mod/login"); // ไปหน้า login mod
+  //   } catch (error) {
+  //     Swal.fire({
+  //       icon: "error",
+  //       title: "สมัครสมาชิกไม่สำเร็จ",
+  //       text: error.response?.data?.message || error.message,
+  //     });
+  //   }
+  // };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
