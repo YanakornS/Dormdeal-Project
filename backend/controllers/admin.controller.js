@@ -74,3 +74,51 @@ exports.updateUserStatus = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+exports.loginMod = async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ message: "กรุณากรอกอีเมลและรหัสผ่าน" });
+  }
+
+  const user = await UserModel.findOne({ email, role: "mod" }).select('+password');
+
+  if (!user) {
+    return res.status(404).json({ message: "ไม่พบบัญชีผู้ดูแลระบบนี้" });
+  }
+
+  const isValid = bcrypt.compareSync(password, user.password);
+  if (!isValid) {
+    return res.status(401).json({ message: "รหัสผ่านไม่ถูกต้อง" });
+  }
+
+  // ✅ สร้าง token
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || process.env.SECRET, {
+    expiresIn: "1d",
+  });
+
+  
+  res
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // ใช้ HTTPS ใน production
+      sameSite: "Strict",
+      maxAge: 24 * 60 * 60 * 1000, // 1 วัน
+    })
+    .json({
+      message: "เข้าสู่ระบบสำเร็จ",
+      token:token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        displayName: user.displayName,
+        role: user.role,
+      },
+    });
+};
+

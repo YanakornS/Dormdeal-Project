@@ -9,8 +9,10 @@ import {
   signOut,
   signInWithPopup,
   GoogleAuthProvider,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 import UserService from "../services/user.service";
+import AdminService from "../services/admin.service";
 
 const cookies = new Cookies();
 const auth = getAuth(app);
@@ -20,7 +22,7 @@ const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
-  
+
   const getUser = () => cookies.get("user") || null;
 
   const connectSocket = (userId) => {
@@ -49,7 +51,7 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // Login & Register With Google 
+  // Login & Register With Google
   const loginWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ hd: "webmail.npru.ac.th" });
@@ -88,6 +90,59 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+// const loginMod = async (email, password) => {
+//   try {
+//     const response = await AdminService.modLogin({ email, password });
+//     console.log("Login response:", response.data);
+
+//     const userData = response.data.user;
+//     const token = response.data.token || response.data.accessToken;
+
+//     if (userData) {
+//       cookies.set("user", JSON.stringify(userData), { path: "/", maxAge: 60 * 60 * 24 });
+//       cookies.set("token", token, { path: "/", maxAge: 60 * 60 * 24 });
+
+//       setUser(userData);
+//       connectSocket(userData._id || userData.id);
+//     }
+//   } catch (err) {
+//     console.error("Mod login failed:", err.message);
+//     throw err;
+//   }
+// };
+
+
+
+  const loginModWithFirebase = async (email, password) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const firebaseUser = userCredential.user;
+
+      const { email: modEmail, displayName, photoURL } = firebaseUser;
+
+      const jwtResponse = await UserService.signJwt(
+        modEmail,
+        displayName || "mod",
+        photoURL || ""
+      );
+
+      const userData = jwtResponse.data;
+
+      if (userData) {
+        cookies.set("user", userData, { path: "/", maxAge: 60 * 60 * 24 });
+        setUser(userData); // <-- เพิ่มตรงนี้
+        connectSocket(userData._id || userData.id);
+      }
+    } catch (err) {
+      console.error("Mod Firebase Login failed:", err.message);
+      throw err;
+    }
+  };
+
   const logout = async () => {
     await signOut(auth);
     disconnectSocket();
@@ -95,6 +150,7 @@ const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    
     // ตรวจสอบสถานะ
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -123,6 +179,7 @@ const AuthProvider = ({ children }) => {
     isLoading,
     logout,
     loginWithGoogle,
+    loginModWithFirebase,
     getUser,
     socket,
     onlineUsers,

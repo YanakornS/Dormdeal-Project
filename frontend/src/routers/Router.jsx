@@ -17,6 +17,8 @@ import UserProtectPage from "../pages/ProtectPage/UserProtectPage";
 import NotAllowed from "../pages/ProtectPage/NotAllowed";
 import Wishlists from "../pages/UserPages/Wishlists";
 import Profile from "../pages/UserPages/Profile";
+import ModLogin from "../components/Login/ModLogin";
+import ModRegister from "../components/Login/ModRegister";
 
 import ReportPosts from "../pages/ModPages/ReportPosts/ReportPosts";
 import ManageCategories from "../pages/ModPages/MenageCategories/ManageCategories";
@@ -81,6 +83,11 @@ const router = createBrowserRouter([
         path: "/termofservicemodal",
         element: <TermOfServiceModal />,
       },
+       {
+        path: "/mod/login",
+        element: <ModLogin />,
+      },
+      
     ],
   },
   {
@@ -107,6 +114,10 @@ const router = createBrowserRouter([
       {
         path: "/mod/managecategories",
         element: <ManageCategories />,
+      },
+       {
+         path: "/mod/register",
+        element: <ModRegister />,
       },
     ],
   },
