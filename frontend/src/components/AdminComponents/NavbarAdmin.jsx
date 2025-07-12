@@ -2,13 +2,13 @@ import logo from "/Logo/logo.png";
 import Modal from "../Login/Modal";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
-import ModProfileMenu from "./ModProfileMenu";
+import AdminProfileMenu from "./AdminProfileMenu";
 
-const NavbarMod = () => {
+const NavbarAdmin = () => {
   const { user } = useContext(AuthContext);
 
   return (
-    <div className="section-container navbar bg-base-100 fixed top-0 w-full shadow-sm z-10 ">
+    <div className="section-container navbar bg-base-100 fixed top-0 w-full shadow-sm z-10">
       <div className="navbar-start">
         <div className="dropdown">
           {/* <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -19,13 +19,12 @@ const NavbarMod = () => {
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              {" "}
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth="2"
                 d="M4 6h16M4 12h8m-8 6h16"
-              />{" "}
+              />
             </svg>
           </div> */}
           <ul
@@ -33,54 +32,42 @@ const NavbarMod = () => {
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
           >
             <li>
-              <a>Item 10</a>
+              <a>เมนู A</a>
             </li>
             <li>
-              <a>Parent</a>
+              <a>เมนู B</a>
               <ul className="p-2">
                 <li>
-                  <a>Submenu 1</a>
+                  <a>Submenu A</a>
                 </li>
                 <li>
-                  <a>Submenu 2</a>
+                  <a>Submenu B</a>
                 </li>
               </ul>
             </li>
             <li>
-              <a>Item 3</a>
+              <a>เมนู C</a>
             </li>
           </ul>
         </div>
         <a
           className="flex items-center text-xl hover:scale-105 transition transform duration-300"
-          href="/"
+          href="/admin"
         >
           <img
             src={logo}
             alt="DormDeals Logo"
             className="h-6 lg:h-8 pr-1 mr-2"
           />
-           <p className="font-bold hidden sm:block">DormDeals <span className="text-yellow-600 border border-yellow-600 rounded-md  px-3">Mod</span></p>
+          <p className="font-bold hidden sm:block">DormDeals <span className="text-red-600 border border-red-600 rounded-md  px-3">Admin</span></p>
         </a>
       </div>
-      <div className="navbar-center hidden lg:flex">
-        {/* <ul className="menu menu-horizontal px-1">
-      <li><a>Item 1</a></li>
-      <li>
-        <details>
-          <summary>Parent</summary>
-          <ul className="p-2">
-            <li><a>Submenu 1</a></li>
-            <li><a>Submenu 2</a></li>
-          </ul>
-        </details>
-      </li>
-      <li><a>Item 3</a></li>
-    </ul> */}
-      </div>
+
+      <div className="navbar-center hidden lg:flex">{/* กลางว่างไว้ */}</div>
+
       <div className="navbar-end gap-4">
         {user ? (
-          <ModProfileMenu />
+          <AdminProfileMenu />
         ) : (
           <a
             className="btn-sign"
@@ -95,4 +82,4 @@ const NavbarMod = () => {
   );
 };
 
-export default NavbarMod;
+export default NavbarAdmin;

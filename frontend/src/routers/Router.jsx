@@ -12,7 +12,8 @@ import ManagePosts from "../pages/UserPages/ManagePosts/Index";
 import ManagePostsByMod from "../pages/ModPages/ManagePostsByMod";
 import ManagePostStatus from "../pages/UserPages/ManagePostStatus";
 import ApprovePosts from "../pages/ModPages/ApprovePosts/ApprovePosts";
-import AdminRoute from "../pages/ProtectPage/AdminRouter";
+import ModRoute from "../pages/ProtectPage/ModRoute";
+import AdminRoute from "../pages/ProtectPage/AdminRoute";
 import UserProtectPage from "../pages/ProtectPage/UserProtectPage";
 import NotAllowed from "../pages/ProtectPage/NotAllowed";
 import Wishlists from "../pages/UserPages/Wishlists";
@@ -25,6 +26,10 @@ import ManageCategories from "../pages/ModPages/MenageCategories/ManageCategorie
 import UpdatePostProduct from "../pages/UserPages/UpdatePost/UpdatePostProduct";
 import TermOfService from "../components/TermOfService";
 import TermOfServiceModal from "../components/TermOfServiceModal";
+import AdminProfileMenu from "../components/AdminComponents/AdminProfileMenu";
+import AdminLayout from "../layouts/AdminLayout/AdminLayout";
+import ManagePermissions from "../pages/AdminPages/ManagePermissions";
+import ManageStatuses from './../pages/AdminPages/ManageStatuses';
 
 const router = createBrowserRouter([
   {
@@ -90,13 +95,14 @@ const router = createBrowserRouter([
       
     ],
   },
+
   {
     path: "/mod",
     element: (
-      <AdminRoute>
+      <ModRoute>
         {" "}
         <ModLayout />{" "}
-      </AdminRoute>
+      </ModRoute>
     ),
     children: [
       {
@@ -118,6 +124,33 @@ const router = createBrowserRouter([
        {
          path: "/mod/register",
         element: <ModRegister />,
+      },
+    ],
+  },
+
+  {
+    path: "/admin",
+    element: (
+      <AdminRoute>
+        <AdminLayout/>
+      </AdminRoute>
+    ),
+    children: [
+       {
+         path: "/admin/register",
+        element: <ModRegister />,
+      },
+      {
+        path: "",
+        element: <ManagePermissions />,
+      },
+      {
+        path: "manage-permission",
+        element: <ManagePermissions />,
+      },
+      {
+        path: "manage-status",
+        element: <ManageStatuses />,
       },
     ],
   },

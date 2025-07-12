@@ -5,6 +5,18 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const secret = process.env.SECRET;
 
+
+// Create By Kays
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await UserModel.find().select("-password"); // ไม่ส่ง password
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: "เกิดข้อผิดพลาดในการดึงผู้ใช้", error: error.message });
+  }
+};
+
+
 //Register
 exports.createMod = async (req, res) => {
   const { email, password,displayName } = req.body;
@@ -74,9 +86,6 @@ exports.updateUserStatus = async (req, res) => {
     });
   }
 };
-
-
-
 
 
 exports.loginMod = async (req, res) => {

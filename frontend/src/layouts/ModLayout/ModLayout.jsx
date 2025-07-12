@@ -7,7 +7,7 @@ const Main = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <NavbarMod />
-      <div className="flex-grow pt-[height-of-navbar]">
+      <div className="flex-grow pt-[32px] px-4">
         <Outlet />
         <ThemeToggleFloating />
       </div>
