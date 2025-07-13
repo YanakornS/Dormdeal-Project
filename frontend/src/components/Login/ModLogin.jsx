@@ -77,6 +77,7 @@ const ModLogin = () => {
               <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="email"
+                data-test="modlogin-email"
                 className="input input-bordered w-full pl-10"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -96,6 +97,7 @@ const ModLogin = () => {
               <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="password"
+                data-test="modlogin-password"
                 className="input input-bordered w-full pl-10"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -108,6 +110,7 @@ const ModLogin = () => {
 
           <button
             type="submit"
+            data-test="modlogin-button-submit"
             className="btn w-full bg-vivid text-white hover:bg-primary-focus rounded-xl"
           >
             เข้าสู่ระบบ
