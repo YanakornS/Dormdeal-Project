@@ -89,7 +89,7 @@ const router = createBrowserRouter([
         element: <TermOfServiceModal />,
       },
        {
-        path: "/mod/login",
+        path: "/login",
         element: <ModLogin />,
       },
       

@@ -16,18 +16,23 @@ const Footer = () => {
         </a>
       </aside>
 
-      <nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
-        <div className="text-center md:text-left">
-          © 2024 DormDeals, All Rights Reserved.
-        </div>
-        <a href="/termofservice" className="text-vivid hover:underline">
-          Terms & Conditions
-        </a>
-        <span className="text-gray-400">|</span>
-        <a href="/termofservice" className="text-vivid hover:underline">
-          Privacy Policy
-        </a>
-      </nav>
+      <nav className="grid-flow-col gap-4 md:place-self-center md:justify-self-end text-sm">
+  <div className="text-center md:text-left">
+    © 2024 DormDeals, All Rights Reserved.
+  </div>
+  <a href="/termofservice" className="text-vivid hover:underline">
+    Terms & Conditions
+  </a>
+  <span className="text-gray-400">|</span>
+  <a href="/termofservice" className="text-vivid hover:underline">
+    Privacy Policy
+  </a>
+  <span className="text-gray-400">|</span>
+  <a href="/login" className="text-gray-400 hover:text-vivid hover:underline">
+    Staff Portal
+  </a>
+</nav>
+
     </footer>
   );
 };
