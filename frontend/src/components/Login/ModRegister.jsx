@@ -2,8 +2,18 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import AdminService from "../../services/admin.service";
-import { createUserWithEmailAndPassword, updateProfile, signOut } from "firebase/auth";
-import secondaryAuth from "../../configs/firebase.secondary"; 
+import {
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signOut,
+} from "firebase/auth";
+import secondaryAuth from "../../configs/firebase.secondary";
+
+//imaport icon
+import { FaUserPen } from "react-icons/fa6";
+import { MdOutlineMarkEmailRead } from "react-icons/md";
+import { RiLockPasswordLine } from "react-icons/ri";
+import { MdOutlineAddModerator } from "react-icons/md";
 
 const ModRegister = () => {
   const [email, setEmail] = useState("");
@@ -17,9 +27,13 @@ const ModRegister = () => {
     try {
       //  ใช้ secondaryAuth เพื่อไม่ให้เปลี่ยน user ปัจจุบัน
 
-      //auth.currentUser จะ เปลี่ยนกลายเป็น user ใหม่ ทันที  ทำให้คุณ (admin/mod ที่กำลัง login อยู่) หลุดออกจากระบบ ซึ่งไม่ใช่สิ่งที่ต้องการ 
+      //auth.currentUser จะ เปลี่ยนกลายเป็น user ใหม่ ทันที  ทำให้คุณ (admin/mod ที่กำลัง login อยู่) หลุดออกจากระบบ ซึ่งไม่ใช่สิ่งที่ต้องการ
       //แต่เมื่อใช้ secondaryAuth จาก:มันจะ สร้างผู้ใช้ใหม่แบบแยก session → แล้วคุณก็ signOut เฉพาะ secondaryAuth ทิ้งได้ โดยไม่แตะ session หลักของ admin/mod ที่กำลังใช้งานอยู่
-      const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);  //สร้าง user ใหม่แบบไม่กระทบ session ปัจจุบัน
+      const userCredential = await createUserWithEmailAndPassword(
+        secondaryAuth,
+        email,
+        password
+      ); //สร้าง user ใหม่แบบไม่กระทบ session ปัจจุบัน
       const firebaseUser = userCredential.user;
 
       await updateProfile(firebaseUser, { displayName });
@@ -27,10 +41,9 @@ const ModRegister = () => {
       //  เพิ่มเข้า backend
       await AdminService.createMod({ email, password, displayName });
 
-      //  signOut เฉพาะจาก secondaryAuth เหมือนเป็นตัวเเทนในการcurrentUser ทำให้หลุด login 
+      //  signOut เฉพาะจาก secondaryAuth เหมือนเป็นตัวเเทนในการcurrentUser ทำให้หลุด login
       await signOut(secondaryAuth);
 
-      
       await Swal.fire({
         icon: "success",
         title: "เพิ่มผู้ดูแลระบบสำเร็จ!",
@@ -56,7 +69,7 @@ const ModRegister = () => {
     }
   };
 
-// Loginเเบบไม่ใช้Gmail firebase
+  // Loginเเบบไม่ใช้Gmail firebase
   // const handleRegister = async (e) => {
   //   e.preventDefault();
 
@@ -81,50 +94,68 @@ const ModRegister = () => {
   //   }
   // };
 
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center mb-8 text-vivid">เพิ่มผู้ดูแลระบบ (Mod)</h2>
+    <div className="min-h-screen flex items-center justify-center bg-base-200 text-base-content p-4">
+      <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md text-base-content">
+        <h2 className="text-3xl font-bold text-center mb-8 text-vivid">
+          เพิ่มผู้ดูแลระบบ (Mod)
+        </h2>
 
         <form onSubmit={handleRegister} className="space-y-6">
+          {/* Display Name */}
           <div>
             <label className="block text-sm font-semibold mb-2">ชื่อแสดง</label>
-            <input
-              type="text"
-              className="input input-bordered w-full"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              required
-              placeholder="ชื่อที่จะแสดง"
-            />
+            <div className="relative">
+              <FaUserPen className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                className="input input-bordered w-full pl-10"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                required
+                placeholder="ชื่อที่จะแสดง"
+              />
+            </div>
           </div>
 
+          {/* Email */}
           <div>
             <label className="block text-sm font-semibold mb-2">อีเมล</label>
-            <input
-              type="email"
-              className="input input-bordered w-full"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="mod@example.com"
-            />
+            <div className="relative">
+              <MdOutlineMarkEmailRead className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="email"
+                className="input input-bordered w-full pl-10"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="mod@example.com"
+              />
+            </div>
           </div>
 
+          {/* Password */}
           <div>
             <label className="block text-sm font-semibold mb-2">รหัสผ่าน</label>
-            <input
-              type="password"
-              className="input input-bordered w-full"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="********"
-            />
+            <div className="relative">
+              <RiLockPasswordLine className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="password"
+                className="input input-bordered w-full pl-10"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="********"
+              />
+            </div>
           </div>
 
-          <button type="submit" className="btn w-full rounded-2xl bg-vivid text-white hover:bg-vivid-dark">
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="btn w-full rounded-2xl bg-vivid text-white hover:bg-vivid-dark transition-all duration-200 flex items-center justify-center gap-2"
+          >
+            <MdOutlineAddModerator className="text-xl" />
             เพิ่มผู้ดูแลระบบ
           </button>
         </form>

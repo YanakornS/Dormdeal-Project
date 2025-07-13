@@ -112,36 +112,34 @@ const AuthProvider = ({ children }) => {
 // };
 
 
+const loginModWithFirebase = async (email, password) => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const firebaseUser = userCredential.user;
 
-  const loginModWithFirebase = async (email, password) => {
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const firebaseUser = userCredential.user;
+    const { email: modEmail, displayName, photoURL } = firebaseUser;
 
-      const { email: modEmail, displayName, photoURL } = firebaseUser;
+    const jwtResponse = await UserService.signJwt(
+      modEmail,
+      displayName || "mod",
+      photoURL || ""
+    );
 
-      const jwtResponse = await UserService.signJwt(
-        modEmail,
-        displayName || "mod",
-        photoURL || ""
-      );
+    const userData = jwtResponse.data;
 
-      const userData = jwtResponse.data;
-
-      if (userData) {
-        cookies.set("user", userData, { path: "/", maxAge: 60 * 60 * 24 });
-        setUser(userData); // <-- เพิ่มตรงนี้
-        connectSocket(userData._id || userData.id);
-      }
-    } catch (err) {
-      console.error("Mod Firebase Login failed:", err.message);
-      throw err;
+    if (userData) {
+      cookies.set("user", userData, { path: "/", maxAge: 60 * 60 * 24 });
+      setUser(userData);
+      connectSocket(userData._id || userData.id);
     }
-  };
+
+    return userData; // ✅ เพิ่มตรงนี้สำคัญมาก!
+  } catch (err) {
+    console.error("Mod Firebase Login failed:", err.message);
+    throw err;
+  }
+};
+
 
   const logout = async () => {
     await signOut(auth);
