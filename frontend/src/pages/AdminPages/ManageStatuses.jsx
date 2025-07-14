@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import AdminService from "../../services/admin.service";
 import Swal from "sweetalert2";
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
 const statusLabels = {
   normal: { label: "ปกติ", class: "bg-green-100 text-green-800" },
@@ -13,14 +14,44 @@ const ManageStatuses = () => {
   const [users, setUsers] = useState([]);
   const [cookies] = useCookies(["token"]);
 
+  const [filterStatus, setFilterStatus] = useState("ทั้งหมด");
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 10;
+
+  const filteredUsers =
+    filterStatus === "ทั้งหมด"
+      ? users
+      : users.filter((user) => (user.userStatus || "normal") === filterStatus);
+
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+  const startIndex = (currentPage - 1) * usersPerPage;
+  const currentUsers = filteredUsers.slice(
+    startIndex,
+    startIndex + usersPerPage
+  );
+
   useEffect(() => {
     fetchUsers();
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterStatus]);
+
   const fetchUsers = async () => {
     try {
       const res = await AdminService.getAllUsers(cookies.token);
-      setUsers(res.data);
+
+      const sortedUsers = res.data.sort((a, b) => {
+        const aIsNpru = a.email?.endsWith("@webmail.npru.ac.th") ? 0 : 1;
+        const bIsNpru = b.email?.endsWith("@webmail.npru.ac.th") ? 0 : 1;
+        if (aIsNpru !== bIsNpru) return aIsNpru - bIsNpru;
+
+        return (a.displayName || "").localeCompare(b.displayName || "");
+      });
+
+      setUsers(sortedUsers);
     } catch (err) {
       console.error("ดึงข้อมูลผู้ใช้ล้มเหลว:", err);
     }
@@ -40,7 +71,10 @@ const ManageStatuses = () => {
       });
 
       if (confirm.isConfirmed) {
-        await AdminService.updateUserStatus({ userId, newStatus }, cookies.token);
+        await AdminService.updateUserStatus(
+          { userId, newStatus },
+          cookies.token
+        );
         await fetchUsers();
         Swal.fire({
           icon: "success",
@@ -61,9 +95,31 @@ const ManageStatuses = () => {
     }
   };
 
+  const handlePrev = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
   return (
     <div className="section-container sm:mt-7 mt-6 px-6 py-14">
-      <h2 className="text-3xl font-bold mb-6">จัดการสถานะผู้ใช้งานระบบ</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-3xl font-bold">จัดการสถานะผู้ใช้งานระบบ</h2>
+
+        {/* Filter สถานะบัญชี */}
+        <select
+          className="border rounded px-3 py-2 text-base"
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="ทั้งหมด">ทั้งหมด</option>
+          <option value="normal">ปกติ</option>
+          <option value="Banned">ถูกแบน</option>
+          <option value="outof">พ้นสภาพ</option>
+        </select>
+      </div>
 
       <div className="overflow-x-auto">
         <table className="table table-fixed w-full min-w-[700px]">
@@ -76,14 +132,14 @@ const ManageStatuses = () => {
             </tr>
           </thead>
           <tbody>
-            {users.length === 0 ? (
+            {currentUsers.length === 0 ? (
               <tr>
                 <td colSpan="4" className="text-center py-6 text-gray-500">
                   ไม่พบผู้ใช้งาน
                 </td>
               </tr>
             ) : (
-              users.map((user) => {
+              currentUsers.map((user) => {
                 const statusKey = user.userStatus || "normal";
                 const statusInfo = statusLabels[statusKey];
 
@@ -92,22 +148,49 @@ const ManageStatuses = () => {
                     <td className="px-4 py-3">{user.displayName || "-"}</td>
                     <td className="px-4 py-3">{user.email}</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${statusInfo.class}`}>
+                      <span
+                        className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${statusInfo.class}`}
+                      >
                         {statusInfo.label}
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <select
-                        className="w-40 px-3 py-2 text-sm text-white bg-blue-500 rounded-md shadow-sm text-center appearance-none focus:outline-none focus:ring-2 focus:ring-blue-300"
-                        value={statusKey}
-                        onChange={(e) =>
-                          handleStatusChange(user._id, e.target.value, user.displayName || user.email)
+                      <button
+                        onClick={() =>
+                          Swal.fire({
+                            title: `แก้ไขสถานะของ ${
+                              user.displayName || user.email
+                            }`,
+                            input: "select",
+                            inputOptions: {
+                              normal: "ปกติ",
+                              Banned: "ถูกแบน",
+                              outof: "พ้นสภาพ",
+                            },
+                            inputValue: statusKey,
+                            showCancelButton: true,
+                            confirmButtonText: "อัปเดตสถานะ",
+                            cancelButtonText: "ยกเลิก",
+                            inputValidator: (value) => {
+                              if (!value) return "กรุณาเลือกสถานะ";
+                            },
+                          }).then(async (result) => {
+                            if (
+                              result.isConfirmed &&
+                              result.value !== statusKey
+                            ) {
+                              handleStatusChange(
+                                user._id,
+                                result.value,
+                                user.displayName || user.email
+                              );
+                            }
+                          })
                         }
+                        className="btn rounded-xl border-blue-500  text-base text-blue-500 font-medium px-4 py-2 "
                       >
-                        <option value="normal">ปกติ</option>
-                        <option value="Banned">ถูกแบน</option>
-                        <option value="outof">พ้นสภาพ</option>
-                      </select>
+                        แก้ไขสถานะบัญชี
+                      </button>
                     </td>
                   </tr>
                 );
@@ -116,6 +199,36 @@ const ManageStatuses = () => {
           </tbody>
         </table>
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <button
+            onClick={handlePrev}
+            disabled={currentPage === 1}
+            className={`p-2 rounded-full ${
+              currentPage === 1
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-base-200 hover:bg-base-300"
+            }`}
+          >
+            <IoChevronBack size={20} />
+          </button>
+          <span className="text-base">
+            หน้า {currentPage} / {totalPages}
+          </span>
+          <button
+            onClick={handleNext}
+            disabled={currentPage === totalPages}
+            className={`p-2 rounded-full ${
+              currentPage === totalPages
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-base-200 hover:bg-base-300"
+            }`}
+          >
+            <IoChevronForward size={20} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

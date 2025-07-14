@@ -5,7 +5,6 @@ import { TbMoodEdit } from "react-icons/tb";
 import { CiUser } from "react-icons/ci";
 import { MdOutlineSupportAgent } from "react-icons/md";
 
-
 const AdminProfileMenu = () => {
   const { user, logout, getUser, isLoading } = useContext(AuthContext);
   const userInfo = getUser();
@@ -36,23 +35,6 @@ const AdminProfileMenu = () => {
 
         <div className="dropdown dropdown-end">
           <a
-            href="/admin/register"
-            role="button"
-            className="btn btn-ghost flex items-center"
-          >
-            <div className="indicator flex items-center gap-2">
-              <MdOutlineSupportAgent  className="w-6 h-6" />
-              <span className="hidden 2xl:inline text-sm font-light">
-                เพิ่มเจ้าหน้าที่ดูแลระบบ
-              </span>
-            </div>
-          </a>
-        </div>
-
-        
-
-        <div className="dropdown dropdown-end">
-          <a
             href="/admin/manage-status"
             role="button"
             className="btn btn-ghost flex items-center"
@@ -61,6 +43,21 @@ const AdminProfileMenu = () => {
               <TbMoodEdit className="w-6 h-6" />
               <span className="hidden 2xl:inline text-sm font-light">
                 จัดการสถานะผู้ใช้งานระบบ
+              </span>
+            </div>
+          </a>
+        </div>
+
+        <div className="dropdown dropdown-end">
+          <a
+            href="/admin/register"
+            role="button"
+            className="btn btn-ghost flex items-center"
+          >
+            <div className="indicator flex items-center gap-2">
+              <MdOutlineSupportAgent className="w-6 h-6" />
+              <span className="hidden 2xl:inline text-sm font-light">
+                เพิ่มเจ้าหน้าที่ดูแลระบบ
               </span>
             </div>
           </a>

@@ -8,7 +8,6 @@ import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 const ManagePostsByMod = () => {
   const [posts, setPosts] = useState([]);
 
- 
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 10;
   const totalPages = Math.ceil(posts.length / postsPerPage);
@@ -44,16 +43,25 @@ const ManagePostsByMod = () => {
       showCancelButton: true,
       confirmButtonText: "ใช่",
       cancelButtonText: "ไม่",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        ModService.deletePostProductByMod(id);
-        Swal.fire({
-          title: "ลบโพสต์สำเร็จ",
-          text: "โพสต์ถูกลบเรียบร้อยแล้ว",
-          icon: "success",
-        }).then(() => {
-          window.location.reload();
-        });
+        try {
+          await ModService.deletePostProductByMod(id); 
+          setPosts((prevPosts) => prevPosts.filter((post) => post._id !== id)); 
+
+          Swal.fire({
+            title: "ลบโพสต์สำเร็จ",
+            text: "โพสต์ถูกลบเรียบร้อยแล้ว",
+            icon: "success",
+          });
+        } catch (error) {
+          Swal.fire({
+            title: "เกิดข้อผิดพลาด",
+            text: "ไม่สามารถลบโพสต์ได้",
+            icon: "error",
+          });
+          console.error("ลบโพสต์ล้มเหลว:", error);
+        }
       }
     });
   };
@@ -104,7 +112,6 @@ const ManagePostsByMod = () => {
         </tbody>
       </table>
 
-    
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-6">
           <button
