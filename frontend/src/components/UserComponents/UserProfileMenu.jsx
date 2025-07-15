@@ -73,6 +73,7 @@ const UserMenu = () => {
             className="btn-profile flex items-center gap-2 hover:scale-105 transition transform duration-300"
             tabIndex={0}
             role="button"
+            data-test="profile-button"
             aria-label="Profile Button"
           >
             <CiUser className="w-6 h-6" />
@@ -91,7 +92,8 @@ const UserMenu = () => {
             {/* userInfo	เก็บผลลัพธ์จาก getUser() (เช่น _id) */}
             {userInfo?._id && (
               <li>
-                <a href={`/ManagePost/${userInfo._id}`}>โพสต์ประกาศของฉัน</a>
+                <a href={`/ManagePost/${userInfo._id}`}
+                data-test="my-announcement">โพสต์ประกาศของฉัน</a>
               </li>
             )}
 

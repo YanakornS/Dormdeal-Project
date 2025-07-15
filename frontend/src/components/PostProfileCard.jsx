@@ -92,6 +92,7 @@ const PostProfileCard = ({ product, onDelete = () => {} }) => {
         <div className="flex justify-between gap-2 mt-3">
           <button
             onClick={handleEditPost}
+            data-test={`icon-edit-post`}
             className="btn btn-sm btn-outline w-26 rounded-2xl  flex items-center  text-vivid hover:bg-vivid border-vivid hover:text-white justify-center gap-1"
           >
             <FaEdit size={14} />
