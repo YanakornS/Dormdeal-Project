@@ -53,6 +53,7 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
         <button
           className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
           onClick={onClose}
+          data-test="modalreport-close-button"
         >
           ✕
         </button>
@@ -96,6 +97,7 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
         <div className="mt-8 flex flex-wrap justify-between gap-3">
           <button
             onClick={() => handleAction("delete")}
+            data-test="modalreport-delete-button"
             className="btn bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-xl"
             type="button"
           >
@@ -104,6 +106,7 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
           </button>
           <button
             onClick={() => handleAction("normal")}
+            data-test="modalreport-normal-button"
             className="btn bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl"
             type="button"
           >
@@ -112,6 +115,7 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
           </button>
           <button
             onClick={() => handleAction("go_to_post")}
+            data-test="modalreport-goto-button"
             className="btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-xl"
             type="button"
           >

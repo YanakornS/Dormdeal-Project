@@ -30,9 +30,7 @@ const ReportPosts = () => {
   };
 
   const filteredReports = reports.filter((report) =>
-    filterReason === "ทั้งหมด"
-      ? true
-      : report.reasons?.includes(filterReason)
+    filterReason === "ทั้งหมด" ? true : report.reasons?.includes(filterReason)
   );
 
   const totalPages = Math.ceil(filteredReports.length / reportsPerPage);
@@ -63,11 +61,14 @@ const ReportPosts = () => {
         <h2 className="text-3xl font-bold">แจ้งรายงานปัญหา</h2>
 
         <select
+          data-test="report-filter-select"
           className="border rounded px-3 py-2"
           value={filterReason}
           onChange={(e) => setFilterReason(e.target.value)}
         >
-          <option className="text-black" value="ทั้งหมด">ทั้งหมด</option>
+          <option className="text-black" value="ทั้งหมด">
+            ทั้งหมด
+          </option>
           <option className="text-black" value="ข้อมูลสินค้าไม่ตรงตามที่ระบุ">
             ข้อมูลสินค้าไม่ตรงตามที่ระบุ
           </option>
@@ -77,7 +78,9 @@ const ReportPosts = () => {
           <option className="text-black" value="โพสต์นี้เป็นสินค้าผิดกฎหมาย">
             โพสต์นี้เป็นสินค้าผิดกฎหมาย
           </option>
-          <option className="text-black" value="อื่นๆ">อื่นๆ</option>
+          <option className="text-black" value="อื่นๆ">
+            อื่นๆ
+          </option>
         </select>
       </div>
 
@@ -94,7 +97,11 @@ const ReportPosts = () => {
           <tbody>
             {currentReports.length === 0 ? (
               <tr>
-                <td colSpan="4" className="text-center py-6 text-gray-500">
+                <td
+                  colSpan="4"
+                  data-test="report-no-data"
+                  className="text-center py-6 text-gray-500"
+                >
                   ไม่มีรายงาน
                 </td>
               </tr>
@@ -112,6 +119,7 @@ const ReportPosts = () => {
                   </td>
                   <td className="px-4 py-3 text-center">
                     <button
+                      data-test={`report-view-${report._id}`}
                       onClick={() => setSelectedReport(report)}
                       className="btn-checkpost bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
                     >
@@ -136,6 +144,7 @@ const ReportPosts = () => {
         <div className="flex justify-center items-center gap-4 mt-6">
           <button
             onClick={handlePrev}
+            data-test="report-pagination-prev"
             disabled={currentPage === 1}
             className={`p-2 rounded-full ${
               currentPage === 1
@@ -145,11 +154,12 @@ const ReportPosts = () => {
           >
             <IoChevronBack size={20} />
           </button>
-          <span className="text-base">
+          <span className="text-base" data-test="report-pagination-info">
             หน้า {currentPage} / {totalPages}
           </span>
           <button
             onClick={handleNext}
+            data-test="report-pagination-next"
             disabled={currentPage === totalPages}
             className={`p-2 rounded-full ${
               currentPage === totalPages

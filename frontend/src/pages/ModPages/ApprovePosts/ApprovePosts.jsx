@@ -282,6 +282,7 @@ const ApprovePosts = () => {
       <div className="flex bg-base-300 justify-center items-center gap-4 mt-12 p-4 rounded-2xl ">
         {/* ปุ่มไม่ผ่านการตรวจสอบ (ลบ) */}
         <button
+        data-test="post-reject-button"
           className="flex items-center cursor-pointer justify-center px-6 py-3 w-full text-base rounded-xl border text-white bg-red-500 border-red-500 hover:bg-red-400 transition-all"
           // onClick={handleRejectPost}
           onClick={() => handleApproveStatus("rejected")}
@@ -292,6 +293,7 @@ const ApprovePosts = () => {
 
         {/* ปุ่มต้องแก้ไข */}
         <button
+        data-test="post-revision-button"
           className="flex items-center cursor-pointer justify-center px-6 py-3 w-full text-base rounded-xl text-white bg-gray-700 border-gray-400 hover:bg-gray-400 transition-all"
           onClick={() => handleApproveStatus("needs_revision")}
         >
@@ -301,6 +303,7 @@ const ApprovePosts = () => {
 
         {/* ปุ่มผ่านการตรวจสอบ */}
         <button
+         data-test="post-approve-button"
           className="flex items-center cursor-pointer justify-center px-6 py-3 w-full text-base rounded-xl border text-white bg-green-500 border-green-500 hover:bg-green-400 transition-all"
           onClick={() => handleApproveStatus("approved")}
         >

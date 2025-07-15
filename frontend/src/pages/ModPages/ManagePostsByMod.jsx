@@ -46,8 +46,8 @@ const ManagePostsByMod = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await ModService.deletePostProductByMod(id); 
-          setPosts((prevPosts) => prevPosts.filter((post) => post._id !== id)); 
+          await ModService.deletePostProductByMod(id);
+          setPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
 
           Swal.fire({
             title: "ลบโพสต์สำเร็จ",
@@ -72,7 +72,7 @@ const ManagePostsByMod = () => {
         <h2 className="text-3xl font-bold">อนุมัติโพสต์ซื้อขาย</h2>
       </div>
 
-      <table className="table">
+      <table className="table" data-test="post-table">
         <thead className="bg-base-200 text-base-content">
           <tr>
             <th>ชื่อสินค้า</th>
@@ -95,6 +95,7 @@ const ManagePostsByMod = () => {
               </td>
               <td className="px-4 py-3 text-center flex items-center justify-center gap-3">
                 <button
+                  data-test={`post-delete-${post._id}`}
                   className="text-red-500 hover:text-red-700 transition-all"
                   onClick={() => handleDeletePost(post._id)}
                 >
@@ -102,6 +103,7 @@ const ManagePostsByMod = () => {
                 </button>
                 <a
                   href={`mod/approveposts/${post._id}`}
+                  data-test={`post-check-${post._id}`}
                   className="btn-checkpost"
                 >
                   ตรวจสอบโพสต์
@@ -116,6 +118,7 @@ const ManagePostsByMod = () => {
         <div className="flex justify-center items-center gap-4 mt-6">
           <button
             onClick={handlePrev}
+            data-test="pagination-prev"
             disabled={currentPage === 1}
             className={`p-2 rounded-full ${
               currentPage === 1
@@ -125,11 +128,12 @@ const ManagePostsByMod = () => {
           >
             <IoChevronBack size={20} />
           </button>
-          <span className="text-base">
+          <span className="text-base" data-test="pagination-info">
             หน้า {currentPage} / {totalPages}
           </span>
           <button
             onClick={handleNext}
+            data-test="pagination-next"
             disabled={currentPage === totalPages}
             className={`p-2 rounded-full ${
               currentPage === totalPages

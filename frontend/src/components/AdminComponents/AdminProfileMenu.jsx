@@ -20,6 +20,7 @@ const AdminProfileMenu = () => {
       <div className="flex items-center gap-4">
         <div className="dropdown dropdown-end">
           <a
+            data-test="link-manage-permission"
             href="/admin/manage-permission"
             role="button"
             className="btn btn-ghost flex items-center"
@@ -35,6 +36,7 @@ const AdminProfileMenu = () => {
 
         <div className="dropdown dropdown-end">
           <a
+            data-test="link-manage-status"
             href="/admin/manage-status"
             role="button"
             className="btn btn-ghost flex items-center"
@@ -50,6 +52,7 @@ const AdminProfileMenu = () => {
 
         <div className="dropdown dropdown-end">
           <a
+            data-test="link-register-admin"
             href="/admin/register"
             role="button"
             className="btn btn-ghost flex items-center"
@@ -65,6 +68,7 @@ const AdminProfileMenu = () => {
 
         <div className="dropdown dropdown-end">
           <div
+            data-test="button-profile-menu"
             className="btn-profile flex items-center gap-2 hover:scale-105 transition transform duration-300"
             tabIndex={0}
             role="button"
@@ -78,22 +82,36 @@ const AdminProfileMenu = () => {
 
           <ul
             tabIndex={0}
+            data-test="dropdown-profile-menu"
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
             <li>
-              <a href="/mod/register">เพิ่มเจ้าหน้าที่ดูแลระบบ</a>
+              <a data-test="dropdown-register-mod" href="/mod/register">
+                เพิ่มเจ้าหน้าที่ดูแลระบบ
+              </a>
             </li>
             <li>
-              <a href="/admin/manage-permission">สิทธิ์ของผู้ใช้งานระบบ</a>
+              <a
+                data-test="dropdown-manage-permission"
+                href="/admin/manage-permission"
+              >
+                สิทธิ์ของผู้ใช้งานระบบ
+              </a>
             </li>
             <li>
-              <a href="/admin/manage-status">จัดการสถานะผู้ใช้งานระบบ</a>
+              <a data-test="dropdown-manage-status" href="/admin/manage-status">
+                จัดการสถานะผู้ใช้งานระบบ
+              </a>
             </li>
             <li>
-              <a href="/">แก้ไขโปรไฟล์</a>
+              <a data-test="dropdown-edit-profile" href="/">
+                แก้ไขโปรไฟล์
+              </a>
             </li>
             <li>
-              <a onClick={handleLogout}>ออกจากระบบ</a>
+              <a data-test="dropdown-logout" onClick={handleLogout}>
+                ออกจากระบบ
+              </a>
             </li>
           </ul>
         </div>

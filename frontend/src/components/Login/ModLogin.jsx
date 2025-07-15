@@ -121,6 +121,7 @@ const ModLogin = () => {
           ยังไม่มีบัญชี? ติดต่อผู้ดูแลระบบเพื่อขอสมัคร <br />
           <a
             href="/mod/register"
+            data-test="modlogin-link-register"
             className="text-vivid font-semibold hover:underline"
           >
             สมัครโดย ADMIN เท่านั้น

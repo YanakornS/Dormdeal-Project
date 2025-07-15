@@ -110,6 +110,7 @@ const ManageStatuses = () => {
 
         {/* Filter สถานะบัญชี */}
         <select
+          data-test="filter-status-select"
           className="border rounded px-3 py-2 text-base"
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
@@ -131,9 +132,9 @@ const ManageStatuses = () => {
               <th className="px-4 py-3 text-left w-[25%]">จัดการสถานะบัญชี</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody data-test="user-list">
             {currentUsers.length === 0 ? (
-              <tr>
+              <tr data-test="no-users-row">
                 <td colSpan="4" className="text-center py-6 text-gray-500">
                   ไม่พบผู้ใช้งาน
                 </td>
@@ -144,10 +145,27 @@ const ManageStatuses = () => {
                 const statusInfo = statusLabels[statusKey];
 
                 return (
-                  <tr key={user._id} className="hover:bg-base-100">
-                    <td className="px-4 py-3">{user.displayName || "-"}</td>
-                    <td className="px-4 py-3">{user.email}</td>
-                    <td className="px-4 py-3">
+                  <tr
+                    key={user._id}
+                    data-test={`user-row-${user._id}`}
+                    className="hover:bg-base-100"
+                  >
+                    <td
+                      data-test={`user-name-${user._id}`}
+                      className="px-4 py-3"
+                    >
+                      {user.displayName || "-"}
+                    </td>
+                    <td
+                      data-test={`user-email-${user._id}`}
+                      className="px-4 py-3"
+                    >
+                      {user.email}
+                    </td>
+                    <td
+                      data-test={`user-status-${user._id}`}
+                      className="px-4 py-3"
+                    >
                       <span
                         className={`inline-block rounded-full px-3 py-1 text-sm font-medium ${statusInfo.class}`}
                       >
@@ -156,6 +174,7 @@ const ManageStatuses = () => {
                     </td>
                     <td className="px-4 py-3">
                       <button
+                        data-test={`edit-status-btn-${user._id}`}
                         onClick={() =>
                           Swal.fire({
                             title: `แก้ไขสถานะของ ${
@@ -203,6 +222,7 @@ const ManageStatuses = () => {
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-6">
           <button
+          data-test="pagination-prev"
             onClick={handlePrev}
             disabled={currentPage === 1}
             className={`p-2 rounded-full ${
@@ -213,10 +233,11 @@ const ManageStatuses = () => {
           >
             <IoChevronBack size={20} />
           </button>
-          <span className="text-base">
+          <span data-test="pagination-current" className="text-base">
             หน้า {currentPage} / {totalPages}
           </span>
           <button
+          data-test="pagination-next"
             onClick={handleNext}
             disabled={currentPage === totalPages}
             className={`p-2 rounded-full ${

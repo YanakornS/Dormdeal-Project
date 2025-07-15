@@ -188,6 +188,7 @@ const ManageCategories = () => {
 
       <div className="mb-6 flex flex-col md:flex-row items-center gap-2">
         <input
+          data-test="input-new-main-category"
           type="text"
           placeholder="ชื่อหมวดหมู่ใหม่"
           value={newName}
@@ -195,12 +196,14 @@ const ManageCategories = () => {
           className="input input-bordered w-full"
         />
         <input
+          data-test="input-new-main-category-image"
           type="file"
           accept="image/*"
           onChange={(e) => setImage(e.target.files[0])}
           className="file-input file-input-bordered"
         />
         <button
+          data-test="button-add-main-category"
           onClick={handleAddCategory}
           className="btn btn-primary"
           disabled={adding}
@@ -211,6 +214,7 @@ const ManageCategories = () => {
 
       {image && (
         <img
+          data-test="preview-main-category-image"
           src={URL.createObjectURL(image)}
           alt="Preview"
           className="w-20 h-20 object-cover rounded mb-4"
@@ -225,6 +229,7 @@ const ManageCategories = () => {
             <div
               key={cat._id}
               className=" rounded-lg border border-gray-500 shadow px-4 py-3"
+              data-test={`main-category-${cat._id}`}
             >
               <div className="flex items-center justify-between flex-wrap gap-4">
                 <div
@@ -241,6 +246,7 @@ const ManageCategories = () => {
 
                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
                   <button
+                    data-test={`edit-main-category-${cat._id}`}
                     onClick={() => handleEditCategory(cat)}
                     className="flex items-center gap-1 text-sm bg-yellow-50 hover:bg-yellow-100 text-yellow-700 px-3 py-1.5 rounded shadow-sm transition duration-200"
                   >
@@ -249,6 +255,7 @@ const ManageCategories = () => {
                   </button>
 
                   <button
+                    data-test={`add-sub-category-toggle-${cat._id}`}
                     onClick={() => toggleExpand(index)}
                     className="flex items-center gap-1 text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-1.5 rounded shadow-sm transition duration-200"
                   >
@@ -256,6 +263,7 @@ const ManageCategories = () => {
                     เพิ่มหมวดย่อย
                   </button>
                   <button
+                    data-test={`delete-main-category-${cat._id}`}
                     onClick={() => handleDeleteCategory(cat._id)}
                     className="flex items-center gap-1 text-sm bg-red-50 hover:bg-red-100 text-red-700 px-3 py-1.5 rounded shadow-sm transition duration-200"
                   >
@@ -269,6 +277,7 @@ const ManageCategories = () => {
                 <div className="mt-4 space-y-2">
                   <div className="flex gap-2">
                     <input
+                      data-test={`input-sub-category-${cat._id}`}
                       type="text"
                       placeholder="ชื่อหมวดย่อย"
                       value={subNames[cat._id] || ""}
@@ -281,6 +290,7 @@ const ManageCategories = () => {
                       className="input input-bordered w-full"
                     />
                     <button
+                      data-test={`add-sub-category-${cat._id}`}
                       onClick={() => handleAddSubCategory(cat._id)}
                       className="btn btn-outline btn-primary"
                     >
@@ -295,17 +305,20 @@ const ManageCategories = () => {
                         {cat.subCategories.map((sub) => (
                           <li
                             key={sub._id}
+                            data-test={`sub-category-${sub._id}`}
                             className="flex justify-between items-center"
                           >
                             <span>{sub.subCategoryName}</span>
                             <div className="flex gap-2">
                               <button
+                                data-test={`edit-sub-category-${sub._id}`}
                                 onClick={() => handleEditSubCategory(sub)}
                                 className="text-yellow-600 hover:underline text-sm"
                               >
                                 แก้ไข
                               </button>
                               <button
+                                data-test={`delete-sub-category-${sub._id}`}
                                 onClick={() => handleDeleteSubCategory(sub._id)}
                                 className="text-red-600 hover:underline text-sm"
                               >

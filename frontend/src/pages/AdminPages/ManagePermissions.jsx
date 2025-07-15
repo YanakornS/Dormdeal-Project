@@ -7,13 +7,11 @@ const ManagePermissions = () => {
   const [users, setUsers] = useState([]);
   const [cookies] = useCookies(["token"]);
 
-  // State สำหรับ filter role
   const [filterRole, setFilterRole] = useState("ทั้งหมด");
 
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
 
-  // กรอง users ตาม filterRole
   const filteredUsers =
     filterRole === "ทั้งหมด"
       ? users
@@ -21,13 +19,15 @@ const ManagePermissions = () => {
 
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
   const startIndex = (currentPage - 1) * usersPerPage;
-  const currentUsers = filteredUsers.slice(startIndex, startIndex + usersPerPage);
+  const currentUsers = filteredUsers.slice(
+    startIndex,
+    startIndex + usersPerPage
+  );
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
-  // ถ้าเปลี่ยน filter ให้กลับไปหน้าแรกเสมอ
   useEffect(() => {
     setCurrentPage(1);
   }, [filterRole]);
@@ -59,6 +59,7 @@ const ManagePermissions = () => {
         <h2 className="text-3xl font-bold">สิทธิ์ของผู้ใช้งานระบบ</h2>
 
         <select
+          data-test="filter-role-select"
           className="border rounded px-8 py-2 text-base"
           value={filterRole}
           onChange={(e) => setFilterRole(e.target.value)}
@@ -79,19 +80,36 @@ const ManagePermissions = () => {
               <th className="px-4 py-3 text-center w-[30%]">สิทธิ์ปัจจุบัน</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody data-test="user-list">
             {currentUsers.length === 0 ? (
-              <tr>
+              <tr data-test="no-users-row">
                 <td colSpan="3" className="text-center py-6 text-gray-500">
                   ไม่พบผู้ใช้งานในระบบ
                 </td>
               </tr>
             ) : (
               currentUsers.map((user) => (
-                <tr key={user._id} className="hover:bg-base-100">
-                  <td className="px-4 py-3 truncate">{user.displayName || "-"}</td>
-                  <td className="px-4 py-3 truncate">{user.email}</td>
-                  <td className="px-4 py-3 text-center capitalize">
+                <tr
+                  key={user._id}
+                  data-test={`user-row-${user._id}`}
+                  className="hover:bg-base-100"
+                >
+                  <td
+                    data-test={`user-name-${user._id}`}
+                    className="px-4 py-3 truncate"
+                  >
+                    {user.displayName || "-"}
+                  </td>
+                  <td
+                    data-test={`user-email-${user._id}`}
+                    className="px-4 py-3 truncate"
+                  >
+                    {user.email}
+                  </td>
+                  <td
+                    data-test={`user-role-${user._id}`}
+                    className="px-4 py-3 text-center capitalize"
+                  >
                     <span
                       className={
                         (user.role === "admin"
@@ -113,8 +131,12 @@ const ManagePermissions = () => {
       </div>
 
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-4 mt-6">
+        <div
+          data-test="pagination"
+          className="flex justify-center items-center gap-4 mt-6"
+        >
           <button
+            data-test="pagination-prev"
             onClick={handlePrev}
             disabled={currentPage === 1}
             className={`p-2 rounded-full ${
@@ -125,10 +147,11 @@ const ManagePermissions = () => {
           >
             <IoChevronBack size={20} />
           </button>
-          <span className="text-base">
+          <span data-test="pagination-current" className="text-base">
             หน้า {currentPage} / {totalPages}
           </span>
           <button
+            data-test="pagination-next"
             onClick={handleNext}
             disabled={currentPage === totalPages}
             className={`p-2 rounded-full ${

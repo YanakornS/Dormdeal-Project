@@ -22,6 +22,7 @@ const ModProfileMenu = () => {
           <a
             href="/mod/reportpost"
             role="button"
+            data-test="modmenu-link-reportpost"
             className="btn btn-ghost flex items-center"
           >
             <div className="indicator flex items-center gap-2">
@@ -37,6 +38,7 @@ const ModProfileMenu = () => {
           <a
             href="/mod"
             role="button"
+            data-test="modmenu-link-posts"
             className="btn btn-ghost flex items-center"
           >
             <div className="indicator flex items-center gap-2">
@@ -52,6 +54,7 @@ const ModProfileMenu = () => {
           <a
             href="/mod/managecategories"
             role="button"
+            data-test="modmenu-link-categories"
             className="btn btn-ghost flex items-center"
           >
             <div className="indicator flex items-center gap-2">
@@ -69,6 +72,7 @@ const ModProfileMenu = () => {
             tabIndex={0}
             role="button"
             aria-label="Profile Button"
+            data-test="modmenu-profile-button"
           >
             <CiUser className="w-6 h-6" />
             <span className="hidden lg:inline truncate">
@@ -81,19 +85,32 @@ const ModProfileMenu = () => {
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
             <li>
-              <a href="/mod/reportpost">ตรวจสอบรายงานปัญหา</a>
+              <a href="/mod/reportpost" data-test="modmenu-dropdown-report">
+                ตรวจสอบรายงานปัญหา
+              </a>
             </li>
             <li>
-              <a href="/mod">ตรวจสอบโพสต์ซื้อขาย</a>
+              <a href="/mod" data-test="modmenu-dropdown-posts">
+                ตรวจสอบโพสต์ซื้อขาย
+              </a>
             </li>
             <li>
-              <a href="/mod/managecategories">จัดการหมวดหมู่สินค้า</a>
+              <a
+                href="/mod/managecategories"
+                data-test="modmenu-dropdown-categories"
+              >
+                จัดการหมวดหมู่สินค้า
+              </a>
             </li>
             <li>
-              <a href="/">แก้ไขโปรไฟล์</a>
+              <a href="/" data-test="modmenu-dropdown-editprofile">
+                แก้ไขโปรไฟล์
+              </a>
             </li>
             <li>
-              <a onClick={handleLogout}>ออกจากระบบ</a>
+              <a onClick={handleLogout} data-test="modmenu-dropdown-logout">
+                ออกจากระบบ
+              </a>
             </li>
           </ul>
         </div>
