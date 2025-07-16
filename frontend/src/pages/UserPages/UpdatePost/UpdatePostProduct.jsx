@@ -235,7 +235,7 @@ const UpdatePostProduct = () => {
     //ใช้ postProduct เป็น state หลักในการเก็บค่าจาก input ต่าง ๆ
     <div className="section-container-add-products pt-16">      
       <form className="mb-4" onSubmit={handleSubmit}> 
-        <h2 data-test="edit-productdetails" className="bg-card w-full pl-16  h-20 text-xl flex items-center">
+        <h2 data-test="header-edit-productdetails" className="bg-card w-full pl-16  h-20 text-xl flex items-center">
           รายละเอียดสินค้า
         </h2>
         {/* เลือกข้อเสนอ */}
@@ -426,7 +426,7 @@ const UpdatePostProduct = () => {
               id="price"
               name="price"
               min="0"
-              required
+              data-test="edit-price"
               className="mt-1 p-4 text-base xl:w-100 border-gray-400 rounded-xl shadow-sm"
               type="number"
               placeholder="กรอกราคา"
