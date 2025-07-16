@@ -73,6 +73,7 @@ const PostProfileCard = ({ product, onDelete = () => {} }) => {
         {/* ปุ่มลบ */}
         <button
           onClick={() => handleDeletePost(product._id)}
+          data-test={`icon-delete-post-${product._id}`}
           className="absolute top-2 right-2 text-black-600  p-1.5 border-1 rounded-lg "
         >
           <FaTrashAlt size={14} />
@@ -92,7 +93,7 @@ const PostProfileCard = ({ product, onDelete = () => {} }) => {
         <div className="flex justify-between gap-2 mt-3">
           <button
             onClick={handleEditPost}
-            data-test={`icon-edit-post`}
+            data-test={`icon-edit-post-${product._id}`}
             className="btn btn-sm btn-outline w-26 rounded-2xl  flex items-center  text-vivid hover:bg-vivid border-vivid hover:text-white justify-center gap-1"
           >
             <FaEdit size={14} />

@@ -165,14 +165,27 @@ const UpdatePostProduct = () => {
     showCancelButton: true,
     confirmButtonText: "ใช่, ยกเลิก",
     cancelButtonText: "ไม่, กลับไปแก้ไข",
+   didOpen: () => {
+  const confirmButton = document.querySelector(".swal2-confirm");
+  if (confirmButton) {
+    confirmButton.setAttribute("data-test", "swal-post-confirm-cancelupdate");
+  }
+}
+
   }).then((result) => {
     if (result.isConfirmed) {
    Swal.fire({
         title: "คุณได้ยกเลิกการแก้ไขโพสต์แล้ว",
         text: "โพสต์ของคุณจะไม่ถูกบันทึก",
         icon: "success",
-        timer: 1500,
+        timer: 2500,
         showConfirmButton: false,
+        didOpen: () => {
+        const title = document.querySelector(".swal2-title");
+        if (title) {
+          title.setAttribute("data-test", "swal-post-cancel-update-success"); 
+        }
+      },
       }).then(() =>{
            navigate("/ManagePostStatus");
       })
@@ -216,6 +229,12 @@ const UpdatePostProduct = () => {
           text: "โพสต์ของคุณจะถูกส่งตรวจสอบอีกครั้ง",
           icon: "success",
           timer: 2500,
+           didOpen: () => {
+        const title = document.querySelector(".swal2-title");
+        if (title) {
+          title.setAttribute("data-test", "swal-post-update-success"); 
+        }
+      },
         });
         navigate("/");
       } else {
@@ -561,12 +580,13 @@ const UpdatePostProduct = () => {
               </div>
 
               {/* ปุ่ม submit */}
-              <div className="mt-6 flex justify-center items-center w-full">
-                <a  onClick={handleCancel} className="cursor-pointer transition-all duration-300 text-red-500 items-center justify-center flex border-red-500 hover:bg-red-500 hover:text-white border-2 rounded-xl text-lg w-48 h-18 m-2">
+              <div  className="mt-6 flex justify-center items-center w-full">
+                <a data-test="submit-cancel-update-post"  onClick={handleCancel} className="cursor-pointer transition-all duration-300 text-red-500 items-center justify-center flex border-red-500 hover:bg-red-500 hover:text-white border-2 rounded-xl text-lg w-48 h-18 m-2">
                   ยกเลิก
                 </a>
                 <button
                   type="submit"
+                  data-test="submit-update-post"
                   className="cursor-pointer transition-all duration-300 items-center justify-center flex text-vivid hover:bg-vivid border-vivid hover:text-white border-2 rounded-xl text-lg w-48 h-18 m-2"
                 >
                   ยืนยันการโพสต์
