@@ -24,6 +24,15 @@ const PostSchema = new Schema(
       type: [String],
       required: true,
     },
+    slipImageUrl: {
+      type: String,
+      default: null,
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "confirmed"],
+      default: "pending",
+    },
     price: {
       type: Number,
       required: true,

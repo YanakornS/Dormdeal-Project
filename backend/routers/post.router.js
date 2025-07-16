@@ -2,7 +2,8 @@ const express = require("express");
 const router = express.Router();
 const postController = require("../controllers/post.controller");
 const authJwt = require("../middlewares/auth.middleware");
-const { uploads, uploadsToFirebase } = require("../middlewares/file.midleware");
+const { upload, uploadToFirebase, uploads, uploadsToFirebase } = require("../middlewares/file.midleware");
+const verifySlipWithEasySlip = require("../middlewares/easyslip.middleware")
 
 //http://localhost:5000/api/v1/post
 
@@ -15,6 +16,8 @@ router.post(
 );
 
 router.post("/", authJwt.verifyToken, uploads,uploadsToFirebase, postController.createPost)
+
+router.post("/:id/upload-slip", authJwt.verifyToken, upload, verifySlipWithEasySlip, uploadToFirebase, postController.uploadPaymentSlip);
 
 
 //http://localhost:5000/api/v1/post

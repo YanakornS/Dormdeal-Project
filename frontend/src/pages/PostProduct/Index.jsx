@@ -99,66 +99,108 @@ const Index = () => {
     setPostProduct((prev) => ({ ...prev, files: updatedFiles }));
   };
 
-const handleSubmit = async (event) => {
-  event.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-  //  Validation ฝั่ง Client
-  if (
-    !postProduct.postType ||
-    !postProduct.productName ||
-    !postProduct.category ||
-    !postProduct.subcategory ||
-    !postProduct.price ||
-    !postProduct.description ||
-    !postProduct.condition ||
-    !postProduct.postPaymentType
-  ) {
-    Swal.fire({
-      title: "กรุณากรอกข้อมูลให้ครบถ้วน!",
-      text: "กรุณากรอกข้อมูลให้ครบทุกช่องก่อนโพสต์",
-      icon: "error",
-      didOpen: () => {
-        const title = document.querySelector(".swal2-title");
-        if (title) {
-          title.setAttribute("data-test", "swal-post-failed"); 
-        }
-      },
-    });
-    return;
-  }
-
-  try {
-    const data = new FormData();
-    data.set("postType", postProduct.postType);
-    data.set("productName", postProduct.productName);
-    data.set("category", postProduct.category);
-    data.set("subcategory", postProduct.subcategory);
-    data.set("price", postProduct.price);
-    data.set("description", postProduct.description);
-    data.set("condition", postProduct.condition);
-    data.set("postPaymentType", postProduct.postPaymentType);
-
-    if (postProduct.files && postProduct.files.length > 0) {
-      postProduct.files.forEach((file) => {
-        data.append("files", file);
-      });
-    }
-
-    const response = await PostService.createPostProduct(data);
-    if (response.status === 200) {
+    //  Validation ฝั่ง Client
+    if (
+      !postProduct.postType ||
+      !postProduct.productName ||
+      !postProduct.category ||
+      !postProduct.subcategory ||
+      !postProduct.price ||
+      !postProduct.description ||
+      !postProduct.condition ||
+      !postProduct.postPaymentType
+    ) {
       Swal.fire({
-        title: "กรุณารอเจ้าหน้าที่ตรวจสอบ!",
-        text: "ตัวเลือก : โพสต์แบบฟรี",
-        icon: "success",
-        showConfirmButton: false,
-        timer: 2500,
+        title: "กรุณากรอกข้อมูลให้ครบถ้วน!",
+        text: "กรุณากรอกข้อมูลให้ครบทุกช่องก่อนโพสต์",
+        icon: "error",
         didOpen: () => {
           const title = document.querySelector(".swal2-title");
           if (title) {
-            title.setAttribute("data-test", "swal-post-success");
+            title.setAttribute("data-test", "swal-post-failed");
           }
         },
-      }).then(() => {
+      });
+      return;
+    }
+
+    try {
+      const data = new FormData();
+      data.set("postType", postProduct.postType);
+      data.set("productName", postProduct.productName);
+      data.set("category", postProduct.category);
+      data.set("subcategory", postProduct.subcategory);
+      data.set("price", postProduct.price);
+      data.set("description", postProduct.description);
+      data.set("condition", postProduct.condition);
+      data.set("postPaymentType", postProduct.postPaymentType);
+
+      if (postProduct.files && postProduct.files.length > 0) {
+        postProduct.files.forEach((file) => {
+          data.append("files", file);
+        });
+      }
+
+      //     const response = await PostService.createPostProduct(data);
+      //     if (response.status === 200) {
+      //       Swal.fire({
+      //         title: "กรุณารอเจ้าหน้าที่ตรวจสอบ!",
+      //         text: "ตัวเลือก : โพสต์แบบฟรี",
+      //         icon: "success",
+      //         showConfirmButton: false,
+      //         timer: 2500,
+      //         didOpen: () => {
+      //           const title = document.querySelector(".swal2-title");
+      //           if (title) {
+      //             title.setAttribute("data-test", "swal-post-success");
+      //           }
+      //         },
+      //       }).then(() => {
+      //         setPostProduct({
+      //           postType: "",
+      //           productName: "",
+      //           category: "",
+      //           subcategory: "",
+      //           price: "",
+      //           description: "",
+      //           condition: "",
+      //           postPaymentType: "",
+      //           files: [],
+      //         });
+      //       });
+      //       navigate("/");
+      //     } else {
+      //       Swal.fire({
+      //         title: "Error",
+      //         text: "Something went wrong. Please try again.",
+      //         icon: "error",
+      //         didOpen: () => {
+      //           const title = document.querySelector(".swal2-title");
+      //           if (title) {
+      //             title.setAttribute("data-test", "swal-post-failed");
+      //           }
+      //         },
+      //       });
+      //     }
+      //   } catch (error) {
+      //     Swal.fire({
+      //       title: "Error",
+      //       text:
+      //         error.response?.data?.message ||
+      //         "An error occurred. Please try again.",
+      //       icon: "error",
+      //     });
+      //   }
+      // };
+
+      const response = await PostService.createPostProduct(data);
+      if (response.status === 200) {
+        const createdPost = response.data; // สมมุติ backend ส่ง post กลับมา
+        const postId = createdPost._id;
+
         setPostProduct({
           postType: "",
           productName: "",
@@ -170,31 +212,49 @@ const handleSubmit = async (event) => {
           postPaymentType: "",
           files: [],
         });
-      });
-      navigate("/");
-    } else {
+
+        if (postProduct.postPaymentType === "Paid") {
+          // ไปหน้า Qrcode
+          navigate(`/payment/${postId}`);
+        } else {
+          // โพสต์แบบฟรี
+          Swal.fire({
+            title: "โพสต์สำเร็จ",
+            text: "โพสต์แบบฟรี กรุณารอเจ้าหน้าที่ตรวจสอบ",
+            icon: "success",
+            timer: 2500,
+            showConfirmButton: false,
+            didOpen: () => {
+              const title = document.querySelector(".swal2-title");
+              if (title) {
+                title.setAttribute("data-test", "swal-post-success");
+              }
+            },
+          }).then(() => navigate("/"));
+        }
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "Something went wrong. Please try again.",
+          icon: "error",
+          didOpen: () => {
+            const title = document.querySelector(".swal2-title");
+            if (title) {
+              title.setAttribute("data-test", "swal-post-failed");
+            }
+          },
+        });
+      }
+    } catch (error) {
       Swal.fire({
         title: "Error",
-        text: "Something went wrong. Please try again.",
+        text:
+          error.response?.data?.message ||
+          "An error occurred. Please try again.",
         icon: "error",
-        didOpen: () => {
-          const title = document.querySelector(".swal2-title");
-          if (title) {
-            title.setAttribute("data-test", "swal-post-failed");
-          }
-        },
       });
     }
-  } catch (error) {
-    Swal.fire({
-      title: "Error",
-      text:
-        error.response?.data?.message ||
-        "An error occurred. Please try again.",
-      icon: "error",
-    });
-  }
-};
+  };
 
   const handleCancel = () => {
     Swal.fire({
@@ -273,7 +333,6 @@ const handleSubmit = async (event) => {
               id="productName"
               name="productName"
               placeholder="กรอกชื่อสินค้า"
-            
               className="mt-2 p-4 text-base w-full border-gray-400 rounded-xl shadow-sm"
               value={postProduct.productName}
               onChange={handleChange}
@@ -410,7 +469,6 @@ const handleSubmit = async (event) => {
             <textarea
               id="description"
               name="description"
-          
               className="mt-1 p-4 h-50 text-base w-full border-gray-400 rounded-xl shadow-sm"
               type="text"
               placeholder=" กรุณากรอกข้อมูล เช่น สภาพสินค้า, ยี่ห้อ, รุ่น, ขนาด หรือข้อมูลสำคัญอื่น ๆ เพื่อให้ผู้ซื้อเข้าใจชัดเจน."

@@ -92,13 +92,13 @@ async function uploadsToFirebase(req, res, next) {
   }).single("file");
   
   function checkFileType(file, cb) {
-    const fileType = /jpeg|jpg|png|git|webp/;
+    const fileType = /jpeg|jpg|png|git|jfif|webp/;
     const extName = fileType.test(path.extname(file.originalname).toLowerCase());
     const mimetype = fileType.test(file.mimetype);
     if (mimetype && extName) {
       return cb(null, true);
     } else {
-      cb("Error : รูปภาพเท่านั้น (.jpeg, .jpg, .png, .gif, .webp) เท่านั้น ");
+      cb("Error : รูปภาพเท่านั้น (.jpeg, .jpg, .png, .gif, .jfif, .webp) เท่านั้น ");
     }
   }
   

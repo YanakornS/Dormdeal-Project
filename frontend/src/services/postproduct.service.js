@@ -11,6 +11,19 @@ const createPostProduct = async (post) => {
   return response;
 };
 
+const uploadPaymentSlip = async (postId, file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await api.post(`${API_URL}/${postId}/upload-slip`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response;
+};
+
 const getAllPostsProduct = async () => {
   return await api.get(API_URL);
 };
@@ -47,7 +60,7 @@ const PostService = {
   getPostByOwner,
   deletePostByOwner,
   updatePostProduct,
-  
+  uploadPaymentSlip
 };
 
 export default PostService;

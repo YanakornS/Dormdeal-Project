@@ -90,6 +90,31 @@ exports.createPost = async (req, res) => {
   }
 };
 
+exports.uploadPaymentSlip = async (req, res) => {
+  try {
+    const postId = req.params.id;
+
+    const updatedPost = await PostModel.findByIdAndUpdate(
+      postId,
+      {
+        slipImageUrl: req.file.firebaseUrl,
+        paymentStatus: "confirmed",
+        status: "pending_review",
+      },
+      { new: true }
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ message: "ไม่พบโพสต์" });
+    }
+
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    console.error("UploadSlip error:", error.message);
+    res.status(500).json({ message: "เกิดข้อผิดพลาดภายในระบบ" });
+  }
+};
+
 // getAllPost
 exports.getAllPosts = async (req, res) => {
   try {

@@ -4,6 +4,7 @@ import MainLayout from "../layouts/MainLayout/Main";
 import ModLayout from "../layouts/ModLayout/ModLayout";
 
 import AddProduct from "../pages/PostProduct/Index";
+import PaymentPage from "../pages/PostProduct/PaymentPage";
 import Home from "../pages/Home/Index";
 import ShoppingPost from "../pages/ShoppiongPost/Index";
 import ProductDetail from "../pages/ProductDetail/ProductDetail";
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
       {
         path: "/post",
         element:<UserProtectPage><AddProduct /></UserProtectPage> ,
+      },
+      {
+        path: "/payment/:postId",
+        element:<UserProtectPage><PaymentPage /></UserProtectPage>,
       },
       {
         path: "/chat",
