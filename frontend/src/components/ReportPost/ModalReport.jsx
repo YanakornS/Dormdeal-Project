@@ -118,6 +118,7 @@ const ModalReport = ({ postId }) => {
           <div className="mt-8 flex justify-center">
             <button
               onClick={handleSubmit}
+              data-test="submit-report"
               className="btn bg-vivid text-white border-blue-500 hover:bg-blue-200 flex items-center px-6 py-2 rounded-xl"
               type="button"
             >

@@ -87,7 +87,8 @@ const UserMenu = () => {
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
           >
             <li>
-              <a href="/ManagePostStatus">จัดการโพสต์ประกาศ</a>
+              <a href={`/ManagePostStatus`}
+              data-test="my-announcement">จัดการโพสต์ประกาศ</a>
             </li>
             {/* userInfo	เก็บผลลัพธ์จาก getUser() (เช่น _id) */}
             {userInfo?._id && (
