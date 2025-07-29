@@ -3,7 +3,7 @@ import api from "./api";
 const API_URL = import.meta.env.VITE_BASE_URL + "/post";
 
 const createPostProduct = async (post) => {
-  const response = await api.post(API_URL, post, {
+  const response = await api.post(API_URL + "/create", post, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -25,16 +25,16 @@ const uploadPaymentSlip = async (postId, file) => {
 };
 
 const getAllPostsProduct = async () => {
-  return await api.get(API_URL);
+  return await api.get(API_URL + "/get-all");
 };
 
 const getPostByOwner = async (id) => {
-  return await api.get(`${API_URL}/owner/${id}`);
+  return await api.get(`${API_URL}/ownerId/${id}`);
 }
 
 
 const getPostById = async (id) => {
-  const response = await api.get(`${API_URL}/${id}`);
+  const response = await api.get(`${API_URL}/post${id}`);
   
   return response.data || null;  // ใช้ response.data โดยตรง
 };
@@ -49,7 +49,7 @@ const updatePostProduct = async (id, post) => {
 
 
 const deletePostByOwner = async (id) => {
-  return await api.delete(`${API_URL}/${id}`);
+  return await api.delete(`${API_URL}/delete${id}`);
 };
 
 

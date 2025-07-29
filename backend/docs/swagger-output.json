@@ -800,7 +800,7 @@
         }
       }
     },
-    "/user/sign/photo": {
+    "/user/photo": {
       "put": {
         "tags": [
           "User"

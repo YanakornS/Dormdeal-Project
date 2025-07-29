@@ -27,7 +27,7 @@ router.put("/photo",
   /**
    * #swagger.tags = ['User']
    * #swagger.summary = 'อัปเดตรูปโปรไฟล์โดยใช้ email'
-   * * #swagger.path = '/user/sign/photo'
+   * #swagger.path = '/user/photo'
    */
   userController.updatePhotoByEmail
 );
