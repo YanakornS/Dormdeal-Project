@@ -2,11 +2,35 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user.controller");
 
-//http://localhost:5000/api/v1/user/sign
-router.post("/sign", userController.sign);
-//http://localhost:5000/api/v1/user/
-router.post("/", userController.addUser);
-//http://localhost:5000/api/v1/user/userId
-router.put("/photo", userController.updatePhotoByEmail);
+// ลงชื่อเข้าใช้
+router.post("/sign",
+  /**
+   * #swagger.tags = ['User']
+   * #swagger.summary = 'ลงชื่อเข้าใช้ผู้ใช้'
+   * #swagger.path = '/user/sign'
+   */
+  userController.sign
+);
+
+// เพิ่มผู้ใช้ใหม่
+router.post("/",
+  /**
+   * #swagger.tags = ['User']
+   * #swagger.summary = 'เพิ่มผู้ใช้ใหม่'
+   * * #swagger.path = '/user/'
+   */
+  userController.addUser
+);
+
+// อัปเดตรูปโปรไฟล์ตามอีเมล
+router.put("/photo",
+  /**
+   * #swagger.tags = ['User']
+   * #swagger.summary = 'อัปเดตรูปโปรไฟล์โดยใช้ email'
+   * * #swagger.path = '/user/sign/photo'
+   */
+  userController.updatePhotoByEmail
+);
+
 
 module.exports = router;

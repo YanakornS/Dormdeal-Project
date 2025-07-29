@@ -3,18 +3,57 @@ const router = express.Router();
 const modController = require("../controllers/mod.controller");
 const authJwt = require("../middlewares/auth.middleware");
 
-//http://localhost:5000/api/v1/post/mod/getallposts
-router.get("/", authJwt.verifyToken, modController.getAllPostsByMod);
+// ดึงโพสต์ทั้งหมดของ Mod
+router.get("/", 
+  authJwt.verifyToken, 
+  /**
+   * #swagger.tags = ['Mod']
+   * #swagger.summary = 'ดึงโพสต์ทั้งหมดสำหรับ Mod'
+   * #swagger.path = '/mod/'
+   */
+  modController.getAllPostsByMod
+);
 
-//http://localhost:5000/api/v1/post/id
-router.get("/:id", modController.getPostByIdMod);
+// ดึงโพสต์ตาม ID สำหรับ Mod
+router.get("/:id", 
+  /**
+   * #swagger.tags = ['Mod']
+   * #swagger.summary = 'ดึงโพสต์ตาม ID สำหรับ Mod'
+   * #swagger.path = '/mod/{id}'
+   */
+  modController.getPostByIdMod
+);
 
-//http://localhost:5000/api/v1//mod/review/id
-router.patch("/review/:id", authJwt.verifyToken,authJwt.isMod, modController.reviewPost);
+// รีวิวโพสต์โดย Mod
+router.patch("/review/:id", 
+  authJwt.verifyToken, 
+  authJwt.isMod, 
+  /**
+   * #swagger.tags = ['Mod']
+   * #swagger.summary = 'รีวิวโพสต์โดย Mod'
+   * #swagger.path = '/mod/review/{id}'
+   */
+  modController.reviewPost
+);
 
-//http://localhost:5000/api/v1/mod/id
-router.delete("/:id", authJwt.verifyToken, modController.deletePostByMod);
+// ลบโพสต์โดย Mod
+router.delete("/:id", 
+  authJwt.verifyToken, 
+  /**
+   * #swagger.tags = ['Mod']
+   * #swagger.summary = 'ลบโพสต์โดย Mod'
+   * #swagger.path = '/mod/{id}'
+   */
+  modController.deletePostByMod
+);
 
-router.get("/owner/:id", modController.getPostByOwner); 
-
+// ดึงโพสต์ของเจ้าของ
+router.get("/owner/:id", 
+  /**
+   * #swagger.tags = ['Mod']
+   * #swagger.summary = 'ดึงโพสต์ของเจ้าของ'
+   * #swagger.path = '/mod/owner/{id}'
+   */
+  modController.getPostByOwner
+);
 module.exports = router;

@@ -18,7 +18,8 @@ const messageRouter = require("./routers/message.router")
 const chatroomRouter = require("./routers/chatroom.router");
 const notificationRouter = require("./routers/notification.router");
 const ratingRouter = require("./routers/rating.router")
-
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./docs/swagger-output.json");
 try {
   mongoose.connect(DB_URL);
   console.log("Connect to mongo DB Successfully");
@@ -32,6 +33,7 @@ app.get("/", (req, res) => {
   res.send("<h1>Welcome to DormDeals Restful API</h1>");
 });
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/post", postRouter);
 app.use("/api/v1/maincategory", maincategoryRouter);

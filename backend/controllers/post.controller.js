@@ -4,9 +4,10 @@ const UserModel = require("../models/user.model");
 const NotificationModel = require("../models/notification.model")
 const MessageModel = require("../models/message.model")
 const RatingModel = require("../models/rating.model");
+
 //createPost
 exports.createPost = async (req, res) => {
-  if (!req.files) {
+  if (!req.files ) {
     return res.status(400).json({ message: "กรุณาอัปโหลดรูปภาพประกอบโพสต์" });
   }
 

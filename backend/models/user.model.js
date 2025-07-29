@@ -5,7 +5,7 @@ const { Schema, model } = mongoose;
 const UserSchema = new Schema({
   displayName: { type: String, required: true, unique: true,},
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true, select: false },
+  password: { type: String, },
   role: { type: String, enum: ["admin", "mod", "user"], default: "user" },
   userStatus: { type: String, enum: ["normal", "Banned", "outof"], default: "normal" },
   wishlist: [{ type: Schema.Types.ObjectId, ref: "Post" }],
