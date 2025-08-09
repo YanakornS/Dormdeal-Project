@@ -3,28 +3,60 @@ const router = express.Router();
 const subcategory = require("../controllers/subcategory.controller");
 const authJwt = require("../middlewares/auth.middleware");
 
-//http://localhost:5000/api/v1/subcategory/sub
-router.post(
-  "/",
-//   authJwt.verifyToken,
-//   authJwt.isMod,
+// เพิ่มหมวดย่อย
+router.post("/",
+  /**
+   * #swagger.tags = ['Subcategory']
+   * #swagger.summary = 'เพิ่มหมวดย่อย'
+   * #swagger.path = '/subcategory'
+   * #swagger.security = [{ "bearerAuth": [] }]
+   */
+  // authJwt.verifyToken,
+  // authJwt.isMod,
   subcategory.addSubCategory
 );
 
-//http://localhost:5000/api/v1/subcategory/sub
-router.get("/sub", subcategory.getSubCategories);
-//http://localhost:5000/api/v1/subcategory/id
-router.get("/:id", subcategory.getSubCategoryById);
-//http://localhost:5000/api/v1/subcategory/id
-router.put(
-  "/:id",
+// ดึงหมวดย่อยทั้งหมด
+router.get("/sub",
+  /**
+   * #swagger.tags = ['Subcategory']
+   * #swagger.summary = 'ดึงข้อมูลหมวดย่อยทั้งหมด'
+   * #swagger.path = '/subcategory/sub'
+   */
+  subcategory.getSubCategories
+);
+
+// ดึงหมวดย่อยตาม ID
+router.get("/:id",
+  /**
+   * #swagger.tags = ['Subcategory']
+   * #swagger.summary = 'ดึงข้อมูลหมวดย่อยตาม ID'
+   * #swagger.path = '/subcategory/{id}'
+   */
+  subcategory.getSubCategoryById
+);
+
+// อัปเดตหมวดย่อย
+router.put("/:id",
+  /**
+   * #swagger.tags = ['Subcategory']
+   * #swagger.summary = 'อัปเดตหมวดย่อย'
+   * #swagger.path = '/subcategory/{id}'
+   * #swagger.security = [{ "bearerAuth": [] }]
+   */
   authJwt.verifyToken,
   authJwt.isMod,
   subcategory.updateSubCategory
 );
-//http://localhost:5000/api/v1/subcategory/id
-router.delete(
-  "/:id",
+
+// ลบหมวดย่อย
+router.delete("/:id",
+  /**
+   * #swagger.tags = ['Subcategory']
+   * #swagger.summary = 'ลบหมวดย่อย'
+   * #swagger.path = '/subcategory/{id}'
+   * #swagger.security = [{ "bearerAuth": [] }]
+   */
   authJwt.verifyToken,
   authJwt.isMod,
   subcategory.deleteSubCategory

@@ -4,9 +4,54 @@ const router = express.Router();
 const reportController = require("../controllers/report.controller")
 const authJwt = require("../middlewares/auth.middleware");
 
-router.post("/", reportController.createReport);
-router.get("/", authJwt.verifyToken, authJwt.isMod, reportController.getAllReports);
-router.get("/:id", authJwt.verifyToken, authJwt.isMod, reportController.getReportById);
-router.delete("/:id", authJwt.verifyToken, authJwt.isMod, reportController.deleteReport);
+// สร้างรายงาน
+router.post("/",
+  /**
+   * #swagger.tags = ['Report']
+   * #swagger.summary = 'สร้างรายงานโพสต์'
+   * #swagger.path = '/report'
+   */
+  reportController.createReport
+);
+
+// ดึงรายงานทั้งหมด (MOD เท่านั้น)
+router.get("/",
+  /**
+   * #swagger.tags = ['Report']
+   * #swagger.summary = 'ดึงข้อมูลรายงานทั้งหมด'
+   * #swagger.path = '/report'
+   * #swagger.security = [{ "bearerAuth": [] }]
+   */
+  authJwt.verifyToken,
+  authJwt.isMod,
+  reportController.getAllReports
+);
+
+// ดึงรายงานตาม ID (MOD เท่านั้น)
+router.get("/:id",
+  /**
+   * #swagger.tags = ['Report']
+   * #swagger.summary = 'ดึงข้อมูลรายงานตาม ID'
+   * #swagger.path = '/report/{id}'
+   * #swagger.security = [{ "bearerAuth": [] }]
+   */
+  authJwt.verifyToken,
+  authJwt.isMod,
+  reportController.getReportById
+);
+
+// ลบรายงานตาม ID (MOD เท่านั้น)
+router.delete("/:id",
+  /**
+   * #swagger.tags = ['Report']
+   * #swagger.summary = 'ลบรายงานตาม ID'
+   * #swagger.path = '/report/{id}'
+   * #swagger.security = [{ "bearerAuth": [] }]
+   */
+  authJwt.verifyToken,
+  authJwt.isMod,
+  reportController.deleteReport
+);
+
 
 module.exports = router;
