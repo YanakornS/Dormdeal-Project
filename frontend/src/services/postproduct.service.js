@@ -34,7 +34,7 @@ const getPostByOwner = async (id) => {
 
 
 const getPostById = async (id) => {
-  const response = await api.get(`${API_URL}/post${id}`);
+  const response = await api.get(`${API_URL}/post/${id}`);
   
   return response.data || null;  // ใช้ response.data โดยตรง
 };
@@ -49,7 +49,7 @@ const updatePostProduct = async (id, post) => {
 
 
 const deletePostByOwner = async (id) => {
-  return await api.delete(`${API_URL}/delete${id}`);
+  return await api.delete(`${API_URL}/delete/${id}`);
 };
 
 
