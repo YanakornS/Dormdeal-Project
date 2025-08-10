@@ -47,20 +47,37 @@ const updatePostProduct = async (id, post) => {
   });
 };
 
-
 const deletePostByOwner = async (id) => {
   return await api.delete(`${API_URL}/delete/${id}`);
 };
 
+const getInterestedUsers = async (postId) => {
+  const response = await api.get(`${API_URL}/${postId}/interested-users`);
+  return response.data.data?.interestedUsers || [];
+};
+
+
+const closePostAndNotify = async (postId, { buyerIds }) => {
+  return await api.patch(`${API_URL}/${postId}/close`, { buyerIds });
+};
+
+
+const rateSeller = async (postId, ratingData) => {
+  return await api.post(`${API_URL}/${postId}/rate`, ratingData);
+};
+
 
 const PostService = {
-  createPostProduct,
+ createPostProduct,
   getAllPostsProduct,
   getPostById,
   getPostByOwner,
   deletePostByOwner,
   updatePostProduct,
-  uploadPaymentSlip
+  uploadPaymentSlip,
+  getInterestedUsers,
+  closePostAndNotify,
+  rateSeller
 };
 
 export default PostService;

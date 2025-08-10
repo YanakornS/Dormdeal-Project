@@ -6,14 +6,23 @@ import toast, { Toaster } from "react-hot-toast";
 import PostService from "../services/postproduct.service";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
-const PostProfileCard = ({ product, onDelete = () => {} }) => {
+import ModalClosePost from "./ModalClosePost";
+
+
+const PostProfileCard = ({ product, onDelete = () => { } }) => {
   const [isLiked, setIsLiked] = useState(false);
   const { user } = useContext(AuthContext); // ต้องมี user ถึงเรียกได้
+  const [showCloseModal, setShowCloseModal] = useState(false);
+
   const navigate = useNavigate();
 
   const handleEditPost = () => {
     navigate(`/updatepost/${product._id}`);
   };
+  const onMarkSoldOut = (product) => {
+    setShowCloseModal(true);
+  };
+
 
   const handleDeletePost = async (id) => {
     const result = await Swal.fire({
@@ -106,8 +115,21 @@ const PostProfileCard = ({ product, onDelete = () => {} }) => {
             <MdOutlineSell size={15} />
             ปิดขาย
           </button>
+
         </div>
       </div>
+      {showCloseModal && (
+        <ModalClosePost
+          postId={product._id}
+          onClose={() => setShowCloseModal(false)}
+          onSuccess={() => {
+            setShowCloseModal(false);
+            toast.success("ปิดการขายสำเร็จ");
+            // ถ้าต้องการรีเฟรชข้อมูล หรือทำอย่างอื่น สามารถทำที่นี่
+          }}
+        />
+      )}
+
     </div>
   );
 };

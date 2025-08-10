@@ -8,8 +8,10 @@ import TermOfServiceModal from "../TermOfServiceModal";
 const Modal = ({ name }) => {
   const { loginWithGoogle } = useContext(AuthContext);
   const [showTerms, setShowTerms] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const googleSignUp = () => {
+    setIsLoggingIn(true); // disable ปุ่ม
     loginWithGoogle()
       .then(() => {
         Swal.fire({
@@ -18,7 +20,8 @@ const Modal = ({ name }) => {
           showConfirmButton: false,
           timer: 2000,
         });
-        document.getElementById("login").close();
+        // ปิด modal หลัง login สำเร็จเท่านั้น
+        document.getElementById(name)?.close();
       })
       .catch((error) => {
         Swal.fire({
@@ -27,17 +30,21 @@ const Modal = ({ name }) => {
           text: error.message,
           showConfirmButton: false,
         });
-        document.getElementById("login").close();
+      })
+      .finally(() => {
+        setIsLoggingIn(false);
       });
   };
 
   const handleClickLogin = () => {
+    if (isLoggingIn) return;
+
     const accepted = localStorage.getItem("acceptedTerms");
     if (accepted === "true") {
       googleSignUp();
     } else {
       setShowTerms(true);
-      document.getElementById(name).close();
+      // ❌ ไม่ปิด modal ตรงนี้ เพื่อให้ Google popup ขึ้นได้
     }
   };
 
@@ -58,10 +65,13 @@ const Modal = ({ name }) => {
           <img src={logo} alt="DormDeals Logo" className="h-12 mb-6" />
 
           <button
-            className="flex items-center justify-center btn-sign rounded-lg mt-8"
+            className={`flex items-center justify-center btn-sign rounded-lg mt-8 transition-all duration-200 ${
+              isLoggingIn ? "opacity-60 cursor-not-allowed" : ""
+            }`}
             onClick={handleClickLogin}
             data-test="LoginNpru-button"
             type="button"
+            disabled={isLoggingIn}
           >
             <img
               src={universityLogo}
@@ -69,7 +79,7 @@ const Modal = ({ name }) => {
               className="h-16 sm:h-20 mr-3"
             />
             <span className="text-base sm:text-lg font-medium">
-              ลงชื่อเข้าใช้ด้วยอีเมลมหาวิทยาลัย
+              {isLoggingIn ? "กำลังเข้าสู่ระบบ..." : "ลงชื่อเข้าใช้ด้วยอีเมลมหาวิทยาลัย"}
             </span>
           </button>
 

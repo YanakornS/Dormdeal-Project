@@ -347,16 +347,14 @@ exports.closePostAndNotify = async (req, res) => {
   try {
     const { postId } = req.params;
     const sellerId = req.userId;
-    const { buyerIds } = req.body;
+    const { buyerIds } = req.body;  // รับเป็น array
 
-    // ตรวจสอบข้อมูลที่ส่งมา
     if (!buyerIds || !Array.isArray(buyerIds) || buyerIds.length === 0) {
       return res.status(400).json({ 
         message: "กรุณาระบุผู้ซื้ออย่างน้อยหนึ่งคน" 
       });
     }
 
-    // หาโพสต์ที่ต้องการปิดขาย
     const post = await PostModel.findById(postId);
     if (!post) {
       return res.status(404).json({ 
@@ -365,7 +363,6 @@ exports.closePostAndNotify = async (req, res) => {
       });
     }
 
-    // ตรวจสอบว่าเป็นเจ้าของโพสต์
     if (post.owner.toString() !== sellerId) {
       return res.status(403).json({ 
         success: false, 
@@ -373,7 +370,6 @@ exports.closePostAndNotify = async (req, res) => {
       });
     }
 
-    // ตรวจสอบว่าโพสต์ยังไม่ได้ปิดขาย
     if (post.status === "sold") {
       return res.status(400).json({ 
         success: false, 
@@ -381,13 +377,12 @@ exports.closePostAndNotify = async (req, res) => {
       });
     }
 
-    // เปลี่ยนสถานะโพสต์เป็น sold
     post.status = "sold";
     post.buyers = buyerIds;
-    post.buyer = buyerIds[0]; // เก็บผู้ซื้อคนแรก
+    post.buyer = buyerIds[0]; // เก็บผู้ซื้อหลักเป็นคนแรก
     await post.save();
 
-    // แจ้งเตือนเฉพาะผู้ซื้อ
+    // แจ้งเตือนผู้ซื้อทั้งหมด
     const notifications = buyerIds.map(userId => ({
       recipient: userId,
       message: `ยินดีด้วย! คุณได้ซื้อสินค้า "${post.productName}" เรียบร้อยแล้ว กรุณาให้คะแนนผู้ขาย`,
@@ -409,17 +404,16 @@ exports.closePostAndNotify = async (req, res) => {
         productName: post.productName,
         notifiedUsers: buyerIds.length,
         buyers: buyerIds.length,
-        buyerNotifications: buyerIds.length,
       }
     });
   } catch (error) {
-
     return res.status(500).json({ 
       success: false, 
       message: "เกิดข้อผิดพลาด กรุณาลองใหม่" 
     });
   }
 };
+
 
 
 exports.rateSeller = async (req, res) => {
