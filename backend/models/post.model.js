@@ -19,7 +19,6 @@ const PostSchema = new Schema(
       required: true,
     },
     subcategory: { type: mongoose.Schema.Types.ObjectId },
-
     images: {
       type: [String],
       required: true,
@@ -32,6 +31,10 @@ const PostSchema = new Schema(
       type: String,
       enum: ["pending", "confirmed"],
       default: "pending",
+    },
+    slipTransactionRef: {
+      type: String,
+      default: null,
     },
     price: {
       type: Number,
@@ -71,7 +74,7 @@ const PostSchema = new Schema(
       ref: "User",
       default: null,
     },
-    buyers: [{ type: Schema.Types.ObjectId, ref: "User" }] 
+    buyers: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   {
     timestamps: true,

@@ -85,6 +85,7 @@ exports.createPost = async (req, res) => {
 });
     
   } catch (error) {
+    console.log("error", error);
     res.status(500).send({
       message:"เกิดข้อผิดพลาดระหว่างการสร้างโพสต์ กรุณาลองใหม่ภายหลัง",
     });
@@ -95,12 +96,25 @@ exports.uploadPaymentSlip = async (req, res) => {
   try {
     const postId = req.params.id;
 
+    const current = await PostModel.findById(postId).select(
+      "paymentStatus slipTransactionRef"
+    );
+    
+    if (!current) {
+      return res.status(404).json({ message: "ไม่พบโพสต์" });
+    }
+
+    if (current.paymentStatus === "confirmed" || current.slipTransactionRef) {
+      return res.status(409).json({ message: "โพสต์นี้ชำระเงินแล้ว" });
+    }
+
     const updatedPost = await PostModel.findByIdAndUpdate(
       postId,
       {
         slipImageUrl: req.file.firebaseUrl,
         paymentStatus: "confirmed",
         status: "pending_review",
+        slipTransactionRef: req.slipMeta?.transactionRef || null,
       },
       { new: true }
     );
