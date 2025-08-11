@@ -32,7 +32,7 @@ const verifySlipWithEasySlip = async (req, res, next) => {
 
     const data = response?.data?.data;
     const slipTransactionRef = data.transRef;
-
+    
     if (response.status !== 200) {
       return res.status(400).json({ message: "สลิปไม่ถูกต้อง กรุณาลองใหม่" });
     }

@@ -31,6 +31,8 @@ const ApprovePosts = () => {
     }).format(price);
   };
 
+  console.log(postProductDetail);
+
   // ดึงโพสต์จาก backend เมื่อโหลดหน้า
   useEffect(() => {
     const fetchPost = async () => {
@@ -241,9 +243,6 @@ const ApprovePosts = () => {
           <p className="text-sm leading-relaxed mt-2 text-base-800 whitespace-pre-line">
             {postProductDetail.description}
           </p>
-          <p className="text-sm leading-relaxed mt-2 text-base-800 whitespace-pre-line">
-            {postProductDetail.description}
-          </p>
         </div>
 
         {/* Seller Info */}
@@ -264,11 +263,21 @@ const ApprovePosts = () => {
               ดูโปรไฟล์
             </a>
           </div>
-          <button className="mt-4 flex items-center justify-center bg-base-200  px-4 py-2 rounded-2xl w-full border border-base-300 hover:bg-base-300 cursor-pointer">
-            <AiOutlineMessage size={20} className="mr-2" /> แชท
-          </button>
         </div>
       </div>
+
+      {/* SlipImage */}
+      {postProductDetail.slipImageUrl && (
+        <div className="shadow-lg p-6 w-full sm:w-[400px] rounded-2xl mt-6">
+          <h1 className="text-xl mb-4 text-center">หลักฐานการชำระเงิน</h1>
+          <img 
+            src={postProductDetail.slipImageUrl} 
+            alt="หลักฐานการชำระเงิน" 
+            className="w-full h-auto rounded-lg"
+          />
+        </div>
+      )}
+
 
       {/* Lightbox */}
       <Lightbox
@@ -278,11 +287,10 @@ const ApprovePosts = () => {
         index={currentIndex}
         styles={{ container: { backgroundColor: "rgba(0, 0, 0, 0.2)" } }}
       />
-
       <div className="flex bg-base-300 justify-center items-center gap-4 mt-12 p-4 rounded-2xl ">
         {/* ปุ่มไม่ผ่านการตรวจสอบ (ลบ) */}
         <button
-        data-test="post-reject-button"
+          data-test="post-reject-button"
           className="flex items-center cursor-pointer justify-center px-6 py-3 w-full text-base rounded-xl border text-white bg-red-500 border-red-500 hover:bg-red-400 transition-all"
           // onClick={handleRejectPost}
           onClick={() => handleApproveStatus("rejected")}
@@ -293,7 +301,7 @@ const ApprovePosts = () => {
 
         {/* ปุ่มต้องแก้ไข */}
         <button
-        data-test="post-revision-button"
+          data-test="post-revision-button"
           className="flex items-center cursor-pointer justify-center px-6 py-3 w-full text-base rounded-xl text-white bg-gray-700 border-gray-400 hover:bg-gray-400 transition-all"
           onClick={() => handleApproveStatus("needs_revision")}
         >
@@ -303,7 +311,7 @@ const ApprovePosts = () => {
 
         {/* ปุ่มผ่านการตรวจสอบ */}
         <button
-         data-test="post-approve-button"
+          data-test="post-approve-button"
           className="flex items-center cursor-pointer justify-center px-6 py-3 w-full text-base rounded-xl border text-white bg-green-500 border-green-500 hover:bg-green-400 transition-all"
           onClick={() => handleApproveStatus("approved")}
         >
