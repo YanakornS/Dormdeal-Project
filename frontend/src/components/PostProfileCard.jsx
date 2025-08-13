@@ -1,28 +1,26 @@
-import { useState, useEffect, useContext } from "react";
-import { FaHeart, FaRegHeart, FaTrashAlt, FaEdit } from "react-icons/fa";
+import { useState, useContext } from "react";
+import { FaTrashAlt, FaEdit } from "react-icons/fa";
 import { MdOutlineSell } from "react-icons/md";
-import { AuthContext } from "../context/AuthContext"; // ถ้าใช้ context user
+import { AuthContext } from "../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 import PostService from "../services/postproduct.service";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
 import ModalClosePost from "./ModalClosePost";
 
-
-const PostProfileCard = ({ product, onDelete = () => { } }) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const { user } = useContext(AuthContext); // ต้องมี user ถึงเรียกได้
+const PostProfileCard = ({ product, onDelete = () => {} }) => {
+  const { user } = useContext(AuthContext);
   const [showCloseModal, setShowCloseModal] = useState(false);
-
+  const [isVisible, setIsVisible] = useState(true); // เอาไว้ซ่อนการ์ดหลังปิดการขาย
   const navigate = useNavigate();
 
   const handleEditPost = () => {
     navigate(`/updatepost/${product._id}`);
   };
-  const onMarkSoldOut = (product) => {
+
+  const onMarkSoldOut = () => {
     setShowCloseModal(true);
   };
-
 
   const handleDeletePost = async (id) => {
     const result = await Swal.fire({
@@ -38,7 +36,6 @@ const PostProfileCard = ({ product, onDelete = () => { } }) => {
       try {
         await PostService.deletePostByOwner(id);
         Swal.fire("ลบสำเร็จ", "โพสต์ถูกลบแล้ว", "success");
-
         if (typeof onDelete === "function") {
           onDelete();
         }
@@ -61,10 +58,11 @@ const PostProfileCard = ({ product, onDelete = () => { } }) => {
     }).format(price);
   };
 
+  if (!isVisible) return null; // ซ่อนการ์ดออก
+
   return (
     <div className="card shadow-md flex flex-col h-full relative rounded-xl overflow-hidden">
       <Toaster position="bottom-center" />
-
       <figure className="relative">
         <img
           src={product.images}
@@ -72,18 +70,15 @@ const PostProfileCard = ({ product, onDelete = () => { } }) => {
           className="w-full h-56 object-cover"
         />
 
-        {/* โฆษณา */}
         {product.postPaymentType === "Paid" && (
           <span className="badge badge-warning absolute top-2 left-2 text-xs">
             🔥 โฆษณา
           </span>
         )}
 
-        {/* ปุ่มลบ */}
         <button
           onClick={() => handleDeletePost(product._id)}
-          data-test={`icon-delete-post-${product._id}`}
-          className="absolute top-2 right-2 text-black-600  p-1.5 border-1 rounded-lg "
+          className="absolute top-2 right-2 text-black-600 p-1.5 border-1 rounded-lg "
         >
           <FaTrashAlt size={14} />
         </button>
@@ -98,26 +93,24 @@ const PostProfileCard = ({ product, onDelete = () => { } }) => {
           {formatPrice(product.price)}
         </p>
 
-        {/* ปุ่มแก้ไข + ปิดการขาย */}
         <div className="flex justify-between gap-2 mt-3">
           <button
             onClick={handleEditPost}
-            data-test={`icon-edit-post-${product._id}`}
-            className="btn btn-sm btn-outline w-26 rounded-2xl  flex items-center  text-vivid hover:bg-vivid border-vivid hover:text-white justify-center gap-1"
+            className="btn btn-sm btn-outline w-26 rounded-2xl flex items-center text-vivid hover:bg-vivid border-vivid hover:text-white justify-center gap-1"
           >
             <FaEdit size={14} />
             แก้ไข
           </button>
           <button
-            onClick={() => onMarkSoldOut(product)}
-            className="btn btn-sm btn-outline rounded-2xl shadow w-26 flex items-center  text-vivid hover:bg-vivid border-vivid hover:text-white justify-center gap-1"
+            onClick={onMarkSoldOut}
+            className="btn btn-sm btn-outline rounded-2xl shadow w-26 flex items-center text-vivid hover:bg-vivid border-vivid hover:text-white justify-center gap-1"
           >
             <MdOutlineSell size={15} />
             ปิดขาย
           </button>
-
         </div>
       </div>
+
       {showCloseModal && (
         <ModalClosePost
           postId={product._id}
@@ -125,11 +118,10 @@ const PostProfileCard = ({ product, onDelete = () => { } }) => {
           onSuccess={() => {
             setShowCloseModal(false);
             toast.success("ปิดการขายสำเร็จ");
-            // ถ้าต้องการรีเฟรชข้อมูล หรือทำอย่างอื่น สามารถทำที่นี่
+            setIsVisible(false); // ลบการ์ดออกจากหน้าโดยไม่ต้องรีเฟรช
           }}
         />
       )}
-
     </div>
   );
 };

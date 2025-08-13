@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import PostService from "../services/postproduct.service";
+import Swal from "sweetalert2";
 
 const ModalClosePost = ({ postId, onClose, onSuccess }) => {
   const [post, setPost] = useState(null);
@@ -12,7 +13,6 @@ const ModalClosePost = ({ postId, onClose, onSuccess }) => {
       try {
         const postData = await PostService.getPostById(postId);
         const interested = await PostService.getInterestedUsers(postId);
-        console.log("Interested users from API:", interested);
         setPost(postData);
         setInterestedUsers(interested || []);
       } catch (err) {
@@ -33,11 +33,23 @@ const ModalClosePost = ({ postId, onClose, onSuccess }) => {
       alert("กรุณาเลือกผู้ซื้ออย่างน้อยหนึ่งคน");
       return;
     }
+
+    const confirm = await Swal.fire({
+      title: "ยืนยันการปิดการขาย?",
+      text: "คุณต้องการปิดการขายและขายให้ผู้ซื้อที่เลือกใช่หรือไม่",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "ยืนยัน",
+      cancelButtonText: "ยกเลิก",
+    });
+
+    if (!confirm.isConfirmed) return;
+
     try {
       await PostService.closePostAndNotify(postId, {
         buyerIds: [selectedBuyer],
       });
-      if (onSuccess) onSuccess();
+      if (onSuccess) onSuccess(postId); // ส่ง id กลับไปเพื่อลบการ์ด
       onClose();
     } catch (err) {
       console.error(err);
