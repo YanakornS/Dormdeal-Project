@@ -21,33 +21,50 @@ const PostProfileCard = ({ product, onDelete = () => {} }) => {
   const onMarkSoldOut = () => {
     setShowCloseModal(true);
   };
-
-  const handleDeletePost = async (id) => {
-    const result = await Swal.fire({
-      title: "คุณแน่ใจหรือไม่?",
-      text: "โพสต์นี้จะถูกลบแบบถาวร",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "ลบโพสต์",
-      cancelButtonText: "ยกเลิก",
-    });
-
-    if (result.isConfirmed) {
-      try {
-        await PostService.deletePostByOwner(id);
-        Swal.fire("ลบสำเร็จ", "โพสต์ถูกลบแล้ว", "success");
-        if (typeof onDelete === "function") {
-          onDelete();
-        }
-      } catch (err) {
-        Swal.fire(
-          "เกิดข้อผิดพลาด",
-          err.response?.data?.message || err.message,
-          "error"
-        );
+const handleDeletePost = async (id) => {
+  const result = await Swal.fire({
+    title: "คุณแน่ใจหรือไม่?",
+    text: "โพสต์นี้จะถูกลบแบบถาวร",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "ลบโพสต์",
+    cancelButtonText: "ยกเลิก",
+    didOpen: () => {
+      const confirmButton = document.querySelector(".swal2-confirm");
+      if (confirmButton) {
+        confirmButton.setAttribute("data-test", "swal-post-delete");
       }
+    },
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await PostService.deletePostByOwner(id);
+      Swal.fire({
+        title: "ลบสำเร็จ",
+        text: "โพสต์ถูกลบแล้ว",
+        icon: "success",
+        timer: 2500, // ปิดเองใน 2.5 วิ
+        showConfirmButton: false,
+        didOpen: () => {
+          const title = document.querySelector(".swal2-title");
+          if (title) {
+            title.setAttribute("data-test", "swal-post-confirm-delete");
+          }
+        },
+      }).then(() => {
+        navigate("/ManagePostStatus"); 
+      });
+    } catch (err) {
+      Swal.fire(
+        "เกิดข้อผิดพลาด",
+        err.response?.data?.message || err.message,
+        "error"
+      );
     }
-  };
+  }
+};
+
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("th-TH", {
@@ -78,6 +95,7 @@ const PostProfileCard = ({ product, onDelete = () => {} }) => {
 
         <button
           onClick={() => handleDeletePost(product._id)}
+          data-test={`icon-delete-post-${product._id}`}
           className="absolute top-2 right-2 text-black-600 p-1.5 border-1 rounded-lg "
         >
           <FaTrashAlt size={14} />
@@ -96,6 +114,7 @@ const PostProfileCard = ({ product, onDelete = () => {} }) => {
         <div className="flex justify-between gap-2 mt-3">
           <button
             onClick={handleEditPost}
+            data-test={`icon-edit-post-${product._id}`}
             className="btn btn-sm btn-outline w-26 rounded-2xl flex items-center text-vivid hover:bg-vivid border-vivid hover:text-white justify-center gap-1"
           >
             <FaEdit size={14} />
