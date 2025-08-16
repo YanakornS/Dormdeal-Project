@@ -56,4 +56,5 @@ router.get("/owner/:id",
    */
   modController.getPostByOwner
 );
+router.patch("/change-password",authJwt.verifyToken,modController.changePassword)
 module.exports = router;

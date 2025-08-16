@@ -1,4 +1,6 @@
 const PostModel = require("../models/post.model");
+const UserModel = require("../models/user.model");
+const bcrypt = require("bcrypt");
 
 exports.getAllPostsByMod = async (req, res) => {
   try {
@@ -66,6 +68,7 @@ exports.deletePostByMod = async (req, res) => {
   }
 };
 
+
 exports.getPostByOwner = async (req, res) => {
   const { id } = req.params;
 
@@ -126,5 +129,43 @@ exports.reviewPost = async (req, res) => {
     res.status(500).json({
       message: "เกิดข้อผิดพลาดขณะตรวจสอบโพสต์",
     });
+  }
+};
+
+
+
+exports.changePassword = async (req, res) => {
+  try {
+    const userId = req.userId; 
+    const { newPassword } = req.body;
+
+    if (!newPassword) {
+      return res.status(400).json({ message: "กรุณาระบุรหัสผ่านใหม่" });
+    }
+
+    // หา user
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "ไม่พบผู้ใช้" });
+    }
+
+    // ตรวจสอบว่ารหัสผ่านใหม่เหมือนรหัสผ่านเก่าหรือไม่
+    if (user.password) {
+      const isSame = await bcrypt.compare(newPassword, user.password);
+      if (isSame) {
+        return res.status(400).json({ message: "รหัสผ่านใหม่ต้องไม่ซ้ำกับรหัสผ่านเก่า" });
+      }
+    }
+
+    // hash รหัสผ่านใหม่
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    // บันทึกลง DB
+    await user.save();
+
+    return res.status(200).json({ message: "เปลี่ยนรหัสผ่านเรียบร้อยแล้ว" });
+  } catch (error) {
+    return res.status(500).json({ message: "เกิดข้อผิดพลาด", error: error.message });
   }
 };

@@ -107,31 +107,3 @@ exports.updatePhotoByEmail = async (req, res) => {
 };
 
 
-exports.changePassword = async (req, res) => {
-  try {
-    const userId = req.userId; 
-    const { newPassword } = req.body;
-
-    if (!newPassword) {
-      return res.status(400).json({ message: "กรุณาระบุรหัสผ่านใหม่" });
-    }
-
-    // หา user
-    const user = await UserModel.findById(userId);
-    if (!user) {
-      return res.status(404).json({ message: "ไม่พบผู้ใช้" });
-    }
-
-    // hash รหัสผ่านใหม่
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(newPassword, salt);
-
-    // บันทึกลง DB
-    await user.save();
-
-    return res.status(200).json({ message: "เปลี่ยนรหัสผ่านเรียบร้อยแล้ว" });
-  } catch (error) {
-    return res.status(500).json({ message: "เกิดข้อผิดพลาด", error: error.message });
-  }
-};
-
