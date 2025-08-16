@@ -89,13 +89,25 @@ exports.updateCategory = async (req, res) => {
 exports.deleteCategory = async (req, res) => {
   const { id } = req.params;
   try {
-    const category = await MainCategory.findByIdAndDelete(id);
+    // หา category ก่อน
+    const category = await MainCategory.findById(id);
     if (!category) {
       return res.status(404).json({ message: "ไม่พบหมวดหมู่ที่ระบุ" });
     }
-    return res.status(200).send({ message: "ลบหมวดหมู่เรียบร้อยแล้ว" });
+
+    // เช็คว่ามี subCategories หรือไม่
+    if (category.subCategories && category.subCategories.length > 0) {
+      return res.status(400).json({
+        message: "ไม่สามารถลบหมวดหมู่นี้ได้ เพราะมีหมวดย่อยอยู่"
+      });
+    }
+
+    // ถ้าไม่มี subCategories จึงลบได้
+    await MainCategory.findByIdAndDelete(id);
+
+    return res.status(200).json({ message: "ลบหมวดหมู่เรียบร้อยแล้ว" });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "เกิดข้อผิดพลาดระหว่างการลบหมวดหมู่",
       error: error.message,
     });

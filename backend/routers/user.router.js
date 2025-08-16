@@ -31,6 +31,9 @@ router.put("/photo",
    */
   userController.updatePhotoByEmail
 );
+router.patch("/:userId/change-password",
+  userController.changePassword
+)
 
 
 module.exports = router;
