@@ -7,28 +7,32 @@ const secret = process.env.SECRET;
 
 exports.sign = async (req, res) => {
   const { email, password } = req.body;
+
   if (!email) {
-    return res.status(400).json({ message: "Email is required to sign in" });
+    return res.status(400).json({ message: "กรุณาระบุอีเมล" });
   }
 
   const user = await UserModel.findOne({ email });
   if (!user) {
-    return res.status(404).json({ message: "Email is not found" });
+    return res.status(404).json({ message: "ไม่พบอีเมลนี้" });
   }
 
-  //#OXE ตรวจสอบรหัสผ่านยังไมได้ใช้ bcrypt
-  // if (user.role === "mod") {
-  //   if (!password) {
-  //     return res.status(400).json({ message: "Password is required for moderators" });
-  //   }
-  //   //hasspassword ว่าตรงกับใน DB ไหม
-  //   const isPasswordValid = bcrypt.compareSync(password, user.password);
-  //   if (!isPasswordValid) {
-  //     return res.status(401).json({ message: "Invalid password" });
-  //   }
-  // }
+  // ถ้าผู้ใช้มีรหัสผ่าน
+  if (user.password) {
+    if (!password) {
+      return res.status(400).json({ message: "กรุณาระบุรหัสผ่าน" });
+    }
 
-  //ข้อมูลที่ต้องการส่งไปยัง JWT
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "รหัสผ่านไม่ถูกต้อง" });
+    }
+  } else {
+    // กรณีผู้ใช้ OAuth login ไม่มี password
+    return res.status(400).json({ message: "บัญชีนี้ใช้ OAuth โปรดเข้าสู่ระบบด้วย Google" });
+  }
+
+  // สร้าง JWT
   const token = jwt.sign(
     {
       id: user._id,
@@ -38,21 +42,21 @@ exports.sign = async (req, res) => {
       photoURL: user.photoURL,
     },
     secret,
-    {
-      expiresIn: "24h",
-    }
+    { expiresIn: "24h" }
   );
 
   const userInfo = {
-    token: token,
+    token,
     email: user.email,
     _id: user._id,
     role: user.role,
     displayName: user.displayName,
     photoURL: user.photoURL,
   };
+
   res.status(200).json(userInfo);
 };
+
 
 exports.addUser = async (req, res) => {
   try {
@@ -105,7 +109,7 @@ exports.updatePhotoByEmail = async (req, res) => {
 
 exports.changePassword = async (req, res) => {
   try {
-    const { userId } = req.params; 
+    const userId = req.userId; 
     const { newPassword } = req.body;
 
     if (!newPassword) {
@@ -127,7 +131,6 @@ exports.changePassword = async (req, res) => {
 
     return res.status(200).json({ message: "เปลี่ยนรหัสผ่านเรียบร้อยแล้ว" });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ message: "เกิดข้อผิดพลาด", error: error.message });
   }
 };
