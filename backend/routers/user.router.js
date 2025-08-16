@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/user.controller");
+const authJwt = require("../middlewares/auth.middleware");
 
 // ลงชื่อเข้าใช้
 router.post("/sign",
@@ -31,8 +32,9 @@ router.put("/photo",
    */
   userController.updatePhotoByEmail
 );
-router.patch("/:userId/change-password",
-  userController.changePassword
+router.patch("/change-password",
+   authJwt.verifyToken
+  ,userController.changePassword
 )
 
 
