@@ -18,6 +18,7 @@ const Index = () => {
 
   const { id } = useParams();
 
+  // ตรวจสอบผู้ใช้
   useEffect(() => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -53,12 +54,10 @@ const Index = () => {
       if (!id) return;
       try {
         const res = await RatingService.getSellerRatings(id);
-        const ratings = res.data?.data?.ratings || [];
+        const avgRating = res.data?.data?.stats?.averageRating;
 
-        if (ratings.length > 0) {
-          const avg =
-            ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length;
-          setAverageRating(avg.toFixed(1));
+        if (avgRating !== undefined && avgRating !== null) {
+          setAverageRating(avgRating);
         } else {
           setAverageRating("ยังไม่มีคะแนน");
         }
@@ -102,7 +101,7 @@ const Index = () => {
           <span className="flex items-center justify-center md:justify-start">
             <LuStar />
             <span className="ml-2">
-              คะแนนเรทติ้ง : {averageRating || "กำลังโหลด..."}
+              คะแนนเรทติ้ง : {averageRating ?? "กำลังโหลด..."}
             </span>
           </span>
         </div>
