@@ -1,8 +1,8 @@
 import api from "./api";
 const API_URL = "/user";
 
-const signJwt = async (email, displayName, photoURL) => {
-  return await api.post(`${API_URL}/sign`, {email, displayName, photoURL});
+const signJwt = async (idToken) => {
+  return await api.post(`${API_URL}/sign`, { idToken });
 };
 
 const addUser = async (email, displayName, photoURL) => {

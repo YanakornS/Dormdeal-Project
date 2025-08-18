@@ -32,7 +32,6 @@ const AuthProvider = ({ children }) => {
     const socketURL = import.meta.env.VITE_SOCKET_URL;
     const newSocket = io(socketURL, {
       query: { userId }, // ส่ง userId ไป backend
-      transports: ["websocket"],
     });
 
     newSocket.on("connect", () => {
@@ -51,44 +50,43 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // Login & Register With Google
-  const loginWithGoogle = async () => {
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ hd: "webmail.npru.ac.th" });
+ // Login & Register With Google
+ const loginWithGoogle = async () => {
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ hd: "webmail.npru.ac.th" });
 
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      const { email, displayName, photoURL } = user;
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const firebaseUser = result.user;
+    const { email, displayName, photoURL } = firebaseUser;
 
-      if (!email.endsWith("@webmail.npru.ac.th")) {
-        await signOut(auth);
-        throw new Error("กรุณาใช้บัญชีอีเมลมหาวิทยาลัยในการเข้าสู่ระบบ");
-      }
-
-      await UserService.addUser(email, displayName, photoURL);
-
-      const jwtResponse = await UserService.signJwt(
-        email,
-        displayName,
-        photoURL
-      );
-
-      const userData = jwtResponse.data;
-
-      // Set Cookies + Connect Socket
-      if (userData) {
-        cookies.set("user", userData, {
-          path: "/",
-          maxAge: 60 * 60 * 24, // 1 day
-        });
-
-        connectSocket(userData.id);
-      }
-    } catch (error) {
-      console.log("Login failed:", error);
+    if (!email.endsWith("@webmail.npru.ac.th")) {
+      await signOut(auth);
+      throw new Error("กรุณาใช้บัญชีอีเมลมหาวิทยาลัยในการเข้าสู่ระบบ");
     }
-  };
+
+    await UserService.addUser(email, displayName, photoURL);
+
+    const idToken = await firebaseUser.getIdToken();
+    console.log("idToken", idToken);
+
+    const jwtResponse = await UserService.signJwt(idToken);
+
+    const userData = jwtResponse.data;
+
+    // Set Cookies + Connect Socket
+    if (userData) {
+      cookies.set("user", userData, {
+        path: "/",
+        maxAge: 60 * 60 * 24, // 1 day
+      });
+
+      connectSocket(userData._id);
+    }
+  } catch (error) {
+    console.log("Login failed:", error);
+  }
+};
 
 // const loginMod = async (email, password) => {
 //   try {

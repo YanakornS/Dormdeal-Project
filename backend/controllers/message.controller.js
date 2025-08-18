@@ -4,7 +4,6 @@ const cloudinary = require("../libs/cloudinary.js");
 const { getReceiverSocketId, io } = require("../libs/socket.js");
 
 exports.sendMessage = async (req, res) => {
-  console.log("sendMessage called!!!!!!!!!")
   try {
     const { id: receiverId } = req.params;
     if (!receiverId) {

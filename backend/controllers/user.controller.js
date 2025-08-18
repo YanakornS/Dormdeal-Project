@@ -1,88 +1,89 @@
-const bcrypt = require("bcrypt");
 const UserModel = require("../models/user.model");
-const salt = bcrypt.genSaltSync(10);
-const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const secret = process.env.SECRET;
+const jwt = require("jsonwebtoken");
+const admin = require("../configs/firebase.admin.config");
 
 exports.sign = async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email) {
-    return res.status(400).json({ message: "กรุณาระบุอีเมล" });
+  const { idToken } = req.body;
+  if (!idToken) {
+    return res.status(400).json({ message: "idToken is required" });
   }
 
-  const user = await UserModel.findOne({ email });
-  if (!user) {
-    return res.status(404).json({ message: "ไม่พบอีเมลนี้" });
-  }
+  try {
+    // verify Firebase ID token
+    const decoded = await admin.auth().verifyIdToken(idToken);
 
-  // ถ้าผู้ใช้มีรหัสผ่าน
-  // if (user.password) {
-  //   if (!password) {
-  //     return res.status(400).json({ message: "กรุณาระบุรหัสผ่าน" });
-  //   }
+    // ดึง email จาก token ของ Firebase
+    const email = decoded.email;
+    const displayName = decoded.name;
+    const photoURL = decoded.picture;
 
-  //   const isPasswordValid = await bcrypt.compare(password, user.password);
-  //   if (!isPasswordValid) {
-  //     return res.status(401).json({ message: "รหัสผ่านไม่ถูกต้อง" });
-  //   }
-  // } else {
-  //   // กรณีผู้ใช้ OAuth login ไม่มี password
-  //   return res.status(400).json({ message: "บัญชีนี้ใช้ OAuth โปรดเข้าสู่ระบบด้วย Google" });
-  // }
+    // หาผู้ใช้ใน database
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Email is not found" });
+    }
 
-  // สร้าง JWT
-  const token = jwt.sign(
-    {
-      id: user._id,
+    // ออก JWT ของระบบ
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+      },
+      secret,
+      { expiresIn: "24h" }
+    );
+
+    const userInfo = {
+      token,
+      _id: user._id,
       email: user.email,
       role: user.role,
       displayName: user.displayName,
       photoURL: user.photoURL,
-    },
-    secret,
-    { expiresIn: "24h" }
-  );
+    };
 
-  const userInfo = {
-    token,
-    email: user.email,
-    _id: user._id,
-    role: user.role,
-    displayName: user.displayName,
-    photoURL: user.photoURL,
-  };
-
-  res.status(200).json(userInfo);
+    return res.status(200).json(userInfo);
+  } catch (error) {
+    console.error("Sign error:", error);
+    return res.status(401).json({ message: "Invalid Firebase token" });
+  }
 };
-
 
 exports.addUser = async (req, res) => {
   try {
     const { email, displayName, photoURL, role } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ message: "กรุณาระบุอีเมล" });
+    if (!email || !displayName || !photoURL) {
+      return res.status(400).json({ message: "Email, displayName, photoURL are required" });
     }
 
     const existedUser = await UserModel.findOne({ email });
     if (existedUser) {
-      return res.status(200).json({ message: "มีผู้ใช้นี้อยู่ในระบบแล้ว" });
+      return res.status(200).json({ message: "User already exists" });
     }
 
     const newUser = new UserModel({ displayName, email, photoURL, role });
     await newUser.save();
 
-    res.status(201);
-  } catch (error) {
-    res.status(500).json({
-      message: "เกิดข้อผิดพลาดขณะเพิ่มผู้ใช้ใหม่",
-      error: error.message,
+    res.status(201).json({
+      message: "Add user successfully",
+      user: {
+        email: newUser.email,
+        displayName: newUser.displayName,
+        photoURL: newUser.photoURL,
+        role: newUser.role,
+      },
     });
+  } catch (error) {
+    console.error("Add user error:", error);
+    return res.status(401).json({ message: "Add user failed" });
   }
 };
-
 
 // ตัวอย่าง updatePhotoURL controller
 exports.updatePhotoByEmail = async (req, res) => {
