@@ -44,7 +44,7 @@ exports.createPost = async (req, res) => {
 
     const userPostCount = await PostModel.countDocuments({
     owner,
-    postStatus: { $in: ["pending_review", "approved", "needs_revision"] }
+    status: { $in: ["pending_review", "approved", "needs_revision"] }
 });
   if (userPostCount >= 5) {
   return res.status(403).json({
@@ -328,10 +328,10 @@ exports.getInterestedUsers = async (req, res) => {
         interestedUsers.push({
           userId: msg.senderId._id,
           displayName: msg.senderId.displayName,
-          // photoURL: msg.senderId.photoURL,
-          // rating: msg.senderId.rating,
-          // lastMessage: msg.text || 'ส่งรูปภาพ',
-          // lastMessageTime: msg.createdAt
+          photoURL: msg.senderId.photoURL,
+          rating: msg.senderId.rating,
+          lastMessage: msg.text || 'ส่งรูปภาพ',
+          lastMessageTime: msg.createdAt
         });
       }
     });
@@ -361,8 +361,7 @@ exports.closePostAndNotify = async (req, res) => {
   try {
     const { postId } = req.params;
     const sellerId = req.userId;
-    const { buyerIds } = req.body;  // รับเป็น array
-
+    const { buyerIds } = req.body; 
     if (!buyerIds || !Array.isArray(buyerIds) || buyerIds.length === 0) {
       return res.status(400).json({ 
         message: "กรุณาระบุผู้ซื้ออย่างน้อยหนึ่งคน" 
