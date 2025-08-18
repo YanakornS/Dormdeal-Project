@@ -18,19 +18,19 @@ exports.sign = async (req, res) => {
   }
 
   // ถ้าผู้ใช้มีรหัสผ่าน
-  if (user.password) {
-    if (!password) {
-      return res.status(400).json({ message: "กรุณาระบุรหัสผ่าน" });
-    }
+  // if (user.password) {
+  //   if (!password) {
+  //     return res.status(400).json({ message: "กรุณาระบุรหัสผ่าน" });
+  //   }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ message: "รหัสผ่านไม่ถูกต้อง" });
-    }
-  } else {
-    // กรณีผู้ใช้ OAuth login ไม่มี password
-    return res.status(400).json({ message: "บัญชีนี้ใช้ OAuth โปรดเข้าสู่ระบบด้วย Google" });
-  }
+  //   const isPasswordValid = await bcrypt.compare(password, user.password);
+  //   if (!isPasswordValid) {
+  //     return res.status(401).json({ message: "รหัสผ่านไม่ถูกต้อง" });
+  //   }
+  // } else {
+  //   // กรณีผู้ใช้ OAuth login ไม่มี password
+  //   return res.status(400).json({ message: "บัญชีนี้ใช้ OAuth โปรดเข้าสู่ระบบด้วย Google" });
+  // }
 
   // สร้าง JWT
   const token = jwt.sign(

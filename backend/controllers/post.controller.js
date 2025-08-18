@@ -7,7 +7,7 @@ const RatingModel = require("../models/rating.model");
 
 //createPost
 exports.createPost = async (req, res) => {
-  if (!req.files || !req.files.length) {
+  if (!req.fileUrls || req.fileUrls.length === 0) {
     return res.status(400).json({ message: "กรุณาอัปโหลดรูปภาพประกอบโพสต์" });
   }
 
