@@ -8,8 +8,6 @@ import { MdOutlineSupportAgent } from "react-icons/md";
 const AdminProfileMenu = () => {
   const { user, logout, getUser, isLoading } = useContext(AuthContext);
   const userInfo = getUser();
-  console.log("Admin User:", user);
-  console.log("Admin Role:", user?.role);
 
   const handleLogout = () => {
     logout();

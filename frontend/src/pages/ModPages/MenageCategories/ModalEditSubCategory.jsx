@@ -12,7 +12,7 @@ const ModalEditSubCategory = ({ isOpen, onClose, onConfirm, subCategory }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-20 backdrop-blur-sm">
-      <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md shadow-lg">
+      <div className="bg-base-100 rounded-lg p-6 w-full max-w-md shadow-lg relative">
         <h3 className="text-xl font-semibold mb-4">แก้ไขหมวดย่อย</h3>
         <input
           type="text"
@@ -21,15 +21,16 @@ const ModalEditSubCategory = ({ isOpen, onClose, onConfirm, subCategory }) => {
           onChange={(e) => setName(e.target.value)}
         />
         <div className="flex justify-end gap-2">
+          <button onClick={onClose} className="btn btn-ghost">
+            ยกเลิก
+          </button>
           <button
             onClick={() => onConfirm(name)}
             className="btn btn-success"
           >
             บันทึก
           </button>
-          <button onClick={onClose} className="btn btn-ghost">
-            ยกเลิก
-          </button>
+          
         </div>
       </div>
     </div>

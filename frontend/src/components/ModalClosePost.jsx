@@ -49,7 +49,7 @@ const ModalClosePost = ({ postId, onClose, onSuccess }) => {
       await PostService.closePostAndNotify(postId, {
         buyerIds: [selectedBuyer],
       });
-      if (onSuccess) onSuccess(postId); // ส่ง id กลับไปเพื่อลบการ์ด
+      if (onSuccess) onSuccess(postId); // ส่ง id กลับไปเพื่อซ่อนสินค้า
       onClose();
     } catch (err) {
       console.error(err);

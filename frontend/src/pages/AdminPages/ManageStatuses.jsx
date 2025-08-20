@@ -13,10 +13,9 @@ const statusLabels = {
 const ManageStatuses = () => {
   const [users, setUsers] = useState([]);
   const [cookies] = useCookies(["token"]);
-
   const [filterStatus, setFilterStatus] = useState("ทั้งหมด");
-
   const [currentPage, setCurrentPage] = useState(1);
+
   const usersPerPage = 10;
 
   const filteredUsers =
@@ -26,6 +25,7 @@ const ManageStatuses = () => {
 
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
   const startIndex = (currentPage - 1) * usersPerPage;
+
   const currentUsers = filteredUsers.slice(
     startIndex,
     startIndex + usersPerPage
@@ -95,6 +95,34 @@ const ManageStatuses = () => {
     }
   };
 
+  const showStatusChangeAlert = (user) => {
+    const statusKey = user.userStatus || "normal";
+    Swal.fire({
+      title: `แก้ไขสถานะของ ${user.displayName || user.email}`,
+      input: "select",
+      inputOptions: {
+        normal: "ปกติ",
+        Banned: "ถูกแบน",
+        outof: "พ้นสภาพ",
+      },
+      inputValue: statusKey,
+      showCancelButton: true,
+      confirmButtonText: "อัปเดตสถานะ",
+      cancelButtonText: "ยกเลิก",
+      inputValidator: (value) => {
+        if (!value) return "กรุณาเลือกสถานะ";
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed && result.value !== statusKey) {
+        handleStatusChange(
+          user._id,
+          result.value,
+          user.displayName || user.email
+        );
+      }
+    });
+  };
+
   const handlePrev = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
@@ -108,7 +136,6 @@ const ManageStatuses = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-3xl font-bold">จัดการสถานะผู้ใช้งานระบบ</h2>
 
-        {/* Filter สถานะบัญชี */}
         <select
           data-test="filter-status-select"
           className="border rounded px-3 py-2 text-base"
@@ -175,38 +202,8 @@ const ManageStatuses = () => {
                     <td className="px-4 py-3">
                       <button
                         data-test={`edit-status-btn-${user._id}`}
-                        onClick={() =>
-                          Swal.fire({
-                            title: `แก้ไขสถานะของ ${
-                              user.displayName || user.email
-                            }`,
-                            input: "select",
-                            inputOptions: {
-                              normal: "ปกติ",
-                              Banned: "ถูกแบน",
-                              outof: "พ้นสภาพ",
-                            },
-                            inputValue: statusKey,
-                            showCancelButton: true,
-                            confirmButtonText: "อัปเดตสถานะ",
-                            cancelButtonText: "ยกเลิก",
-                            inputValidator: (value) => {
-                              if (!value) return "กรุณาเลือกสถานะ";
-                            },
-                          }).then(async (result) => {
-                            if (
-                              result.isConfirmed &&
-                              result.value !== statusKey
-                            ) {
-                              handleStatusChange(
-                                user._id,
-                                result.value,
-                                user.displayName || user.email
-                              );
-                            }
-                          })
-                        }
-                        className="btn rounded-xl border-blue-500  text-base text-blue-500 font-medium px-4 py-2 "
+                        onClick={() => showStatusChangeAlert(user)}
+                        className="btn rounded-xl border-blue-500 text-base text-blue-500 font-medium px-4 py-2 "
                       >
                         แก้ไขสถานะบัญชี
                       </button>
@@ -222,7 +219,7 @@ const ManageStatuses = () => {
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-6">
           <button
-          data-test="pagination-prev"
+            data-test="pagination-prev"
             onClick={handlePrev}
             disabled={currentPage === 1}
             className={`p-2 rounded-full ${
@@ -237,7 +234,7 @@ const ManageStatuses = () => {
             หน้า {currentPage} / {totalPages}
           </span>
           <button
-          data-test="pagination-next"
+            data-test="pagination-next"
             onClick={handleNext}
             disabled={currentPage === totalPages}
             className={`p-2 rounded-full ${

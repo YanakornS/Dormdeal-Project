@@ -1,5 +1,3 @@
-import React from "react";
-
 const ModalEditMainCategory = ({
   isOpen,
   name,
@@ -15,10 +13,9 @@ const ModalEditMainCategory = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-base-200/50">
-  <div className="bg-base-100 rounded-lg p-6 w-full max-w-md shadow-lg relative">
+      <div className="bg-base-100 rounded-lg p-6 w-full max-w-md shadow-lg relative">
         <h2 className="text-xl font-bold mb-4">แก้ไขหมวดหมู่หลัก</h2>
 
-        {/* input ชื่อหมวดหมู่ */}
         <input
           type="text"
           className="input input-bordered w-full mb-4"
@@ -27,7 +24,6 @@ const ModalEditMainCategory = ({
           onChange={(e) => onChangeName(e.target.value)}
         />
 
-        {/* input รูปภาพใหม่ */}
         <input
           type="file"
           accept="image/*"
@@ -35,7 +31,6 @@ const ModalEditMainCategory = ({
           onChange={(e) => onChangeImage(e.target.files[0])}
         />
 
-        {/* preview รูป */}
         {image && (
           <div className="mt-2">
             <img
@@ -49,7 +44,6 @@ const ModalEditMainCategory = ({
           </div>
         )}
 
-        {/* ปุ่ม action */}
         <div className="flex justify-end gap-2 mt-6">
           <button className="btn btn-ghost" onClick={onClose}>
             ยกเลิก

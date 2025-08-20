@@ -28,6 +28,7 @@ const StarRating = ({ postId, initialRating = 0, onRated }) => {
         showConfirmButton: false,
       });
 
+      // แจ้งให้ NotificationModal ทราบว่าการให้คะแนนสำเร็จ
       if (onRated) {
         onRated(selectedRating, res.data?.data?.sellerNewRating);
       }
