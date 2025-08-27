@@ -593,6 +593,8 @@ const Index = () => {
               {/* ปุ่ม submit */}
               <div className="mt-6 flex justify-center items-center w-full">
                 <button
+                  type="button"
+                  data-test="cancel-post"
                   onClick={handleCancel}
                   className="cursor-pointer transition-all duration-300 text-red-500 items-center justify-center flex border-red-500 hover:bg-red-500 hover:text-white border-2 rounded-xl text-lg w-48 h-18 m-2"
                 >
