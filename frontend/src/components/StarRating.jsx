@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 const StarRating = ({ postId, initialRating = 0, onRated }) => {
   const [selectedRating, setSelectedRating] = useState(initialRating);
   const [loading, setLoading] = useState(false);
+  const [rated, setRated] = useState(false);
 
   const handleConfirm = async () => {
     if (!selectedRating) {
@@ -17,34 +18,30 @@ const StarRating = ({ postId, initialRating = 0, onRated }) => {
 
     try {
       setLoading(true);
-      const res = await PostService.rateSeller(postId, {
-        rating: selectedRating,
-      });
+      await PostService.rateSeller(postId, { rating: selectedRating });
+      setRated(true);
 
+      if (onRated) onRated(postId);
+      
       Swal.fire({
         icon: "success",
         title: `คุณให้ ${selectedRating} คะแนนสำเร็จ!`,
         timer: 1500,
         showConfirmButton: false,
       });
-
-      // แจ้งให้ NotificationModal ทราบว่าการให้คะแนนสำเร็จ
-      if (onRated) {
-        onRated(selectedRating, res.data?.data?.sellerNewRating);
-      }
     } catch (err) {
       console.error("Error rating seller:", err);
-      const msg =
-        err.response?.data?.message || "ไม่สามารถให้คะแนนได้ กรุณาลองใหม่";
       Swal.fire({
         icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: msg,
+        title: "ไม่สามารถให้คะแนนได้",
+        text: err.response?.data?.message || "กรุณาลองใหม่",
       });
     } finally {
       setLoading(false);
     }
   };
+
+  if (rated) return <div className="text-green-600 font-medium">คุณให้คะแนนแล้ว</div>;
 
   return (
     <div className="flex items-center justify-between mt-2 gap-4">
