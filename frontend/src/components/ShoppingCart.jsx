@@ -3,8 +3,8 @@ import ProductCard from "./ProductCard";
 import PostService from "../services/postproduct.service";
 import MainCategoryService from "../services/mainCategory.service";
 import { useLocation } from "react-router";
-
 import { LuPackageSearch } from "react-icons/lu";
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
 const ShoppingCart = () => {
   const [products, setProducts] = useState([]);
@@ -15,7 +15,11 @@ const ShoppingCart = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSort, setSelectedSort] = useState("");
   const [selectedCondition, setSelectedCondition] = useState("");
+  const [currentPage, setCurrentPage] = useState(1); // สำหรับ Pagination
+
   const location = useLocation();
+
+  const productsPerPage = 25; // 5 แถว x 5 สินค้า
 
   // --- ดึง Products ---
   useEffect(() => {
@@ -48,7 +52,7 @@ const ShoppingCart = () => {
     const queryParams = new URLSearchParams(location.search);
     const categoryParam = queryParams.get("category");
     setSelectedCategory(categoryParam || "");
-    setSelectedSubCategory(""); // Reset subcategory ทุกครั้งที่เลือกหมวดหมู่หลักใหม่
+    setSelectedSubCategory("");
     setSearchQuery("");
     setSelectedSort("");
     setSelectedCondition("");
@@ -63,10 +67,10 @@ const ShoppingCart = () => {
     }
     const found = categories.find((c) => c._id === selectedCategory);
     setSubCategories(found?.subCategories || []);
-    setSelectedSubCategory(""); // reset
+    setSelectedSubCategory("");
   }, [selectedCategory, categories]);
 
-  // --- Filter ---
+  // --- Filter + Sort ---
   const getFilteredAndSortedProducts = () => {
     let result = [...products];
 
@@ -74,25 +78,28 @@ const ShoppingCart = () => {
     if (selectedCategory) {
       result = result.filter((p) => p.category?._id === selectedCategory);
     }
+
     // Filter by sub category
     if (selectedSubCategory) {
       result = result.filter((p) =>
-        // กรณี p.subcategory เป็น object หรือ id
         typeof p.subcategory === "string"
           ? p.subcategory === selectedSubCategory
           : p.subcategory?._id === selectedSubCategory
       );
     }
+
     // Filter by condition
     if (selectedCondition) {
       result = result.filter((p) => p.condition === selectedCondition);
     }
+
     // Search
     if (searchQuery) {
       result = result.filter((p) =>
         p.productName?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
+
     // Sort
     if (selectedSort === "newest") {
       result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -105,10 +112,27 @@ const ShoppingCart = () => {
     } else if (selectedSort === "za") {
       result.sort((a, b) => b.productName.localeCompare(a.productName));
     }
+
     return result;
   };
 
   const filteredProducts = getFilteredAndSortedProducts();
+
+  // --- Pagination Logic ---
+  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+  const startIndex = (currentPage - 1) * productsPerPage;
+  const currentProducts = filteredProducts.slice(
+    startIndex,
+    startIndex + productsPerPage
+  );
+
+  const handlePrev = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
 
   const handleClearFilters = () => {
     setSearchQuery("");
@@ -116,6 +140,7 @@ const ShoppingCart = () => {
     setSelectedCondition("");
     setSelectedCategory("");
   };
+
   return (
     <div className="section-container pt-14">
       {/* Filter + Search */}
@@ -163,38 +188,71 @@ const ShoppingCart = () => {
 
           <button
             onClick={handleClearFilters}
-            className="btn  rounded-lg w-full sm:w-auto "
+            className="btn rounded-lg w-full sm:w-auto "
           >
             ล้างค่า
           </button>
         </div>
 
         {/* ค้นหา */}
-        <div className="w-full sm:w-auto rounded-3xl  ">
+        <div className="w-full sm:w-auto rounded-3xl">
           <input
             type="text"
             placeholder="ค้นหาสินค้า..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="input input-bordered w-full sm:w-64 rounded-3xl "
+            className="input input-bordered w-full sm:w-64 rounded-3xl"
           />
         </div>
       </div>
 
       {/* รายการสินค้า */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
+        {currentProducts.length > 0 ? (
+          currentProducts.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))
         ) : (
-          <div className="col-span-full  text-center   text-gray-500 min-h-[40vh] flex flex-col items-center justify-center">
+          <div className="col-span-full text-center text-gray-500 min-h-[40vh] flex flex-col items-center justify-center">
             <LuPackageSearch className="text-gray-700 mb-4" size={64} />
             <h4 className="text-lg font-bold text-gray-600">ไม่พบผลการค้นหา</h4>
             <p>ลองใช้คำอื่นที่แตกต่างหรือคำอื่นที่มีความหมายกว่านี้</p>
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <button
+            onClick={handlePrev}
+            disabled={currentPage === 1}
+            className={`p-2 rounded-full ${
+              currentPage === 1
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-base-200 hover:bg-base-300"
+            }`}
+          >
+            <IoChevronBack size={20} />
+          </button>
+
+          <span className="text-base">
+            หน้า {currentPage} / {totalPages}
+          </span>
+
+          <button
+            onClick={handleNext}
+            disabled={currentPage === totalPages}
+            className={`p-2 rounded-full ${
+              currentPage === totalPages
+                ? "bg-gray-300 cursor-not-allowed"
+                : "bg-base-200 hover:bg-base-300"
+            }`}
+          >
+            <IoChevronForward size={20} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
