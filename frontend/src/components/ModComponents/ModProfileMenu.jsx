@@ -76,7 +76,7 @@ const ModProfileMenu = () => {
           >
             <CiUser className="w-6 h-6" />
             <span className="hidden lg:inline truncate">
-              {user?.displayName || "ผู้ใช้"}
+              {userInfo?.displayName || "ผู้ใช้"}
             </span>
           </div>
 

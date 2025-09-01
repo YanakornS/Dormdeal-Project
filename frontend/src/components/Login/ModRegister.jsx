@@ -1,15 +1,9 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
-import AdminService from "../../services/admin.service";
-import {
-  createUserWithEmailAndPassword,
-  updateProfile,
-  signOut,
-} from "firebase/auth";
-import secondaryAuth from "../../configs/firebase.secondary";
+import { AuthContext } from "../../context/AuthContext";
 
-//imaport icon
+//import icon
 import { FaUserPen } from "react-icons/fa6";
 import { MdOutlineMarkEmailRead } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
@@ -19,80 +13,44 @@ const ModRegister = () => {
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [password, setPassword] = useState("");
+  const { createUserWithEmailAndPasswordHandler } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
     try {
-      //  ใช้ secondaryAuth เพื่อไม่ให้เปลี่ยน user ปัจจุบัน
-
-      //auth.currentUser จะ เปลี่ยนกลายเป็น user ใหม่ ทันที  ทำให้คุณ (admin/mod ที่กำลัง login อยู่) หลุดออกจากระบบ ซึ่งไม่ใช่สิ่งที่ต้องการ
-      //แต่เมื่อใช้ secondaryAuth จาก:มันจะ สร้างผู้ใช้ใหม่แบบแยก session → แล้วคุณก็ signOut เฉพาะ secondaryAuth ทิ้งได้ โดยไม่แตะ session หลักของ admin/mod ที่กำลังใช้งานอยู่
-      const userCredential = await createUserWithEmailAndPassword(
-        secondaryAuth,
+      const result = await createUserWithEmailAndPasswordHandler(
         email,
-        password
-      ); //สร้าง user ใหม่แบบไม่กระทบ session ปัจจุบัน
-      const firebaseUser = userCredential.user;
-
-      await updateProfile(firebaseUser, { displayName });
-
-      //  เพิ่มเข้า backend
-      await AdminService.createMod({ email, password, displayName });
-
-      //  signOut เฉพาะจาก secondaryAuth เหมือนเป็นตัวเเทนในการcurrentUser ทำให้หลุด login
-      await signOut(secondaryAuth);
-
-      await Swal.fire({
-        icon: "success",
-        title: "เพิ่มผู้ดูแลระบบสำเร็จ!",
-        text: `เจ้าหน้าที่ ${displayName} ถูกเพิ่มเรียบร้อยแล้ว`,
-        timer: 2000,
-        showConfirmButton: false,
-      });
-
-      // ล้างฟอร์ม
-      setEmail("");
-      setPassword("");
-      setDisplayName("");
+        password,
+        displayName
+      );
+      if (result.success) {
+        Swal.fire({
+          icon: "success",
+          title: "สมัครสมาชิกสำเร็จ",
+          text: "สามารถเข้าสู่ระบบผู้ดูแลระบบได้แล้ว",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        setEmail("");
+        setPassword("");
+        setDisplayName("");
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "สมัครสมาชิกไม่สำเร็จ",
+          text: result.error || "ไม่สามารถสร้างผู้ใช้ได้",
+        });
+      }
     } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        "เพิ่มผู้ดูแลระบบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง";
       Swal.fire({
         icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: message,
+        title: "สมัครสมาชิกไม่สำเร็จ",
+        text: error.message,
       });
     }
   };
-
-  // Loginเเบบไม่ใช้Gmail firebase
-  // const handleRegister = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     await AdminService.createMod(
-  //       { email, password, displayName },
-  //     );
-  //     Swal.fire({
-  //       icon: "success",
-  //       title: "สมัครสมาชิกสำเร็จ",
-  //       text: "สามารถเข้าสู่ระบบผู้ดูแลระบบได้แล้ว",
-  //       timer: 2000,
-  //       showConfirmButton: false,
-  //     });
-  //     navigate("/mod/login"); // ไปหน้า login mod
-  //   } catch (error) {
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "สมัครสมาชิกไม่สำเร็จ",
-  //       text: error.response?.data?.message || error.message,
-  //     });
-  //   }
-  // };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200 text-base-content p-4">

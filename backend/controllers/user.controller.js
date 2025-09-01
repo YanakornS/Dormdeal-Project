@@ -58,7 +58,7 @@ exports.addUser = async (req, res) => {
   try {
     const { email, displayName, photoURL, role } = req.body;
 
-    if (!email || !displayName || !photoURL) {
+    if (!email || !displayName) {
       return res.status(400).json({ message: "Email, displayName, photoURL are required" });
     }
 

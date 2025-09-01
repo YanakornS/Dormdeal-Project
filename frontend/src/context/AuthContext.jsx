@@ -10,9 +10,9 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
 import UserService from "../services/user.service";
-import AdminService from "../services/admin.service";
 
 const cookies = new Cookies();
 const auth = getAuth(app);
@@ -88,53 +88,51 @@ const AuthProvider = ({ children }) => {
   }
 };
 
-// const loginMod = async (email, password) => {
-//   try {
-//     const response = await AdminService.modLogin({ email, password });
-//     console.log("Login response:", response.data);
-
-//     const userData = response.data.user;
-//     const token = response.data.token || response.data.accessToken;
-
-//     if (userData) {
-//       cookies.set("user", JSON.stringify(userData), { path: "/", maxAge: 60 * 60 * 24 });
-//       cookies.set("token", token, { path: "/", maxAge: 60 * 60 * 24 });
-
-//       setUser(userData);
-//       connectSocket(userData._id || userData.id);
-//     }
-//   } catch (err) {
-//     console.error("Mod login failed:", err.message);
-//     throw err;
-//   }
-// };
-
-
-const loginModWithFirebase = async (email, password) => {
+// Sign in with email and password (for admin/mod use)
+const signInWithEmailAndPasswordHandler = async (email, password) => {
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const firebaseUser = userCredential.user;
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    const firebaseUser = result.user;
+    console.log("firebaseUser", firebaseUser);
 
-    const { email: modEmail, displayName, photoURL } = firebaseUser;
+    const idToken = await firebaseUser.getIdToken();
+    console.log("idToken", idToken);
 
-    const jwtResponse = await UserService.signJwt(
-      modEmail,
-      displayName || "mod",
-      photoURL || ""
-    );
+    const jwtResponse = await UserService.signJwt(idToken);
 
     const userData = jwtResponse.data;
 
+    // Set Cookies + Connect Socket
     if (userData) {
-      cookies.set("user", userData, { path: "/", maxAge: 60 * 60 * 24 });
-      setUser(userData);
-      connectSocket(userData._id || userData.id);
-    }
+      cookies.set("user", userData, {
+        path: "/",
+        maxAge: 60 * 60 * 24, // 1 day
+      });
 
-    return userData; // ✅ เพิ่มตรงนี้สำคัญมาก!
-  } catch (err) {
-    console.error("Mod Firebase Login failed:", err.message);
-    throw err;
+      connectSocket(userData._id);
+    }
+    return { success: true, user: userData };
+  } catch (error) {
+    console.log("Sign in failed:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+// Create mod user with email and password (for admin to add mod only)
+const createUserWithEmailAndPasswordHandler = async (email, password, displayName) => {
+  try {
+    const result = await createUserWithEmailAndPassword(auth, email, password);
+
+    await UserService.addModUser({
+      email,
+      displayName,
+      role: "mod",
+    });
+
+    return { success: true};
+  } catch (error) {
+    console.log("Create mod user failed:", error);
+    return { success: false, error: error.message };
   }
 };
 
@@ -175,7 +173,8 @@ const loginModWithFirebase = async (email, password) => {
     isLoading,
     logout,
     loginWithGoogle,
-    loginModWithFirebase,
+    signInWithEmailAndPasswordHandler,
+    createUserWithEmailAndPasswordHandler,
     getUser,
     socket,
     onlineUsers,

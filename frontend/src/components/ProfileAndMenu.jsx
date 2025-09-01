@@ -79,7 +79,7 @@ const ProfileAndMenu = () => {
           >
             <CiUser className="w-6 h-6" />
             <span className="hidden lg:inline-block truncate">
-              {user?.displayName || "ผู้ใช้"}
+              {userInfo?.displayName || "ผู้ใช้"}
             </span>
           </div>
 

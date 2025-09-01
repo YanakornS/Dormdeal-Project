@@ -74,7 +74,7 @@ const AdminProfileMenu = () => {
           >
             <CiUser className="w-6 h-6" />
             <span className="hidden lg:inline truncate">
-              {user?.displayName || "ผู้ดูแลระบบ"}
+              {userInfo?.displayName || "ผู้ดูแลระบบ"}
             </span>
           </div>
 

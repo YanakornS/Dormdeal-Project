@@ -53,7 +53,7 @@ const NavbarMod = () => {
         </div>
         <a
           className="flex items-center text-xl hover:scale-105 transition transform duration-300"
-          href="/"
+          href="/mod"
         >
           <img
             src={logo}

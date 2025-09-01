@@ -1,67 +1,49 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
-import { AuthContext } from "../../context/AuthContext";  
+import { AuthContext } from "../../context/AuthContext";
 import { FiMail, FiLock } from "react-icons/fi";
 
 const ModLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { loginModWithFirebase,getUser } = useContext(AuthContext);  
+  const { signInWithEmailAndPasswordHandler, getUser } =
+    useContext(AuthContext);
   const navigate = useNavigate();
 
-
   const handleLogin = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    // เรียก login function แล้วรับข้อมูล user ที่ login สำเร็จ
-    const user = await loginModWithFirebase(email, password);
-    console.log("🔍 user object:", user);
+    try {
+      const result = await signInWithEmailAndPasswordHandler(email, password);
+      if (result.success) {
+        const user = result.user;
+        Swal.fire({
+          icon: "success",
+          title: "เข้าสู่ระบบสำเร็จ",
+          timer: 2000,
+          showConfirmButton: false,
+        });
 
-     // พยายามดึง role จาก object หลายรูปแบบ (เผื่อกรณีมี nested structure)
-    const userRole = user?.role || user?.data?.role || user?.user?.role;
-
-     // ถ้าไม่พบ role → แสดง error popup แล้ว return ออกจากฟังก์ชัน
-    if (!userRole) {
+        navigate(user.role === "mod" ? "/mod" : "/admin");
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "เข้าสู่ระบบไม่สำเร็จ",
+          text: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
+        });
+      }
+    } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "ไม่สามารถระบุสิทธิ์ของผู้ใช้งานได้",
-        text: "กรุณาติดต่อผู้ดูแลระบบ",
+        title: "เข้าสู่ระบบไม่สำเร็จ",
+        text: error.message,
       });
-      return;
     }
-
-    // แสดง popup แจ้งว่า login สำเร็จ พร้อมแจ้งว่าจะพาไปหน้าไหนตาม Role  นั้นนๆ
-    Swal.fire({
-      icon: "success",
-      title: "เข้าสู่ระบบสำเร็จ",
-      text: `กำลังพาไปยังหน้า ${userRole === "admin" ? "DashboardAdmin" : "DashboardMod"}`,
-      timer: 2000,
-      showConfirmButton: false,
-    });
-
-    setTimeout(() => {
-      if (userRole === "admin") {
-        navigate("/admin");
-      } else {
-        navigate("/mod");
-      }
-    }, 1800);
-
-  } catch (e) {
-    console.error("Login error:", e);
-    Swal.fire({
-      icon: "error",
-      title: "เข้าสู่ระบบล้มเหลว",
-      text: e.message || "โปรดตรวจสอบอีเมลและรหัสผ่านอีกครั้ง",
-    });
-  }
-};
-
+  };
 
   return (
-   <div className="min-h-screen flex items-center  justify-center bg-base-200 p-4">
+    <div className="min-h-screen flex items-center  justify-center bg-base-200 p-4">
       <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md text-base-content">
         <h2 className="text-3xl font-bold text-center mb-6  text-vivid">
           เข้าสู่ระบบผู้ดูแลระบบ
