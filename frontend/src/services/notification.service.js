@@ -12,9 +12,14 @@ const markNotificationAsRead = async (notificationId) => {
   return await api.put(`${API_URL}/${notificationId}/read`);
 };
 
+const markAllAsRead = async () => {
+  return await api.put(`${API_URL}/read-all`);
+};
+
 const NotificationService = {
   getNotifications,
-  markNotificationAsRead
+  markNotificationAsRead,
+  markAllAsRead
 };
 
 export default NotificationService;

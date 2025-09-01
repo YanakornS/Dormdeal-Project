@@ -61,7 +61,11 @@ const NotificationModal = ({ onClose, anchorRef }) => {
           })
         );
 
-        if (alive) setNotifications(notisWithPosts);
+        if (alive) {
+          setNotifications(notisWithPosts);
+
+          await NotificationService.markAllAsRead();
+        }
       } catch (e) {
         console.error(e);
         if (alive) setNotifications([]);

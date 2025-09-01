@@ -30,5 +30,11 @@ router.put("/:notificationId/read",
   notificationController.markNotificationAsRead
 );
 
+// read all
+router.put("/read-all",
+  authJwt.verifyToken,
+  notificationController.markAllAsRead
+);
+
 
 module.exports = router;

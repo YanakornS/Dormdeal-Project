@@ -72,3 +72,26 @@ exports.markNotificationAsRead = async (req, res) => {
     });
   }
 };
+
+// อ่านแจ้งเตือนทั้งหมดของ user
+exports.markAllAsRead = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    await Notification.updateMany(
+      { recipient: userId, isRead: false },
+      { isRead: true }
+    );
+
+    return res.json({
+      success: true,
+      message: "อ่านแจ้งเตือนทั้งหมดแล้ว"
+    });
+  } catch (error) {
+    console.error("Error in markAllAsRead:", error);
+    return res.status(500).json({
+      success: false,
+      message: "เกิดข้อผิดพลาด กรุณาลองใหม่"
+    });
+  }
+};
