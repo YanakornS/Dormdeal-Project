@@ -152,6 +152,36 @@ exports.getAllPosts = async (req, res) => {
   }
 };
 
+exports.getWTBPosts = async (req, res) => {
+  try {
+    const posts = await PostModel.find({ status: "approved", postType: "WTB" })
+      .populate("category", ["name"])
+      .populate("owner", ["displayName"])
+      .sort({ postPaymentType: -1, createdAt: -1 });
+
+    res.json(posts);
+  } catch (error) {
+    res.status(500).send({
+      message: "ไม่สามารถโหลดโพสต์ WTB ได้ในขณะนี้ กรุณาลองใหม่ภายหลัง",
+    });
+  }
+};
+
+exports.getWTSPosts = async (req, res) => {
+  try {
+    const posts = await PostModel.find({ status: "approved", postType: "WTS" })
+      .populate("category", ["name"])
+      .populate("owner", ["displayName"])
+      .sort({ postPaymentType: -1, createdAt: -1 });
+
+    res.json(posts);
+  } catch (error) {
+    res.status(500).send({
+      message: "ไม่สามารถโหลดโพสต์ WTS ได้ในขณะนี้ กรุณาลองใหม่ภายหลัง",
+    });
+  }
+};
+
 //getPostById
 exports.getPostById = async (req, res) => {
   const { id } = req.params;

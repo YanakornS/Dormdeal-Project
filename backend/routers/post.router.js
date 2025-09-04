@@ -20,7 +20,19 @@ router.get(
    * #swagger.path = '/post/get-all'
    */
   postController.getAllPosts
+)
+//ดึงโพสต์ประเภท WTB
+router.get
+("/get-wtb", 
+  postController.getWTBPosts
 );
+
+//ดึงโพสต์ประเภท WTS
+router.get
+("/get-wts", 
+  postController.getWTSPosts
+);
+
 //เปลี่ยนpath
 // สร้างโพสต์ใหม่
 router.post(
