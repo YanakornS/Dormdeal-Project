@@ -15,11 +15,15 @@ const uploadPaymentSlip = async (postId, file) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await api.post(`${API_URL}/${postId}/upload-slip`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const response = await api.post(
+    `${API_URL}/${postId}/upload-slip`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 
   return response;
 };
@@ -30,13 +34,12 @@ const getAllPostsProduct = async () => {
 
 const getPostByOwner = async (id) => {
   return await api.get(`${API_URL}/ownerId/${id}`);
-}
-
+};
 
 const getPostById = async (id) => {
   const response = await api.get(`${API_URL}/post/${id}`);
-  
-  return response.data || null;  // ใช้ response.data โดยตรง
+
+  return response.data || null; // ใช้ response.data โดยตรง
 };
 
 const updatePostProduct = async (id, post) => {
@@ -56,19 +59,20 @@ const getInterestedUsers = async (postId) => {
   return response.data.data?.interestedUsers || [];
 };
 
-
 const closePostAndNotify = async (postId, { buyerIds }) => {
   return await api.patch(`${API_URL}/${postId}/close`, { buyerIds });
 };
-
 
 const rateSeller = async (postId, ratingData) => {
   return await api.post(`${API_URL}/${postId}/rate`, ratingData);
 };
 
+const getPostsByType = async (type) => {
+  return await api.get(`${API_URL}?type=${type}`);
+};
 
 const PostService = {
- createPostProduct,
+  createPostProduct,
   getAllPostsProduct,
   getPostById,
   getPostByOwner,
@@ -77,7 +81,8 @@ const PostService = {
   uploadPaymentSlip,
   getInterestedUsers,
   closePostAndNotify,
-  rateSeller
+  rateSeller,
+  getPostsByType,
 };
 
 export default PostService;

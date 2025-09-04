@@ -151,4 +151,8 @@ router.post(
   postController.rateSeller
 );
 
+// ดึงโพสต์โดย type query param
+router.get("/", postController.getPostsByType);
+
+
 module.exports = router;

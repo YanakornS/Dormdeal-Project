@@ -1,16 +1,12 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router";
 import ProductCard from "./ProductCard";
 import PostService from "../services/postproduct.service";
 import MainCategoryService from "../services/mainCategory.service";
+import { useLocation } from "react-router";
 import { LuPackageSearch } from "react-icons/lu";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 
-const ShoppingCart = () => {
-  const location = useLocation();
-  const initialType = location.state?.type || "wts"; // ใช้ state จาก navigate
-  const [selectedType, setSelectedType] = useState(initialType);
-
+const WantToBuyCart = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
@@ -19,23 +15,26 @@ const ShoppingCart = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSort, setSelectedSort] = useState("");
   const [selectedCondition, setSelectedCondition] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1); // สำหรับ Pagination
 
-  const productsPerPage = 25;
+  const location = useLocation();
 
+  const productsPerPage = 25; // 5 แถว x 5 สินค้า
+
+  // --- ดึง Products ---
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await PostService.getPostsByType(selectedType);
+        const res = await PostService.getWtb();
         setProducts(res.data);
-        setCurrentPage(1);
       } catch (e) {
         console.error("Error fetching products:", e);
       }
     };
     fetchProducts();
-  }, [selectedType]);
+  }, []);
 
+  // --- ดึง Categories + SubCategories ---
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -48,6 +47,7 @@ const ShoppingCart = () => {
     fetchCategories();
   }, []);
 
+  // --- จัดการหมวดหมู่ใน URL ---
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const categoryParam = queryParams.get("category");
@@ -58,6 +58,7 @@ const ShoppingCart = () => {
     setSelectedCondition("");
   }, [location.search]);
 
+  // --- เมื่อเลือก Category ให้แสดงเฉพาะ Sub ของอันนั้น ---
   useEffect(() => {
     if (!selectedCategory) {
       setSubCategories([]);
@@ -69,13 +70,16 @@ const ShoppingCart = () => {
     setSelectedSubCategory("");
   }, [selectedCategory, categories]);
 
+  // --- Filter + Sort ---
   const getFilteredAndSortedProducts = () => {
     let result = [...products];
 
+    // Filter by main category
     if (selectedCategory) {
       result = result.filter((p) => p.category?._id === selectedCategory);
     }
 
+    // Filter by sub category
     if (selectedSubCategory) {
       result = result.filter((p) =>
         typeof p.subcategory === "string"
@@ -84,16 +88,19 @@ const ShoppingCart = () => {
       );
     }
 
+    // Filter by condition
     if (selectedCondition) {
       result = result.filter((p) => p.condition === selectedCondition);
     }
 
+    // Search
     if (searchQuery) {
       result = result.filter((p) =>
         p.productName?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
+    // Sort
     if (selectedSort === "newest") {
       result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     } else if (selectedSort === "price-high") {
@@ -111,6 +118,7 @@ const ShoppingCart = () => {
 
   const filteredProducts = getFilteredAndSortedProducts();
 
+  // --- Pagination Logic ---
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
   const currentProducts = filteredProducts.slice(
@@ -135,35 +143,12 @@ const ShoppingCart = () => {
 
   return (
     <div className="section-container pt-14">
+      {/* Filter + Search */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between flex-wrap gap-y-4 mb-6">
-        <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full sm:w-auto items-start sm:items-center">
-          {/* ปุ่ม WTS / WTB */}
-          <div className="flex gap-3 sm:gap-4 mb-4 sm:mb-0">
-            <button
-              onClick={() => setSelectedType("wts")}
-              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 text-sm sm:text-base ${
-                selectedType === "wts"
-                  ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg border-2 border-blue-700"
-                  : "bg-gray-200 hover:bg-gray-300 text-gray-800 shadow-sm"
-              }`}
-            >
-              ต้องการขาย (WTS)
-            </button>
-            <button
-              onClick={() => setSelectedType("wtb")}
-              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 text-sm sm:text-base ${
-                selectedType === "wtb"
-                  ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg border-2 border-green-700"
-                  : "bg-gray-200 hover:bg-gray-300 text-gray-800 shadow-sm"
-              }`}
-            >
-              ต้องการซื้อ (WTB)
-            </button>
-          </div>
-
-          {/* เลือกหมวดหมู่ย่อย */}
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full sm:w-auto">
+          {/* หมวดหมู่ย่อย */}
           <select
-            className="select select-bordered rounded-lg w-full sm:w-36 text-sm sm:text-base"
+            className="select select-bordered rounded-lg w-full sm:w-36 "
             value={selectedSubCategory}
             onChange={(e) => setSelectedSubCategory(e.target.value)}
             disabled={!selectedCategory || subCategories.length === 0}
@@ -176,9 +161,9 @@ const ShoppingCart = () => {
             ))}
           </select>
 
-          {/* เลือกการจัดเรียง */}
+          {/* จัดเรียงตาม */}
           <select
-            className="select select-bordered rounded-lg w-full sm:w-36 text-sm sm:text-base"
+            className="select select-bordered rounded-lg w-full sm:w-36 "
             value={selectedSort}
             onChange={(e) => setSelectedSort(e.target.value)}
           >
@@ -190,9 +175,9 @@ const ShoppingCart = () => {
             <option value="za">ฮ-ก</option>
           </select>
 
-          {/* เลือกสภาพสินค้า */}
+          {/* สภาพสินค้า */}
           <select
-            className="select select-bordered rounded-lg w-full sm:w-36 text-sm sm:text-base"
+            className="select select-bordered rounded-lg w-full sm:w-36 "
             value={selectedCondition}
             onChange={(e) => setSelectedCondition(e.target.value)}
           >
@@ -201,15 +186,15 @@ const ShoppingCart = () => {
             <option value="มือสองสภาพพอใช้">ของมือสองสภาพพอใช้</option>
           </select>
 
-          {/* ปุ่มล้างค่า */}
           <button
             onClick={handleClearFilters}
-            className="btn rounded-lg w-full sm:w-auto text-sm sm:text-base"
+            className="btn rounded-lg w-full sm:w-auto "
           >
             ล้างค่า
           </button>
         </div>
 
+        {/* ค้นหา */}
         <div className="w-full sm:w-auto rounded-3xl">
           <input
             type="text"
@@ -221,6 +206,7 @@ const ShoppingCart = () => {
         </div>
       </div>
 
+      {/* รายการสินค้า */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         {currentProducts.length > 0 ? (
           currentProducts.map((product) => (
@@ -235,6 +221,7 @@ const ShoppingCart = () => {
         )}
       </div>
 
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-6">
           <button
@@ -270,4 +257,4 @@ const ShoppingCart = () => {
   );
 };
 
-export default ShoppingCart;
+export default WantToBuyCart;
