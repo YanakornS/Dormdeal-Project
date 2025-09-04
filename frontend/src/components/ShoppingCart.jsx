@@ -27,10 +27,12 @@ const ShoppingCart = () => {
     const fetchProducts = async () => {
       try {
         const res = await PostService.getPostsByType(selectedType);
-        setProducts(res.data);
+        // บางที res อาจ undefined หรือ object ไม่ใช่ array
+        setProducts(Array.isArray(res) ? res : []);
         setCurrentPage(1);
       } catch (e) {
         console.error("Error fetching products:", e);
+        setProducts([]); // fallback
       }
     };
     fetchProducts();
@@ -70,7 +72,8 @@ const ShoppingCart = () => {
   }, [selectedCategory, categories]);
 
   const getFilteredAndSortedProducts = () => {
-    let result = [...products];
+    let result = Array.isArray(products) ? [...products] : [];
+
 
     if (selectedCategory) {
       result = result.filter((p) => p.category?._id === selectedCategory);

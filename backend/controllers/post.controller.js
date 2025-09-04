@@ -155,24 +155,27 @@ exports.getAllPosts = async (req, res) => {
 // ดึงโพสต์ตาม postType (WTB หรือ WTS)
 exports.getPostsByType = async (req, res) => {
   try {
-    const { type } = req.query; // รับ query ?type=wts หรือ ?type=wtb
+    const { type } = req.query; // รับ ?type=wts หรือ ?type=wtb
 
     if (!type) {
       return res.status(400).json({ message: "กรุณาระบุ type เป็น WTS หรือ WTB" });
     }
 
-    // ค้นหาโพสต์ที่ approved และตรงกับ postType
-    const posts = await PostModel.find({ status: "approved", postType: type.toUpperCase() })
+    // แปลงเป็นตัวใหญ่เพื่อ match postType ใน DB
+    const postType = type.toUpperCase();
+
+    const posts = await PostModel.find({ status: "approved", postType })
       .populate("category", ["name"])
       .populate("owner", ["displayName"])
       .sort({ postPaymentType: -1, createdAt: -1 });
 
-    res.json(posts);
+    return res.json(posts);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "เกิดข้อผิดพลาดระหว่างดึงโพสต์" });
+    return res.status(500).json({ message: "เกิดข้อผิดพลาดระหว่างดึงโพสต์" });
   }
 };
+
 
 
 

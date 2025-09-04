@@ -68,7 +68,9 @@ const rateSeller = async (postId, ratingData) => {
 };
 
 const getPostsByType = async (type) => {
-  return await api.get(`${API_URL}?type=${type}`);
+  // type ต้องเป็น "wts" หรือ "wtb"
+  const response = await api.get(`${API_URL}?type=${type}`);
+  return response.data; // ส่ง response.data กลับ
 };
 
 const PostService = {
@@ -82,7 +84,7 @@ const PostService = {
   getInterestedUsers,
   closePostAndNotify,
   rateSeller,
-  getPostsByType,
+  getPostsByType
 };
 
 export default PostService;
