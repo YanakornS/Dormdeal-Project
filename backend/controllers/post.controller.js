@@ -41,17 +41,16 @@ exports.createPost = async (req, res) => {
     if (!userDoc) {
       return res.status(404).json({ message: "ไม่พบข้อมูลผู้ใช้" });
     }
-
     const userPostCount = await PostModel.countDocuments({
     owner,
+    postType, 
     status: { $in: ["pending_review", "approved", "needs_revision"] }
 });
   if (userPostCount >= 5) {
   return res.status(403).json({
-    message: "คุณไม่สามารถลงประกาศได้มากกว่า 5 รายการ กรุณาจัดการโพสต์ประกาศของคุณก่อน",
+    message: "คุณไม่สามารถลงประกาศประเภท " + postType + " ได้เกิน 5 รายการ กรุณาจัดการโพสต์ของคุณก่อน",
   });
 }
-
     if (userDoc.userStatus !== "normal") {
       return res.status(403).json({ message: "บัญชีของคุณถูกระงับการหรืออยู้ในสถานะพ้นสภาพนักศึกษา " });
     }
