@@ -81,7 +81,7 @@ const UserMenu = () => {
 
         <div className="dropdown dropdown-end">
           <div
-            className="btn-profile flex items-center gap-2 hover:scale-105 transition transform duration-300"
+            className="btn-profile flex items-center gap-2 transition transform duration-300"
             tabIndex={0}
             role="button"
             data-test="profile-button"

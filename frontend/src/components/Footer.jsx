@@ -4,7 +4,7 @@ const Footer = () => {
     <footer className="section-container footer sm:footer-horizontal items-center shadow-sm rounded-t-lg p-4">
       <aside className="grid-flow-col items-center">
         <a
-          className="flex items-center text-xl hover:scale-105 transition transform duration-300"
+          className="flex items-center text-xl transition transform duration-300"
           href="/"
         >
           <img

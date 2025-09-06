@@ -35,7 +35,7 @@ const NavbarAdmin = () => {
           </ul>
         </div>
         <a
-          className="flex items-center text-xl hover:scale-105 transition transform duration-300"
+          className="flex items-center text-xl transition transform duration-300"
           href="/admin"
         >
           <img

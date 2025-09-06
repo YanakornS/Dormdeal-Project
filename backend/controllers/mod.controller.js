@@ -4,9 +4,12 @@ const bcrypt = require("bcrypt");
 
 exports.getAllPostsByMod = async (req, res) => {
   try {
+     
     // กรองก่อนว่ามีแค่ pemding_review
-    const posts = await PostModel.find({ status: "pending_review" })
-
+    const posts = await PostModel.find({
+      status: "pending_review",
+      postType: { $in: ["WTB", "WTS"] },
+    })
       .populate("category", ["name"])
       .populate("owner", ["displayName"])
       .sort({
@@ -67,7 +70,6 @@ exports.deletePostByMod = async (req, res) => {
     });
   }
 };
-
 
 exports.getPostByOwner = async (req, res) => {
   const { id } = req.params;
@@ -132,11 +134,9 @@ exports.reviewPost = async (req, res) => {
   }
 };
 
-
-
 exports.changePassword = async (req, res) => {
   try {
-    const userId = req.userId; 
+    const userId = req.userId;
     const { newPassword } = req.body;
 
     if (!newPassword) {
@@ -153,7 +153,9 @@ exports.changePassword = async (req, res) => {
     if (user.password) {
       const isSame = await bcrypt.compare(newPassword, user.password);
       if (isSame) {
-        return res.status(400).json({ message: "รหัสผ่านใหม่ต้องไม่ซ้ำกับรหัสผ่านเก่า" });
+        return res
+          .status(400)
+          .json({ message: "รหัสผ่านใหม่ต้องไม่ซ้ำกับรหัสผ่านเก่า" });
       }
     }
 
@@ -166,6 +168,8 @@ exports.changePassword = async (req, res) => {
 
     return res.status(200).json({ message: "เปลี่ยนรหัสผ่านเรียบร้อยแล้ว" });
   } catch (error) {
-    return res.status(500).json({ message: "เกิดข้อผิดพลาด", error: error.message });
+    return res
+      .status(500)
+      .json({ message: "เกิดข้อผิดพลาด", error: error.message });
   }
 };
