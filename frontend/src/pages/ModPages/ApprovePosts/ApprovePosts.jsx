@@ -80,6 +80,28 @@ const ApprovePosts = () => {
           showCancelButton: true,
           confirmButtonText: "ยืนยัน",
           cancelButtonText: "ยกเลิก",
+          didOpen: () => {
+            const title = document.querySelector(".swal2-title");
+            if (title) {
+              title.setAttribute("data-test", "swal-post-rejected-title");
+            }
+
+            const confirmButton = document.querySelector(".swal2-confirm");
+            if (confirmButton) {
+              confirmButton.setAttribute(
+                "data-test",
+                "swal-post-rejected-confirm"
+              );
+            }
+
+            const cancelButton = document.querySelector(".swal2-cancel");
+            if (cancelButton) {
+              cancelButton.setAttribute(
+                "data-test",
+                "swal-post-rejected-cancel"
+              );
+            }
+          },
         });
 
         if (!confirm.isConfirmed) return;
@@ -136,10 +158,28 @@ const ApprovePosts = () => {
           showCancelButton: true,
           confirmButtonText: "ส่งกลับ",
           cancelButtonText: "ยกเลิก",
+          didOpen: () => {
+            const confirmButton = document.querySelector(".swal2-confirm");
+            if (confirmButton) {
+              confirmButton.setAttribute(
+                "data-test",
+                "swal-post-needs-revision-confirm"
+              );
+            }
+
+            const cancelButton = document.querySelector(".swal2-cancel");
+            if (cancelButton) {
+              cancelButton.setAttribute(
+                "data-test",
+                "swal-post-needs-revision-cancel"
+              );
+            }
+          },
         });
 
         if (!reason) {
           Swal.fire("โปรดเลือกเหตุผล", "", "warning");
+          
           return;
         }
 
@@ -154,6 +194,20 @@ const ApprovePosts = () => {
         showCancelButton: true,
         confirmButtonText: "ยืนยัน",
         cancelButtonText: "ยกเลิก",
+        didOpen: () => {
+          const confirmButton = document.querySelector(".swal2-confirm");
+          if (confirmButton) {
+            confirmButton.setAttribute(
+              "data-test",
+              "swal-post-approve-confirm"
+            );
+          }
+
+          const cancelButton = document.querySelector(".swal2-cancel");
+          if (cancelButton) {
+            cancelButton.setAttribute("data-test", "swal-post-approve-cancel");
+          }
+        },
       });
 
       if (!confirm.isConfirmed) return;
@@ -166,8 +220,14 @@ const ApprovePosts = () => {
           title: "สำเร็จ",
           text: `อัปเดตสถานะเป็น "${getStatusText(status)}" แล้ว`,
           icon: "success",
-          timer: 1500,
+          timer: 2500,
           showConfirmButton: false,
+          didOpen: () => {
+        const title = document.querySelector(".swal2-title");
+        if (title) {
+          title.setAttribute("data-test", "swal-post-approve-success");
+        }
+      },
         }).then(() => {
           navigate("/mod", { replace: true });
         });
@@ -270,14 +330,13 @@ const ApprovePosts = () => {
       {postProductDetail.slipImageUrl && (
         <div className="shadow-lg p-6 w-full sm:w-[400px] rounded-2xl mt-6">
           <h1 className="text-xl mb-4 text-center">หลักฐานการชำระเงิน</h1>
-          <img 
-            src={postProductDetail.slipImageUrl} 
-            alt="หลักฐานการชำระเงิน" 
+          <img
+            src={postProductDetail.slipImageUrl}
+            alt="หลักฐานการชำระเงิน"
             className="w-full h-auto rounded-lg"
           />
         </div>
       )}
-
 
       {/* Lightbox */}
       <Lightbox

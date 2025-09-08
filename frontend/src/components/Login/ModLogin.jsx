@@ -45,7 +45,7 @@ const ModLogin = () => {
   return (
     <div className="min-h-screen flex items-center  justify-center bg-base-200 p-4">
       <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md text-base-content">
-        <h2 className="text-3xl font-bold text-center mb-6  text-vivid">
+        <h2 className="text-3xl font-bold text-center mb-6  text-vivid" data-test="mod-login-title">
           เข้าสู่ระบบผู้ดูแลระบบ
         </h2>
 

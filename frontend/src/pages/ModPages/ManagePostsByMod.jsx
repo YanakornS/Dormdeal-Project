@@ -84,7 +84,7 @@ const ManagePostsByMod = () => {
   return (
     <div className="section-container overflow-x-auto rounded-box border border-base-content/5 bg-base-100 py-14">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold">อนุมัติโพสต์ซื้อขาย</h2>
+        <h2 className="text-3xl font-bold"id="mod-manage-posts-title" >อนุมัติโพสต์ซื้อขาย</h2>
         <select
           className="border rounded px-4 py-2 text-base"
           value={filterType}
