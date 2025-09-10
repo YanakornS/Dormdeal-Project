@@ -21,6 +21,7 @@ import Wishlists from "../pages/UserPages/Wishlists";
 import Profile from "../pages/UserPages/Profile";
 import ModLogin from "../components/Login/ModLogin";
 import ModRegister from "../components/Login/ModRegister";
+import LoginProtect from "../pages/ProtectPage/LoginProtect";
 
 import ReportPosts from "../pages/ModPages/ReportPosts/ReportPosts";
 import ManageCategories from "../pages/ModPages/MenageCategories/ManageCategories";
@@ -95,7 +96,7 @@ const router = createBrowserRouter([
       },
        {
         path: "/login",
-        element: <ModLogin />,
+        element:<LoginProtect> <ModLogin /> </LoginProtect>  ,
       },
       
     ],
