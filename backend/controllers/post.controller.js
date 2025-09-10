@@ -59,9 +59,7 @@ exports.createPost = async (req, res) => {
       return res.status(404).json({ message: "ไม่พบหมวดหมู่ที่เลือก" });
 
     // method find ใช้หาสมาชิกตัวเเรกของarray
-    const matchedSub = categoryDoc.subCategories.find(
-      (sub) => sub._id.toString() === subcategory
-    );
+    const matchedSub = categoryDoc.subCategories.find((sub) => sub._id.toString() === subcategory);
     if (!matchedSub)
       return res.status(404).json({ message: "ไม่พบหมวดหมู่ย่อยที่เลือก" });
 
@@ -482,7 +480,6 @@ exports.closePostAndNotify = async (req, res) => {
     });
   }
 };
-
 
 
 exports.rateSeller = async (req, res) => {
