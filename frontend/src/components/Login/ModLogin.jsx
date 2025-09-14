@@ -19,11 +19,17 @@ const ModLogin = () => {
       if (result.success) {
         const user = result.user;
         Swal.fire({
-          icon: "success",
-          title: "เข้าสู่ระบบสำเร็จ",
-          timer: 2000,
-          showConfirmButton: false,
-        });
+        icon: "success",
+        title: "เข้าสู่ระบบสำเร็จ",
+        timer: 2000,
+        showConfirmButton: false,
+        didOpen: () => {
+        const title = document.querySelector(".swal2-title");
+        if (title) {
+        title.setAttribute("data-test", "swal-login-success");
+    }
+  },
+});
 
         navigate(user.role === "mod" ? "/mod" : "/admin");
       } else {

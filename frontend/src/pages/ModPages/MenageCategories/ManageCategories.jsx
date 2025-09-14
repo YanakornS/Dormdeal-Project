@@ -56,7 +56,10 @@ const ManageCategories = () => {
     setAdding(true);
     try {
       await mainCategoryService.addMainCategory(formData);
-      toast.success("เพิ่มหมวดหมู่สำเร็จ");
+      toast.success("เพิ่มหมวดหมู่สำเร็จ"), { 
+      toastId: "toast-add-success", 
+}
+      
       setNewName("");
       setImage(null);
       fetchCategories();
@@ -210,7 +213,9 @@ const ManageCategories = () => {
       <div className="fixed top-0 right-0 w-auto z-50 p-4">
         <Toaster position="top-center " />
       </div>
-      <h2 className="text-2xl font-bold mb-6">จัดการหมวดหมู่สินค้า</h2>
+      <h2 data-test="modmenu-link-categories" className="text-2xl font-bold mb-6">
+  จัดการหมวดหมู่สินค้า
+</h2>
 
       <div className="mb-6 flex flex-col md:flex-row items-center gap-2">
         <input
