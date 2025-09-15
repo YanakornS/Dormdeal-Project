@@ -21,11 +21,12 @@ exports.getSellerRatings = async (req, res) => {
       .skip((page - 1) * limit);
 
     const totalRatings = await Rating.countDocuments({ seller: sellerId });
-    
+    const existingRating = await Rating.findOne({ seller: sellerId, rater: userId });
     // คำนวณสถิติ
     //Aggregation = การคำนวณสถิติ/รวมข้อมูลจากหลาย document
     const ratingStats = await Rating.aggregate([
       //WHERE seller = sellerId ใน SQL
+      //ประมาณว่าเช็คก่อนว่า sellerId คือของคนขายคนไหนในDb
       { $match: { seller: new mongoose.Types.ObjectId(sellerId) } },
       {
         //วม document หลายตัวเป็นก้อนเดียวแต่ต้องidไม่เป็นnull
@@ -50,7 +51,7 @@ exports.getSellerRatings = async (req, res) => {
       success: true,
       data: {
         ratings,
-        //alreadyRated: !!existingRating,
+        alreadyRated: !!existingRating,
         stats: {
           //ใช้ Math.round(avgr *10)/10 ปัดเลขทศนิยม 1 ตำแหน่ง
           averageRating: Math.round(stats.averageRating * 10) / 10,

@@ -56,10 +56,7 @@ const ManageCategories = () => {
     setAdding(true);
     try {
       await mainCategoryService.addMainCategory(formData);
-      toast.success("เพิ่มหมวดหมู่สำเร็จ"), { 
-      toastId: "toast-add-success", 
-}
-      
+      toast.success("เพิ่มหมวดหมู่สำเร็จ");
       setNewName("");
       setImage(null);
       fetchCategories();
