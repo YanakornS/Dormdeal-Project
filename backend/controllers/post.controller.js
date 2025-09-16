@@ -16,7 +16,7 @@ exports.createPost = async (req, res) => {
   //สลายโครงสร้าง
   const {
     postType,
-    productName,
+    productName,  
     category,
     subcategory,
     price,
@@ -77,9 +77,7 @@ exports.createPost = async (req, res) => {
       postPaymentType,
     });
     
-    res.json(postDoc);({
-    message: "โพสต์ถูกสร้างเรียบร้อยแล้ว"
-});
+    res.json({message:"โพสต์ถูกสร้างเรียบร้อยแล้ว",post:postDoc});
     
   } catch (error) {
     console.log("error", error);
