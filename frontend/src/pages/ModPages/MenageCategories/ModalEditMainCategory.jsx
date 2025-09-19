@@ -14,11 +14,11 @@ const ModalEditMainCategory = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-base-200/50">
       <div className="bg-base-100 rounded-lg p-6 w-full max-w-md shadow-lg relative">
-        <h2 className="text-xl font-bold mb-4">แก้ไขหมวดหมู่หลัก</h2>
+        <h2 className="text-xl font-bold mb-4"data-test="modal-edit-main-category-title">แก้ไขหมวดหมู่หลัก</h2>
 
         <input
           type="text"
-          className="input input-bordered w-full mb-4"
+          className="input input-bordered w-full mb-4" data-test="edit-main-category"
           placeholder="ชื่อหมวดหมู่"
           value={name}
           onChange={(e) => onChangeName(e.target.value)}
@@ -45,13 +45,21 @@ const ModalEditMainCategory = ({
         )}
 
         <div className="flex justify-end gap-2 mt-6">
-          <button className="btn btn-ghost" onClick={onClose}>
-            ยกเลิก
-          </button>
-          <button className="btn btn-primary" onClick={onConfirm}>
-            ยืนยัน
-          </button>
-        </div>
+  <button
+    className="btn btn-ghost"
+    onClick={onClose}
+    data-test="button-edit-cancel"
+  >
+    ยกเลิก
+  </button>
+  <button
+    className="btn btn-primary"
+    onClick={onConfirm}
+    data-test="button-edit-confirm"
+  >
+    ยืนยัน
+  </button>
+</div>
       </div>
     </div>
   );

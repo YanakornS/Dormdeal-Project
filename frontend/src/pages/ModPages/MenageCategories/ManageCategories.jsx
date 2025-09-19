@@ -77,6 +77,10 @@ const ManageCategories = () => {
       cancelButtonColor: "#3085d6",
       confirmButtonText: "ใช่, ลบเลย",
       cancelButtonText: "ยกเลิก",
+      didOpen: () => {
+      Swal.getConfirmButton().setAttribute("data-test", "swal-confirm-delete");
+      //Swal.getCancelButton().setAttribute("data-test", "swal-cancel-delete");
+    },
     });
 
     if (result.isConfirmed) {

@@ -82,14 +82,61 @@ async function uploadsToFirebase(req, res, next) {
     }
   }
 
+// const upload = multer({
+//   storage: multer.memoryStorage(),
+//   limits: { fileSize: 4000000 }, // 4MB
+//   fileFilter: (req, file, cb) => {
+//     if (!file) {
+//       return cb(null, true);
+//     }
+//     checkFileType(file, cb);
+//   },
+// }).single("file")
+//   function checkFileType(file, cb) {
+//     const fileType = /jpeg|jpg|png|git|jfif|webp/;
+//     const extName = fileType.test(path.extname(file.originalname).toLowerCase());
+//     const mimetype = fileType.test(file.mimetype);
+//     if (mimetype && extName) {
+//       return cb(null, true);
+//     } else {
+//       cb("Error : รูปภาพเท่านั้น (.jpeg, .jpg, .png, .gif, .jfif, .webp) เท่านั้น ");
+//     }
+//   }
+  
+//   //upload to firebase
+//   async function uploadToFirebase(req,res,next){
+//     if (!req.file) {
+//   return next();
 
-  const upload = multer({
-    storage: multer.memoryStorage(),
-    limits: { fileSize: 4000000 }, //4MB
-    fileFilter: (req, file, cb) => {
-      checkFileType(file, cb); //Check file exit
-    },
-  }).single("file");
+//     }else{
+//       //savelocation
+//     const storageRef = ref(firebaseStorage,`SE-Shop/DormDeals/imageMainCategory/${req?.file?.originalname}`);
+//     //file type
+//     const metadata = {
+//       contentType : req?.file?.mimetype,
+//     }
+//     try{
+//       //uploading..
+//       const snapshot = await uploadBytesResumable(storageRef,req?.file?.buffer,metadata);
+//       //get url from firebase
+//       req.file.firebaseUrl = await getDownloadURL(snapshot.ref);
+//       next();
+//     }catch(error){
+//       res.status(500).json({message:error.message || "Somthing wen wrong while uploading to firebase"});
+//     }
+  
+//   }
+//     }
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 4000000 }, // 4MB
+  fileFilter: (req, file, cb) => {
+    if (!file) {
+      return cb(null, true);
+    }
+    checkFileType(file, cb);
+  },
+}).single("file")
   
   function checkFileType(file, cb) {
     const fileType = /jpeg|jpg|png|git|jfif|webp/;
@@ -105,7 +152,7 @@ async function uploadsToFirebase(req, res, next) {
   //upload to firebase
   async function uploadToFirebase(req,res,next){
     if (!req.file) {
-  return res.status(400).json({ message: "No image file provided" });
+  return next();
 
     }else{
       //savelocation

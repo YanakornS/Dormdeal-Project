@@ -67,7 +67,15 @@ exports.updateCategory = async (req, res) => {
     if (req.file?.firebaseUrl) {
       updateData.image = req.file.firebaseUrl;
     }
-
+     if (name) {
+      const existing = await MainCategory.findOne({ 
+        name, 
+        _id: { $ne: req.params.id } 
+      });
+      if (existing) {
+        return res.status(400).json({ message: "ชื่อหมวดหมู่ซ้ำ กรุณาใช้ชื่ออื่น" });
+      }
+    }
     const updated = await MainCategory.findByIdAndUpdate(
       req.params.id,
       updateData,
@@ -80,11 +88,14 @@ exports.updateCategory = async (req, res) => {
       return res.status(404).json({ message: "ไม่พบหมวดหมู่ที่ระบุ" });
     }
 
-    res.json(updated);
+    return res.status(200).json({
+      message: "อัปเดตหมวดหมู่สำเร็จ"
+    });
   } catch (error) {
-    res.status(500).json({ message: "เกิดข้อผิดพลาดในการอัปเดต" });
-  }
-};
+  console.error("Update Category Error:", error);
+  return res.status(500).json({ message: error.message || "เกิดข้อผิดพลาดในการอัปเดต" });
+}
+}
 
 exports.deleteCategory = async (req, res) => {
   const { id } = req.params;

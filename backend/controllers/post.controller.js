@@ -34,7 +34,8 @@ exports.createPost = async (req, res) => {
     !condition ||
     !postPaymentType
   ) {
-    return res.status(400).json({ message: "กรุณากรอกข้อมูลให้ครบทุกช่องก่อนโพสต์" });
+    return res.status(400)
+    //.json({ message: "กรุณากรอกข้อมูลให้ครบทุกช่องก่อนโพสต์" });
   }
   try {
     const userDoc = await UserModel.findById(owner);
@@ -137,7 +138,8 @@ exports.getAllPosts = async (req, res) => {
       .sort({
         postPaymentType: -1, // ให้ "Paid" อยู่บนสุด
         createdAt: -1, // แล้วเรียงตามวันที่ใหม่สุด
-      });
+      })
+      .limit(50);
 
     res.json(posts);
   } catch (error) {
