@@ -21,50 +21,50 @@ const PostProfileCard = ({ product, onDelete = () => {} }) => {
   const onMarkSoldOut = () => {
     setShowCloseModal(true);
   };
-const handleDeletePost = async (id) => {
-  const result = await Swal.fire({
-    title: "คุณแน่ใจหรือไม่?",
-    text: "โพสต์นี้จะถูกลบแบบถาวร",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "ลบโพสต์",
-    cancelButtonText: "ยกเลิก",
-    didOpen: () => {
-      const confirmButton = document.querySelector(".swal2-confirm");
-      if (confirmButton) {
-        confirmButton.setAttribute("data-test", "swal-post-delete");
+
+  const handleDeletePost = async (id) => {
+    const result = await Swal.fire({
+      title: "คุณแน่ใจหรือไม่?",
+      text: "โพสต์นี้จะถูกลบแบบถาวร",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "ลบโพสต์",
+      cancelButtonText: "ยกเลิก",
+      didOpen: () => {
+        const confirmButton = document.querySelector(".swal2-confirm");
+        if (confirmButton) {
+          confirmButton.setAttribute("data-test", "swal-post-delete");
+        }
+      },
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await PostService.deletePostByOwner(id);
+        Swal.fire({
+          title: "ลบสำเร็จ",
+          text: "โพสต์ถูกลบแล้ว",
+          icon: "success",
+          timer: 2500, // ปิดเองใน 2.5 วิ
+          showConfirmButton: false,
+          didOpen: () => {
+            const title = document.querySelector(".swal2-title");
+            if (title) {
+              title.setAttribute("data-test", "swal-post-confirm-delete");
+            }
+          },
+        }).then(() => {
+          navigate("/ManagePostStatus");
+        });
+      } catch (err) {
+        Swal.fire(
+          "เกิดข้อผิดพลาด",
+          err.response?.data?.message || err.message,
+          "error"
+        );
       }
-    },
-  });
-
-  if (result.isConfirmed) {
-    try {
-      await PostService.deletePostByOwner(id);
-      Swal.fire({
-        title: "ลบสำเร็จ",
-        text: "โพสต์ถูกลบแล้ว",
-        icon: "success",
-        timer: 2500, // ปิดเองใน 2.5 วิ
-        showConfirmButton: false,
-        didOpen: () => {
-          const title = document.querySelector(".swal2-title");
-          if (title) {
-            title.setAttribute("data-test", "swal-post-confirm-delete");
-          }
-        },
-      }).then(() => {
-        navigate("/ManagePostStatus"); 
-      });
-    } catch (err) {
-      Swal.fire(
-        "เกิดข้อผิดพลาด",
-        err.response?.data?.message || err.message,
-        "error"
-      );
     }
-  }
-};
-
+  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat("th-TH", {

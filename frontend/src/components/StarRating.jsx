@@ -7,9 +7,6 @@ const StarRating = ({ postId, initialRating = 0, onRated }) => {
   const [loading, setLoading] = useState(false);
   const [rated, setRated] = useState(false);
 
-  
-  
-
   const handleConfirm = async () => {
     if (!selectedRating) {
       Swal.fire({
@@ -25,7 +22,7 @@ const StarRating = ({ postId, initialRating = 0, onRated }) => {
       setRated(true);
 
       if (onRated) onRated(postId);
-      
+
       Swal.fire({
         icon: "success",
         title: `คุณให้ ${selectedRating} คะแนนสำเร็จ!`,
@@ -44,10 +41,10 @@ const StarRating = ({ postId, initialRating = 0, onRated }) => {
     }
   };
 
-  if (rated) return <div className="text-green-600 font-medium">คุณให้คะแนนแล้ว</div>;
+  if (rated)
+    return <div className="text-green-600 font-medium">คุณให้คะแนนแล้ว</div>;
 
   return (
-    
     <div className="flex items-center justify-between mt-2 gap-4">
       <div className="flex gap-1">
         {[1, 2, 3, 4, 5].map((i) => (
