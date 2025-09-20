@@ -7,8 +7,8 @@ const ChooseSection = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="section-container flex flex-col items-center py-24">
-      <h2 className="text-4xl font-bold mb-12 text-center">
+    <div className="section-container flex flex-col items-center py-12">
+      <h2 className="lg:text-2xl xl:text-4xl font-bold mb-4 text-center">
         ลองเลือกสิ่งที่คุณสนใจ ?
       </h2>
 
