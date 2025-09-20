@@ -23,14 +23,14 @@ const BannerSection = () => {
           clickable: true,
         }}
         modules={[Autoplay, Pagination, Navigation]}
-        className="mySwiper max-w-[1280px] aspect-[16/5] rounded-lg"
+        className="mySwiper max-w-[1280px] aspect-[16/6] rounded-lg"
       >
         <SwiperSlide>
           <div className="w-full h-full rounded-lg overflow-hidden">
             <img
               src={banner4}
               alt="Slide 1"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover scale-100 md:scale-100 transition-transform duration-500"
             />
           </div>
         </SwiperSlide>
@@ -40,7 +40,7 @@ const BannerSection = () => {
             <img
               src={banner5}
               alt="Slide 2"
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover scale-100 md:scale-100 transition-transform duration-500"
             />
           </div>
         </SwiperSlide>
