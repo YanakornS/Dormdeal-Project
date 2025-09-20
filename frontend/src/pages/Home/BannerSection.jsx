@@ -23,23 +23,27 @@ const BannerSection = () => {
           clickable: true,
         }}
         modules={[Autoplay, Pagination, Navigation]}
-        className="mySwiper max-w-[1280px] h-[400px] rounded-lg"
+        className="mySwiper max-w-[1280px] aspect-[16/5] rounded-lg"
       >
         <SwiperSlide>
-          <img
-            src={banner4}
-            alt="Slide 1"
-            className="w-full h-[400px] object-cover rounded-lg"
-          />
+          <div className="w-full h-full rounded-lg overflow-hidden">
+            <img
+              src={banner4}
+              alt="Slide 1"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </SwiperSlide>
+
         <SwiperSlide>
-          <img
-            src={banner5}
-            alt="Slide 2"
-            className="w-full h-[400px] object-cover rounded-lg"
-          />
+          <div className="w-full h-full rounded-lg overflow-hidden">
+            <img
+              src={banner5}
+              alt="Slide 2"
+              className="w-full h-full object-cover"
+            />
+          </div>
         </SwiperSlide>
-        {/* เพิ่ม SwiperSlide ตามต้องการ */}
       </Swiper>
     </div>
   );
