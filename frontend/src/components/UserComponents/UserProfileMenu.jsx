@@ -119,7 +119,7 @@ const UserMenu = () => {
               <a href="/profile">แก้ไขโปรไฟล์</a>
             </li>
             <li>
-              <a onClick={handleLogout}>ออกจากระบบ</a>
+              <a onClick={handleLogout} href="/">ออกจากระบบ</a>
             </li>
           </ul>
         </div>
