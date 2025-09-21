@@ -53,14 +53,14 @@ const AuthProvider = ({ children }) => {
  // Login & Register With Google
  const loginWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
-  provider.setCustomParameters({ hd: "" });
+  provider.setCustomParameters({ hd: "webmail.npru.ac.th" });
 
   try {
     const result = await signInWithPopup(auth, provider);
     const firebaseUser = result.user;
     const { email, displayName, photoURL } = firebaseUser;
 
-    if (!email.endsWith("")) {
+    if (!email.endsWith("@webmail.npru.ac.th")) {
       await signOut(auth);
       throw new Error("กรุณาใช้บัญชีอีเมลมหาวิทยาลัยในการเข้าสู่ระบบ");
     }
