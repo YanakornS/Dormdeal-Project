@@ -62,7 +62,7 @@ const UserMenu = () => {
         >
           <div className="indicator">
             <BiBell className="w-6 h-6" />
-            <span className="badge badge-xs badge-error indicator-item">
+            <span className="badge badge-xs badge-soft badge-primary indicator-item">
               {unreadCount > 9 ? "9+" : unreadCount}
             </span>
           </div>
@@ -72,7 +72,7 @@ const UserMenu = () => {
           <div className="indicator">
             <BiMessageSquareDetail className="w-6 h-6" />
             {totalUnread > 0 && (
-              <span className="badge badge-error badge-xs indicator-item">
+              <span className="badge badge-soft badge-primary badge-xs indicator-item">
                 {totalUnread > 9 ? "9+" : totalUnread}
               </span>
             )}

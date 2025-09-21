@@ -66,7 +66,7 @@ const StarRating = ({ postId, initialRating = 0, onRated }) => {
         className={`px-3 py-1 rounded text-white transition ${
           selectedRating && !loading
             ? "bg-blue-500 hover:bg-blue-600"
-            : "bg-gray-300 cursor-not-allowed"
+            : "bg-gray-500 cursor-not-allowed"
         }`}
       >
         {loading ? "กำลังบันทึก..." : "ยืนยัน"}

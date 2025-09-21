@@ -166,7 +166,7 @@ const NotificationModal = ({ onClose, anchorRef }) => {
       aria-modal="true"
       aria-labelledby="notif-title"
       className={`fixed z-[1000] w-[90vw] sm:w-96 max-h-[70vh] overflow-y-auto
-                  bg-white rounded-xl shadow-xl p-4
+                  bg-base-100  rounded-xl shadow-xl p-4
                   transition-transform duration-150 ease-out
                   ${flipUp ? "origin-bottom" : "origin-top"}`}
       style={{ top: coords.top, left: coords.left }}
@@ -202,7 +202,7 @@ const NotificationModal = ({ onClose, anchorRef }) => {
             return (
               <li
                 key={n._id}
-                className="rounded-lg p-3 flex flex-col gap-2 bg-gray-50 shadow-sm"
+                className="rounded-lg p-3 flex flex-col gap-2 bg-base-100  shadow-sm"
               >
                 <div className="flex gap-3 items-center flex-wrap sm:flex-nowrap">
                   {post?.images?.[0] && (
@@ -217,7 +217,7 @@ const NotificationModal = ({ onClose, anchorRef }) => {
                     <h3 className="font-medium truncate">
                       {post?.productName}
                     </h3>
-                    <p className="text-gray-600">฿ {post?.price}</p>
+                    <p className="text-base-600">฿ {post?.price}</p>
 
                     {canRate && (
                       <StarRating
