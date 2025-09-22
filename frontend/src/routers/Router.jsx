@@ -22,6 +22,9 @@ import Profile from "../pages/UserPages/Profile";
 import ModLogin from "../components/Login/ModLogin";
 import ModRegister from "../components/Login/ModRegister";
 import LoginProtect from "../pages/ProtectPage/LoginProtect";
+import NotAllowedAdmin from "../pages/ProtectPage/NotAllowedAdmin";
+import NotAllowedMod from "../pages/ProtectPage/NotAllowedMod";
+
 
 import ReportPosts from "../pages/ModPages/ReportPosts/ReportPosts";
 import ManageCategories from "../pages/ModPages/MenageCategories/ManageCategories";
@@ -73,6 +76,14 @@ const router = createBrowserRouter([
       {
         path: "/notallowed",
         element: <NotAllowed />,
+      },
+      {
+        path: "/notallowedadmin",
+        element: <NotAllowedAdmin />,
+      },
+      {
+        path: "/notallowedmod",
+        element: <NotAllowedMod />,
       },
       {
         path: "/profile",

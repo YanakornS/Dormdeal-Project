@@ -15,7 +15,7 @@ const ModRoute = ({ children }) => {
     return children;
   }
 
-  return <Navigate to="/notallowed" state={{ from: location }} replace />;
+  return <Navigate to="/notallowedmod" state={{ from: location }} replace />;
 };
 
 export default ModRoute;

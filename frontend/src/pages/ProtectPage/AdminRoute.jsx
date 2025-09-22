@@ -15,7 +15,7 @@ const AdminRoute = ({ children }) => {
     return children;
   }
 
-  return <Navigate to="/notallowed" state={{ from: location }} replace />;
+  return <Navigate to="/notallowedadmin" state={{ from: location }} replace />;
 };
 
 export default AdminRoute;
