@@ -198,7 +198,7 @@ const Index = () => {
 
       const response = await PostService.createPostProduct(data);
       if (response.status === 200) {
-        const createdPost = response.data; // สมมุติ backend ส่ง post กลับมา
+        const createdPost = response.data.post; // สมมุติ backend ส่ง post กลับมา
         const postId = createdPost._id;
 
         setPostProduct({
