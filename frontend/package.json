@@ -16,6 +16,7 @@
     "firebase": "^11.4.0",
     "frontend": "file:",
     "install": "^0.13.0",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^0.509.0",
     "motion": "^12.4.7",
     "npm": "^11.1.0",
