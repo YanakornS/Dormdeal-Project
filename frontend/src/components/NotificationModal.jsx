@@ -9,7 +9,7 @@ import { createPortal } from "react-dom";
 import NotificationService from "../services/notification.service";
 import PostService from "../services/postproduct.service";
 import StarRating from "./StarRating";
-
+import { formatPrice } from "../libs/utils.js";
 const CLAMP_MARGIN = 8;
 const FALLBACK_W = 384;
 const FALLBACK_H = 500;
@@ -35,6 +35,9 @@ const NotificationModal = ({ onClose, anchorRef }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  //เพิ่มมา
+  const [ratedPosts, setRatedPosts] = useState({});
+
   const modalRef = useRef(null);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const [flipUp, setFlipUp] = useState(false);
@@ -47,11 +50,26 @@ const NotificationModal = ({ onClose, anchorRef }) => {
         let notis = res?.data?.data?.notifications || [];
         notis = notis.filter((n) => n.requiresRating);
 
+        // สำหรับทุก notification, เช็คว่า user ให้คะแนนแล้วหรือยัง
         const notisWithPosts = await Promise.all(
           notis.map(async (n) => {
             if (n.type === "purchase_success" && n.post) {
               try {
                 const postData = await PostService.getPostById(n.post._id);
+
+                //เพิ่มมา 61-69
+                try {
+                  const rateRes = await NotificationService.checkUserRating(
+                    n.post._id
+                  );
+                  setRatedPosts((prev) => ({
+                    ...prev,
+                    [n.post._id]: rateRes.data.hasRated,
+                  }));
+                } catch {
+                  setRatedPosts((prev) => ({ ...prev, [n.post._id]: false }));
+                }
+
                 return { ...n, post: postData };
               } catch {
                 return { ...n, post: n.post };
@@ -61,11 +79,7 @@ const NotificationModal = ({ onClose, anchorRef }) => {
           })
         );
 
-        if (alive) {
-          setNotifications(notisWithPosts);
-
-          await NotificationService.markAllAsRead();
-        }
+        if (alive) setNotifications(notisWithPosts);
       } catch (e) {
         console.error(e);
         if (alive) setNotifications([]);
@@ -217,9 +231,9 @@ const NotificationModal = ({ onClose, anchorRef }) => {
                     <h3 className="font-medium truncate">
                       {post?.productName}
                     </h3>
-                    <p className="text-base-600">฿ {post?.price}</p>
 
-                    {canRate && (
+                    <p className="text-base-600">{formatPrice(post?.price)}</p>
+                    {/* {canRate && (
                       <StarRating
                         postId={post._id}
                         onRated={() => {
@@ -229,7 +243,26 @@ const NotificationModal = ({ onClose, anchorRef }) => {
                           requestAnimationFrame(updatePosition);
                         }}
                       />
-                    )}
+                    )} */}
+                    {post && canRate && !ratedPosts[post._id] ? (
+                      <StarRating
+                        postId={post._id}
+                        onRated={() => {
+                          setNotifications((prev) =>
+                            prev.filter((x) => x._id !== n._id)
+                          );
+                          setRatedPosts((prev) => ({
+                            ...prev,
+                            [post._id]: true,
+                          }));
+                          requestAnimationFrame(updatePosition);
+                        }}
+                      />
+                    ) : post && canRate && ratedPosts[post._id] ? (
+                      <p className="text-sm text-green-600">
+                        คุณได้ให้คะแนนแล้ว
+                      </p>
+                    ) : null}
                   </div>
                 </div>
               </li>

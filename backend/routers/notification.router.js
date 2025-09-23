@@ -1,10 +1,11 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const notificationController = require('../controllers/notification.controller');
+const notificationController = require("../controllers/notification.controller");
 const authJwt = require("../middlewares/auth.middleware");
 
 // ดูแจ้งเตือน
-router.get("/",
+router.get(
+  "/",
   /**
    * #swagger.tags = ['Notification']
    * #swagger.summary = 'ดึงรายการแจ้งเตือนของผู้ใช้'
@@ -18,7 +19,8 @@ router.get("/",
 );
 
 // อ่านแจ้งเตือน
-router.put("/:notificationId/read",
+router.put(
+  "/:notificationId/read",
   /**
    * #swagger.tags = ['Notification']
    * #swagger.summary = 'ทำเครื่องหมายว่าแจ้งเตือนนี้อ่านแล้ว'
@@ -29,12 +31,17 @@ router.put("/:notificationId/read",
   authJwt.verifyToken,
   notificationController.markNotificationAsRead
 );
+router.get(
+  "/check/:postId",
+  authJwt.verifyToken,
+  notificationController.checkUserRating
+);
 
 // read all
-router.put("/read-all",
+router.put(
+  "/read-all",
   authJwt.verifyToken,
   notificationController.markAllAsRead
 );
-
 
 module.exports = router;

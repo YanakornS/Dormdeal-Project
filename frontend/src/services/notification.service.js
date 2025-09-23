@@ -4,7 +4,7 @@ const API_URL = import.meta.env.VITE_BASE_URL + "/notification";
 
 const getNotifications = async (page = 1, limit = 20) => {
   return await api.get(API_URL, {
-    params: { page, limit }
+    params: { page, limit },
   });
 };
 
@@ -15,11 +15,15 @@ const markNotificationAsRead = async (notificationId) => {
 const markAllAsRead = async () => {
   return await api.put(`${API_URL}/read-all`);
 };
+const checkUserRating = async (postId) => {
+  return await api.get(`${API_URL}/check/${postId}`);
+};
 
 const NotificationService = {
   getNotifications,
   markNotificationAsRead,
-  markAllAsRead
+  markAllAsRead,
+  checkUserRating,
 };
 
 export default NotificationService;

@@ -1,5 +1,5 @@
-const Notification = require('../models/notification.model');
-
+const Notification = require("../models/notification.model");
+const Rating = require("../models/rating.model");
 // ดูแจ้งเตือน
 exports.getNotifications = async (req, res) => {
   try {
@@ -7,16 +7,18 @@ exports.getNotifications = async (req, res) => {
     const { page = 1, limit = 20 } = req.query;
 
     const notifications = await Notification.find({ recipient: userId })
-      .populate('post', 'productName price images')
-      .populate('seller', 'displayName photoURL')
+      .populate("post", "productName price images")
+      .populate("seller", "displayName photoURL")
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);
 
-    const totalNotifications = await Notification.countDocuments({ recipient: userId });
-    const unreadCount = await Notification.countDocuments({ 
-      recipient: userId, 
-      isRead: false 
+    const totalNotifications = await Notification.countDocuments({
+      recipient: userId,
+    });
+    const unreadCount = await Notification.countDocuments({
+      recipient: userId,
+      isRead: false,
     });
 
     return res.json({
@@ -27,15 +29,15 @@ exports.getNotifications = async (req, res) => {
           currentPage: parseInt(page),
           totalPages: Math.ceil(totalNotifications / limit),
           totalItems: totalNotifications,
-          hasNext: page * limit < totalNotifications
+          hasNext: page * limit < totalNotifications,
         },
-        unreadCount
-      }
+        unreadCount,
+      },
     });
   } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: "เกิดข้อผิดพลาด กรุณาลองใหม่" 
+    return res.status(500).json({
+      success: false,
+      message: "เกิดข้อผิดพลาด กรุณาลองใหม่",
     });
   }
 };
@@ -53,22 +55,22 @@ exports.markNotificationAsRead = async (req, res) => {
     );
 
     if (!notification) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "ไม่พบแจ้งเตือนนี้" 
+      return res.status(404).json({
+        success: false,
+        message: "ไม่พบแจ้งเตือนนี้",
       });
     }
 
     return res.json({
       success: true,
       message: "อ่านแจ้งเตือนแล้ว",
-      data: notification
+      data: notification,
     });
   } catch (error) {
-    console.error('Error in markNotificationAsRead:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: "เกิดข้อผิดพลาด กรุณาลองใหม่" 
+    console.error("Error in markNotificationAsRead:", error);
+    return res.status(500).json({
+      success: false,
+      message: "เกิดข้อผิดพลาด กรุณาลองใหม่",
     });
   }
 };
@@ -85,13 +87,41 @@ exports.markAllAsRead = async (req, res) => {
 
     return res.json({
       success: true,
-      message: "อ่านแจ้งเตือนทั้งหมดแล้ว"
+      message: "อ่านแจ้งเตือนทั้งหมดแล้ว",
     });
   } catch (error) {
     console.error("Error in markAllAsRead:", error);
     return res.status(500).json({
       success: false,
-      message: "เกิดข้อผิดพลาด กรุณาลองใหม่"
+      message: "เกิดข้อผิดพลาด กรุณาลองใหม่",
+    });
+  }
+};
+// เช็คว่า user เคยให้คะแนนโพสต์นี้หรือยัง
+exports.checkUserRating = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const { postId } = req.params;
+
+    const rating = await Rating.findOne({ rater: userId, post: postId });
+
+    if (rating) {
+      return res.json({
+        success: true,
+        hasRated: true,
+        data: rating,
+      });
+    }
+
+    return res.json({
+      success: true,
+      hasRated: false,
+    });
+  } catch (error) {
+    console.error("Error in checkUserRating:", error);
+    return res.status(500).json({
+      success: false,
+      message: "เกิดข้อผิดพลาด กรุณาลองใหม่",
     });
   }
 };
