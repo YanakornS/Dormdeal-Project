@@ -43,35 +43,77 @@ const ManagePostsByMod = () => {
     setCurrentPage(1);
   }, [filterType]);
 
-  const handleDeletePost = (id) => {
-    Swal.fire({
-      title: "ลบโพสต์",
-      text: "คุณต้องการลบโพสต์นี้หรือไม่?",
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "ใช่",
-      cancelButtonText: "ไม่",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await ModService.deletePostProductByMod(id);
-          setPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
-          Swal.fire({
-            title: "ลบโพสต์สำเร็จ",
-            text: "โพสต์ถูกลบเรียบร้อยแล้ว",
-            icon: "success",
-          });
-        } catch (error) {
-          Swal.fire({
-            title: "เกิดข้อผิดพลาด",
-            text: "ไม่สามารถลบโพสต์ได้",
-            icon: "error",
-          });
-          console.error("ลบโพสต์ล้มเหลว:", error);
-        }
+
+const handleDeletePost = (id) => {
+  Swal.fire({
+    title: "ลบโพสต์",
+    text: "คุณต้องการลบโพสต์นี้หรือไม่?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "ใช่",
+    cancelButtonText: "ไม่",
+    didOpen: (popup) => {
+      const title = popup.querySelector(".swal2-title");
+      if (title) {
+        title.setAttribute("data-test", "swal-delete-title");
       }
-    });
-  };
+
+      const confirmButton = popup.querySelector(".swal2-confirm");
+      if (confirmButton) {
+        confirmButton.setAttribute("data-test", "swal-delete-confirm");
+      }
+
+      const cancelButton = popup.querySelector(".swal2-cancel");
+      if (cancelButton) {
+        cancelButton.setAttribute("data-test", "swal-delete-cancel");
+      }
+    },
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        //  ประกาศ payload ก่อน
+        const payload = {
+          action: "rejected",
+          modNote: "ขออภัย โพสต์ถูกลบเรียบร้อยแล้ว", // เหตุผลเก็บลง modNote
+        };
+
+        // ส่ง payload ไปที่ backend
+        await ModService.deletePostProductByMod(id, payload);
+
+        setPosts((prevPosts) => prevPosts.filter((post) => post._id !== id));
+
+        Swal.fire({
+          title: "ลบโพสต์สำเร็จ",
+          text: "โพสต์ถูกลบเรียบร้อยแล้ว", // ใช้ข้อความจาก payload
+          icon: "success",
+          timer: 3500,
+          showConfirmButton: false,
+          didOpen: (popup) => {
+            const title = popup.querySelector(".swal2-title");
+            if (title) {
+              title.setAttribute("data-test", "swal-delete-success-title");
+            }
+          },
+        });
+      } catch (error) {
+        Swal.fire({
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถลบโพสต์ได้",
+          icon: "error",
+          didOpen: (popup) => {
+            const title = popup.querySelector(".swal2-title");
+            if (title) {
+              title.setAttribute("data-test", "swal-delete-error-title");
+            }
+          },
+        });
+        console.error("ลบโพสต์ล้มเหลว:", error);
+      }
+    }
+  });
+};
+
+
 
   const handlePrev = () => {
     if (currentPage > 1) setCurrentPage((prev) => prev - 1);

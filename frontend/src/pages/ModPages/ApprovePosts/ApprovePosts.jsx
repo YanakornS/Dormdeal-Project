@@ -117,8 +117,14 @@ const ApprovePosts = () => {
             title: "ดำเนินการสำเร็จ",
             text: "โพสต์ถูกปฏิเสธเรียบร้อยแล้ว",
             icon: "success",
-            timer: 1500,
+            timer: 3500,
             showConfirmButton: false,
+            didOpen: () => {
+              const title = document.querySelector(".swal2-title");
+              if (title) {
+                title.setAttribute("data-test", "swal-post-rejected-success");
+              }
+            },
           }).then(() => {
             navigate("/mod", { replace: true });
           });
@@ -178,8 +184,22 @@ const ApprovePosts = () => {
         });
 
         if (!reason) {
-          Swal.fire("โปรดเลือกเหตุผล", "", "warning");
-          
+          await Swal.fire({
+            title: "โปรดเลือกเหตุผล",
+            text: "กรุณาเลือกเหตุผลก่อนที่จะส่งกลับ",
+            icon: "warning",
+            timer: 4500,
+            showConfirmButton: false,
+            didOpen: () => {
+              const title = document.querySelector(".swal2-title");
+              if (title) {
+                title.setAttribute(
+                  "data-test",
+                  "swal-post-needs-revision-title"
+                );
+              }
+            },
+          });
           return;
         }
 
@@ -220,14 +240,21 @@ const ApprovePosts = () => {
           title: "สำเร็จ",
           text: `อัปเดตสถานะเป็น "${getStatusText(status)}" แล้ว`,
           icon: "success",
-          timer: 2500,
+          timer: 55500,
           showConfirmButton: false,
           didOpen: () => {
-        const title = document.querySelector(".swal2-title");
-        if (title) {
-          title.setAttribute("data-test", "swal-post-approve-success");
-        }
-      },
+            const title = document.querySelector(".swal2-title");
+            if (title) {
+              title.setAttribute(
+                "data-test",
+                "swal-post-approve-success"
+              );
+            }
+            const text = document.querySelector(".swal2-html-container");
+            if (text) {
+              text.setAttribute("data-test", "swal-post-revision-text-success");
+            }
+          },
         }).then(() => {
           navigate("/mod", { replace: true });
         });
