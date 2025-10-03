@@ -122,6 +122,7 @@ const PostProfileCard = ({ product, onDelete = () => {} }) => {
           </button>
           <button
             onClick={onMarkSoldOut}
+            data-test={`button-close-sell-post-${product._id}`}
             className="btn btn-sm btn-outline rounded-2xl shadow w-26 flex items-center text-vivid hover:bg-vivid border-vivid hover:text-white justify-center gap-1"
           >
             <MdOutlineSell size={15} />
@@ -136,7 +137,7 @@ const PostProfileCard = ({ product, onDelete = () => {} }) => {
           onClose={() => setShowCloseModal(false)}
           onSuccess={() => {
             setShowCloseModal(false);
-            toast.success("ปิดการขายสำเร็จ");
+            toast.success(<div data-test="toast-close-sale-success">ปิดการขายสำเร็จ</div>);
             setIsVisible(false); // ลบการ์ดออกจากหน้าโดยไม่ต้องรีเฟรช
           }}
         />

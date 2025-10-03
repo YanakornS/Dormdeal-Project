@@ -41,6 +41,24 @@ const ModalClosePost = ({ postId, onClose, onSuccess }) => {
       showCancelButton: true,
       confirmButtonText: "ยืนยัน",
       cancelButtonText: "ยกเลิก",
+      didOpen: (popup) => {
+     
+      const title = popup.querySelector(".swal2-title");
+      if (title) {
+        title.setAttribute("data-test", "swal-confirm-close-sale-post-title");
+      }
+
+      const confirmButton = popup.querySelector(".swal2-confirm");
+      if (confirmButton) {
+        confirmButton.setAttribute("data-test", "swal-confirm-close-sale-post");
+      }
+
+  
+      const cancelButton = popup.querySelector(".swal2-cancel");
+      if (cancelButton) {
+        cancelButton.setAttribute("data-test", "swal-confirm-close-sale-cancel-post");
+      }
+    },
     });
 
     if (!confirm.isConfirmed) return;
@@ -63,7 +81,7 @@ const ModalClosePost = ({ postId, onClose, onSuccess }) => {
   return (
     <div className="modal modal-open bg-black bg-opacity-50 flex items-center justify-center p-4 animate-fadeIn">
       <div className="modal-box max-w-md w-full bg-white rounded-xl shadow-lg p-6 relative animate-scaleIn">
-        <h3 className="font-bold text-2xl mb-4 text-center text-gray-800">
+        <h3 className="font-bold text-2xl mb-4 text-center text-gray-800" data-test="modal-close-sale-title">
           ปิดการขาย
         </h3>
 
@@ -96,6 +114,7 @@ const ModalClosePost = ({ postId, onClose, onSuccess }) => {
                   key={user.userId}
                   className="flex items-center gap-3 px-4 py-3 hover:bg-gray-100 cursor-pointer"
                   onClick={() => handleBuyerSelection(user.userId)}
+                  data-test={`interested-user-${user.userId}`}
                 >
                   <input
                     type="radio"
@@ -105,10 +124,12 @@ const ModalClosePost = ({ postId, onClose, onSuccess }) => {
                     onChange={() => handleBuyerSelection(user.userId)}
                     className="form-radio h-5 w-5 text-indigo-600"
                     onClick={(e) => e.stopPropagation()}
+                    data-test={`radio_close_sell_post-${user.userId}`}
                   />
                   <img
                     src={user.photoURL || "/default-avatar.png"}
                     alt={user.displayName}
+                    data-test={`buyer-name-${user.userId}`}
                     className="w-10 h-10 rounded-full object-cover border border-gray-300"
                   />
                   <span className="text-gray-900 font-medium">{user.displayName}</span>
@@ -116,7 +137,7 @@ const ModalClosePost = ({ postId, onClose, onSuccess }) => {
               ))}
             </ul>
           ) : (
-            <p className="text-gray-500 italic text-center py-4">ยังไม่มีคนสนใจ</p>
+            <p className="text-gray-500 italic text-center py-4" data-test="no-interested">ยังไม่มีคนสนใจ</p>
           )}
         </div>
 
@@ -124,6 +145,7 @@ const ModalClosePost = ({ postId, onClose, onSuccess }) => {
           <button
             className="btn btn-ghost px-5 py-2 rounded-lg text-gray-700 hover:bg-gray-200 transition"
             onClick={onClose}
+             data-test="btn-cancel-close-sale"
           >
             ยกเลิก
           </button>
@@ -135,6 +157,7 @@ const ModalClosePost = ({ postId, onClose, onSuccess }) => {
             }`}
             onClick={handleCloseSale}
             disabled={!selectedBuyer}
+            data-test="btn-confirm-close-sale"
           >
             ยืนยันปิดการขาย
           </button>
