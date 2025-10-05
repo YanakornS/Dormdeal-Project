@@ -178,6 +178,7 @@ const NotificationModal = ({ onClose, anchorRef }) => {
       ref={modalRef}
       role="dialog"
       aria-modal="true"
+      data-test="notification-modal"
       aria-labelledby="notif-title"
       className={`fixed z-[1000] w-[90vw] sm:w-96 max-h-[70vh] overflow-y-auto
                   bg-base-100  rounded-xl shadow-xl p-4
@@ -197,6 +198,7 @@ const NotificationModal = ({ onClose, anchorRef }) => {
         </h2>
         <button
           onClick={onClose}
+          data-test="notification-close-button" 
           className="text-gray-500 hover:text-gray-700 rounded-lg px-2 py-1"
           aria-label="Close"
         >
@@ -216,6 +218,7 @@ const NotificationModal = ({ onClose, anchorRef }) => {
             return (
               <li
                 key={n._id}
+                data-test={`notification-item-${n._id}`}
                 className="rounded-lg p-3 flex flex-col gap-2 bg-base-100  shadow-sm"
               >
                 <div className="flex gap-3 items-center flex-wrap sm:flex-nowrap">
@@ -247,6 +250,7 @@ const NotificationModal = ({ onClose, anchorRef }) => {
                     {post && canRate && !ratedPosts[post._id] ? (
                       <StarRating
                         postId={post._id}
+                        data-test="notification-star-rating"
                         onRated={() => {
                           setNotifications((prev) =>
                             prev.filter((x) => x._id !== n._id)
@@ -259,7 +263,7 @@ const NotificationModal = ({ onClose, anchorRef }) => {
                         }}
                       />
                     ) : post && canRate && ratedPosts[post._id] ? (
-                      <p className="text-sm text-green-600">
+                      <p className="text-sm text-green-600" data-test="notification-rated-text">
                         คุณได้ให้คะแนนแล้ว
                       </p>
                     ) : null}

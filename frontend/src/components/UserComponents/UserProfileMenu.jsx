@@ -58,6 +58,7 @@ const UserMenu = () => {
         <button
           ref={notificationBtnRef}
           onClick={openNotificationModal}
+          data-test="notification-button"
           className="btn btn-ghost btn-circle"
         >
           <div className="indicator">
