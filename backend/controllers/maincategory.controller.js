@@ -112,7 +112,6 @@ exports.deleteCategory = async (req, res) => {
         message: "ไม่สามารถลบหมวดหมู่นี้ได้ เพราะมีหมวดย่อยอยู่"
       });
     }
-
     // ถ้าไม่มี subCategories จึงลบได้
     await MainCategory.findByIdAndDelete(id);
 

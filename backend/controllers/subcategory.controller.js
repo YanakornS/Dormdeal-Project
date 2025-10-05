@@ -1,5 +1,5 @@
 const MainCategory = require("../models/maincategory.model")
-
+const Post = require("../models/post.model");
 exports.addSubCategory = async (req, res) => {
   const { mainCategoryId, subCategoryName } = req.body;
 
@@ -149,6 +149,12 @@ exports.deleteSubCategory = async (req, res) => {
       return res.status(404).json({ message: "ไม่พบหมวดย่อย" });
     }
     
+    const postsInSubCategory = await Post.findOne({ subcategory: id });
+    if (postsInSubCategory) {
+      return res.status(400).json({
+        message: "ไม่สามารถลบหมวดย่อยนี้ได้ เพราะมีโพสต์อยู่ในหมวดย่อย",
+      });
+    }
     mainCategory.subCategories = mainCategory.subCategories.filter(
       (sub) => sub._id.toString() !== id
     );
