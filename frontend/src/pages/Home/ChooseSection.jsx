@@ -28,6 +28,7 @@ const ChooseSection = () => {
             />
             <button
               className="btn-choices"
+              data-test="button-want-to-sell"
               onClick={() => navigate("/shoppingpost", { state: { type: "wts" } })}
             >
               Want to Sell

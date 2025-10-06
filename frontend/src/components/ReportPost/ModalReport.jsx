@@ -63,6 +63,7 @@ const ModalReport = ({ postId }) => {
       <button
         onClick={() => document.getElementById("report_modal").showModal()}
         className="btn-report"
+        data-test="button-report-post"
       >
         <MdOutlineReport size={20} className="mr-2" />
         รายงานโพสต์
@@ -71,7 +72,7 @@ const ModalReport = ({ postId }) => {
       <dialog id="report_modal" className="modal">
         <div className="modal-box w-full max-w-lg p-6">
           <form method="dialog">
-            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" data-test="close-modal">
               ✕
             </button>
           </form>
@@ -93,6 +94,7 @@ const ModalReport = ({ postId }) => {
               >
                 <input
                   type="checkbox"
+                  data-test={`checkbox-reason-${reason}`}
                   checked={selectedReason === reason}
                   onChange={() => handleCheckboxChange(reason)}
                   className="w-5 h-5 border-gray-300 rounded-md appearance-none checked:bg-neutral checked:border-transparent focus:ring-2 focus:ring-neutral-500"
@@ -109,6 +111,7 @@ const ModalReport = ({ postId }) => {
             </label>
             <textarea
               className="textarea rounded-2xl textarea-bordered w-full mt-2 h-24"
+              data-test="input-other-reason"
               placeholder="กรอกรายละเอียดปัญหาที่ต้องการแจ้ง..."
               value={otherReason}
               onChange={(e) => setOtherReason(e.target.value)}

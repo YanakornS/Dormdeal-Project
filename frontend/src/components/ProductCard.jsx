@@ -78,7 +78,7 @@ const ProductCard = ({ product = false }) => {
     
     <div className="card shadow-lg flex flex-col h-full relative">
       <Toaster position="bottom-center" />
-      <a href={`/postproductdetail/${product._id}`} className="block">
+      <a href={`/postproductdetail/${product._id}`} className="block" data-test={`product-card-${product._id}`}>
         <figure className="relative">
           <img
             src={product.images}
