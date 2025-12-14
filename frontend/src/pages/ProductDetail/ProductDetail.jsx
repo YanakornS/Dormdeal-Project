@@ -269,7 +269,10 @@ const ProductDetail = () => {
                 {postProductDetail.owner?.displayName || "ไม่พบผู้ใช้"}
               </p>
             </div>
-            <a className="underline-offset-8 font-medium hover:underline cursor-pointer">
+            <a 
+              href={`/ManagePost/${postProductDetail.owner?._id}`}
+              className="underline-offset-8 font-medium hover:underline cursor-pointer"
+            >
               ดูโปรไฟล์
             </a>
           </div>

@@ -33,8 +33,8 @@ isMod = (req, res, next) => {
   next();
 };
 isAdmin = (req, res, next) => {
-  if (req.role !== "admin") {
-    return res.status(403).json({ message: "Require Admin Role" });
+  if (req.role !== "admin" && req.role !== "mod") {
+    return res.status(403).json({ message: "Require Admin or Mod Role" });
   }
   next();
 };

@@ -9,7 +9,7 @@ const ModProfileMenu = () => {
   const { user, logout, getUser, isLoading } = useContext(AuthContext); // ใช้ useContext เข้าถึง Fn ที่เก็บไว้ใน Authcontext
   const userInfo = getUser();
   console.log("User Object:", user);
-  console.log("User Role:", user?.role);
+  console.log("User Role:", userInfo?.role);
   console.log("User Info:", userInfo);
   const handleLogout = () => {
     logout();

@@ -7,8 +7,8 @@ const getAllPostsByMod = async () => {
   return await api.get(API_URL);
 };
 
-const deletePostProductByMod = async (id) => {
-  return await api.delete(`${API_URL}/${id}`);
+const deletePostProductByMod = async (id, payload = {}) => {
+  return await api.patch(`${API_URL}/${id}/reject`, payload);
 };
 const getPostByIdMod = async (id) => {
   return await api.get(`${API_URL}/${id}`);

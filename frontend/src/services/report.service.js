@@ -18,11 +18,16 @@ const deleteReport = async (id) => {
   return await api.delete(`${API_URL}/${id}`);
 };
 
+const confirmReport = async (id) => {
+  return await api.post(`${API_URL}/${id}/confirm`);
+};
+
 const ReportService = {
   createReport,
   getAllReports,
   getReportById,
   deleteReport,
+  confirmReport,
 };
 
 export default ReportService;

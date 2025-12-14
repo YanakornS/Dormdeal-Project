@@ -1,3 +1,5 @@
+import React from "react";
+import { createPortal } from "react-dom";
 import Swal from "sweetalert2";
 import { MdOutlineReport } from "react-icons/md";
 import { FaTrashAlt, FaCheckCircle, FaExternalLinkAlt } from "react-icons/fa";
@@ -16,7 +18,7 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
       if (action === "delete") {
         const result = await Swal.fire({
           title: "ยืนยันการลบโพสต์?",
-          text: "หากลบแล้วจะไม่สามารถกู้คืนได้",
+          text: "การลบโพสต์จะบันทึก penalty (-0.2) ให้ผู้ขายบน blockchain",
           icon: "warning",
           showCancelButton: true,
           confirmButtonText: "ลบเลย",
@@ -24,10 +26,47 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
         });
 
         if (result.isConfirmed) {
-          await PostService.deletePostProductByMod(postId._id);
-          await ReportService.deleteReport(report._id);
-          Swal.fire("ลบโพสต์สำเร็จ", "", "success");
-          onReportHandled(report._id);
+          try {
+            Swal.fire({
+              title: "กำลังดำเนินการ...",
+              text: "กำลังลบโพสต์และบันทึก penalty บน blockchain",
+              icon: "info",
+              allowOutsideClick: false,
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            });
+
+            // เรียก deletePostByMod ซึ่งจะหัก 0.2 คะแนนบน blockchain อัตโนมัติ
+            const deleteResponse = await PostService.deletePostProductByMod(postId._id);
+            
+            // ตรวจสอบว่า blockchain transaction สำเร็จ
+            const blockchainData = deleteResponse.data?.blockchain;
+            if (blockchainData?.transactionHash) {
+              console.log("Penalty logged to blockchain:", blockchainData.transactionHash);
+            }
+
+            // ลบรายงาน
+            await ReportService.deleteReport(report._id);
+            
+            Swal.fire({
+              title: "ลบโพสต์สำเร็จ",
+              text: blockchainData?.transactionHash 
+                ? `Penalty (-0.2) ถูกบันทึกบน blockchain แล้ว`
+                : "ลบโพสต์เรียบร้อยแล้ว",
+              icon: "success",
+              timer: 4000,
+            });
+            
+            onReportHandled(report._id);
+          } catch (error) {
+            console.error("Error deleting post:", error);
+            Swal.fire({
+              title: "เกิดข้อผิดพลาด",
+              text: error.response?.data?.message || "ไม่สามารถลบโพสต์ได้",
+              icon: "error",
+            });
+          }
         }
       } else if (action === "normal") {
         Swal.fire("จัดการสำเร็จ", "โพสต์นี้ถูกตั้งสถานะเป็นปกติ", "success");
@@ -47,7 +86,7 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
     }
   };
 
-  return (
+  const modalContent = (
     <dialog id="report_detail_modal" className="modal modal-open">
       <div className="modal-box w-full max-w-2xl p-6 bg-base-100 border border-base-300 rounded-xl relative shadow-md">
         <button
@@ -126,6 +165,10 @@ const ModalReportDetail = ({ report, onClose, onReportHandled }) => {
       </div>
     </dialog>
   );
+
+  // ใช้ createPortal เพื่อ render modal นอก table structure
+  return createPortal(modalContent, document.body);
 };
 
 export default ModalReportDetail;
+

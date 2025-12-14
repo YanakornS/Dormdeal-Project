@@ -36,13 +36,14 @@ router.patch("/review/:id",
   modController.reviewPost
 );
 
-// ลบโพสต์โดย Mod
-router.delete("/:id", 
+// Reject โพสต์โดย Mod (อัปเดต status เป็น rejected)
+router.patch("/:id/reject", 
   authJwt.verifyToken, 
+  authJwt.isMod,
   /**
    * #swagger.tags = ['Mod']
-   * #swagger.summary = 'ลบโพสต์โดย Mod'
-   * #swagger.path = '/mod/{id}'
+   * #swagger.summary = 'Reject โพสต์โดย Mod (อัปเดต status เป็น rejected)'
+   * #swagger.path = '/mod/{id}/reject'
    */
   modController.deletePostByMod
 );

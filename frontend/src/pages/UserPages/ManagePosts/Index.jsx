@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router";
 import PostService from "../../../services/postproduct.service";
-import RatingService from "../../../services/rating.service";
+import UserService from "../../../services/user.service";
 import PostProfileCard from "../../../components/PostProfileCard";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -14,6 +14,7 @@ const Index = () => {
   const [products, setProducts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [soldCount, setSoldCount] = useState(0);
+  const [ratingCount, setRatingCount] = useState(0);
   const [averageRating, setAverageRating] = useState(null);
 
   const { id } = useParams();
@@ -53,22 +54,31 @@ const Index = () => {
     const fetchRating = async () => {
       if (!id) return;
       try {
-        const res = await RatingService.getSellerRatings(id);
-        const avgRating = res.data?.data?.stats?.averageRating;
-
-        if (avgRating !== undefined && avgRating !== null) {
-          setAverageRating(avgRating);
+        const res = await UserService.getUserReputation(id);
+        const reputation = res.data?.data?.reputation;
+  
+        const avgRating = reputation?.reputation;
+        const count = reputation?.ratingCount;
+  
+        // set ratingCount
+        setRatingCount(count ?? 0);
+  
+        // set averageRating
+        if (avgRating !== undefined && avgRating !== null && avgRating > 0) {
+          setAverageRating(parseFloat(avgRating.toFixed(2)));
         } else {
           setAverageRating("ยังไม่มีคะแนน");
         }
       } catch (err) {
-        console.error("Error fetching ratings:", err);
+        console.error("Error fetching reputation from blockchain:", err);
+        setRatingCount(0);
         setAverageRating("ยังไม่มีคะแนน");
       }
     };
-
+  
     fetchRating();
   }, [id]);
+  
 
   return (
     <div className="section-container pt-24 max-w-screen-xl mx-auto px-4">
@@ -95,13 +105,13 @@ const Index = () => {
           <span className="flex items-center justify-center md:justify-start">
             <FiBox />
             <span className="ml-2">
-              จำนวนสินค้าที่ปิดการขายสำเร็จ : {soldCount} รายการ
+              จำนวนสินค้าที่ปิดการขายสำเร็จ : {ratingCount} รายการ
             </span>
           </span>
           <span className="flex items-center justify-center md:justify-start">
             <LuStar />
             <span className="ml-2">
-              คะแนนเรทติ้ง : {averageRating ?? "กำลังโหลด..."}
+              คะแนนเรทติ้ง : {averageRating} ดาว
             </span>
           </span>
         </div>

@@ -1,6 +1,8 @@
 const PostModel = require("../models/post.model");
 const UserModel = require("../models/user.model");
 const bcrypt = require("bcrypt");
+const blockchainService = require("../libs/blockchain/service");
+const { getOrGenerateBlockchainAddress } = require("../libs/blockchain/utils");
 
 exports.getAllPostsByMod = async (req, res) => {
   try {
@@ -50,18 +52,91 @@ exports.getPostByIdMod = async (req, res) => {
 
 exports.deletePostByMod = async (req, res) => {
   const { id } = req.params;
+  const { modNote } = req.body; // รับ modNote จาก payload (ถ้ามี)
 
   try {
-    const postDoc = await PostModel.findById(id);
+    const postDoc = await PostModel.findById(id).populate("owner");
 
     if (!postDoc) {
       return res.status(404).send({
         message: "ไม่พบโพสต์ที่ระบุ",
       });
     }
-    await PostModel.findByIdAndUpdate(id, { status: "rejected" });
+
+    // Update post status to rejected และ modNote (ถ้ามี)
+    const updateData = { status: "rejected" };
+    if (modNote) {
+      updateData.modNote = modNote;
+    }
+    await PostModel.findByIdAndUpdate(id, updateData);
+
+    // บันทึก penalty ลงบน blockchain (ถ้า blockchain service เปิดใช้งาน)
+    let blockchainResult = null;
+    let penaltyAlreadyExists = false;
+    let ownerBlockchainAddress = null;
+    if (blockchainService.isEnabled()) {
+      try {
+        const owner = postDoc.owner;
+        if (!owner) {
+          console.warn("Post owner not found, skipping blockchain penalty");
+        } else {
+          ownerBlockchainAddress = await getOrGenerateBlockchainAddress(owner);
+          
+          // ตรวจสอบว่าเคยลงโทษบน blockchain แล้วหรือยัง
+          const alreadyPenalized = await blockchainService.hasPenalized(
+            ownerBlockchainAddress,
+            id
+          );
+
+          if (!alreadyPenalized) {
+            // บันทึก penalty ลงบน blockchain (0.2 คะแนน)
+            blockchainResult = await blockchainService.logPenalty(
+              ownerBlockchainAddress,
+              id
+            );
+
+            console.log("Penalty logged to blockchain:", blockchainResult.transactionHash);
+            
+            // อัปเดต rating ใน database จาก blockchain reputation (รวม penalty แล้ว)
+            try {
+              const blockchainReputation = await blockchainService.getReputation(ownerBlockchainAddress);
+              await UserModel.findByIdAndUpdate(owner._id, {
+                'rating.score': Math.max(0, Math.round(blockchainReputation.reputation * 10) / 10),
+                'rating.count': blockchainReputation.ratingCount
+              });
+            } catch (updateError) {
+              console.error("Failed to update rating from blockchain:", updateError.message);
+            }
+          } else {
+            penaltyAlreadyExists = true;
+            console.log("Penalty already exists on blockchain for this post");
+            
+            // อัปเดต rating ใน database จาก blockchain reputation (รวม penalty แล้ว)
+            try {
+              const blockchainReputation = await blockchainService.getReputation(ownerBlockchainAddress);
+              await UserModel.findByIdAndUpdate(owner._id, {
+                'rating.score': Math.max(0, Math.round(blockchainReputation.reputation * 10) / 10),
+                'rating.count': blockchainReputation.ratingCount
+              });
+            } catch (updateError) {
+              console.error("Failed to update rating from blockchain:", updateError.message);
+            }
+          }
+        }
+      } catch (blockchainError) {
+        console.error("Failed to log penalty to blockchain:", blockchainError.message);
+      }
+    }
+
     res.status(200).send({
-      message: "โพสต์ถูกตั้งสถานะเป็น 'rejected' เรียบร้อยแล้",
+      message: "โพสต์ถูกตั้งสถานะเป็น 'rejected' เรียบร้อยแล้ว",
+      blockchain: blockchainResult ? {
+        transactionHash: blockchainResult.transactionHash,
+        blockNumber: blockchainResult.blockNumber,
+      } : penaltyAlreadyExists && ownerBlockchainAddress ? {
+        address: ownerBlockchainAddress,
+        message: "Penalty already exists on blockchain for this post"
+      } : null,
     });
   } catch (error) {
     console.error(error.message);

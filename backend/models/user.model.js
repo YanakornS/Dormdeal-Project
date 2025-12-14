@@ -19,7 +19,8 @@ const UserSchema = new Schema({
     ref: "User",
     default: null,
   },
-  buyers: [{ type: Schema.Types.ObjectId, ref: "User" }] 
+  buyers: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  blockchainAddress: { type: String, default: null } // Ethereum wallet address
 },  {
   timestamps: true
 });

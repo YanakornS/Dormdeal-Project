@@ -31,7 +31,7 @@ const getScrollParents = (node) => {
   return parents;
 };
 
-const NotificationModal = ({ onClose, anchorRef }) => {
+const NotificationModal = ({ onClose, anchorRef, onNotificationUpdate }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -42,22 +42,26 @@ const NotificationModal = ({ onClose, anchorRef }) => {
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const [flipUp, setFlipUp] = useState(false);
 
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      try {
-        const res = await NotificationService.getNotifications();
-        let notis = res?.data?.data?.notifications || [];
-        notis = notis.filter((n) => n.requiresRating);
+  const loadNotifications = async (showAll = false) => {
+    try {
+      const res = await NotificationService.getNotifications();
+      let notis = res?.data?.data?.notifications || [];
+      // แสดง notification ทั้งหมด (ไม่ filter read/unread) เพื่อให้ผู้ใช้เห็นก่อน
+      // หรือ filter เฉพาะ unread ถ้า showAll = false
+      if (!showAll) {
+        notis = notis.filter((n) => !n.isRead);
+      }
 
-        // สำหรับทุก notification, เช็คว่า user ให้คะแนนแล้วหรือยัง
-        const notisWithPosts = await Promise.all(
-          notis.map(async (n) => {
-            if (n.type === "purchase_success" && n.post) {
-              try {
-                const postData = await PostService.getPostById(n.post._id);
+      // สำหรับทุก notification, เช็คว่า user ให้คะแนนแล้วหรือยัง
+      const notisWithPosts = await Promise.all(
+        notis.map(async (n) => {
+          // Handle notification ที่มี post (purchase_success หรือ rating_received)
+          if (n.post && (n.type === "purchase_success" || n.type === "rating_received")) {
+            try {
+              const postData = await PostService.getPostById(n.post._id);
 
-                //เพิ่มมา 61-69
+              // สำหรับ purchase_success เท่านั้น - เช็คว่า user ให้คะแนนแล้วหรือยัง
+              if (n.type === "purchase_success") {
                 try {
                   const rateRes = await NotificationService.checkUserRating(
                     n.post._id
@@ -69,27 +73,49 @@ const NotificationModal = ({ onClose, anchorRef }) => {
                 } catch {
                   setRatedPosts((prev) => ({ ...prev, [n.post._id]: false }));
                 }
-
-                return { ...n, post: postData };
-              } catch {
-                return { ...n, post: n.post };
               }
-            }
-            return n;
-          })
-        );
 
-        if (alive) setNotifications(notisWithPosts);
-      } catch (e) {
-        console.error(e);
-        if (alive) setNotifications([]);
-      } finally {
-        if (alive) setLoading(false);
+              return { ...n, post: postData };
+            } catch {
+              return { ...n, post: n.post };
+            }
+          }
+          return n;
+        })
+      );
+
+      setNotifications(notisWithPosts);
+    } catch (e) {
+      console.error(e);
+      setNotifications([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      // Mark all notifications as read when modal opens
+      try {
+        await NotificationService.markAllAsRead();
+        // Refresh unread count in parent
+        if (onNotificationUpdate) {
+          onNotificationUpdate();
+        }
+      } catch (error) {
+        console.error("Error marking notifications as read:", error);
+      }
+      
+      // Load notifications (แสดงทั้งหมดหลังจาก mark as read)
+      if (alive) {
+        await loadNotifications(true);
       }
     })();
     return () => {
       alive = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updatePosition = useCallback(() => {
@@ -215,6 +241,8 @@ const NotificationModal = ({ onClose, anchorRef }) => {
           {notifications.map((n) => {
             const post = n.post;
             const canRate = n.requiresRating === true;
+            const isRatingReceived = n.type === "rating_received";
+            
             return (
               <li
                 key={n._id}
@@ -231,22 +259,27 @@ const NotificationModal = ({ onClose, anchorRef }) => {
                     />
                   )}
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-medium truncate">
-                      {post?.productName}
-                    </h3>
-
-                    <p className="text-base-600">{formatPrice(post?.price)}</p>
-                    {/* {canRate && (
-                      <StarRating
-                        postId={post._id}
-                        onRated={() => {
-                          setNotifications((prev) =>
-                            prev.filter((x) => x._id !== n._id)
-                          );
-                          requestAnimationFrame(updatePosition);
-                        }}
-                      />
-                    )} */}
+                    {post ? (
+                      <>
+                        <h3 className="font-medium truncate">
+                          {post.productName}
+                        </h3>
+                        <p className="text-base-600">{formatPrice(post.price)}</p>
+                      </>
+                    ) : (
+                      <h3 className="font-medium truncate">
+                        {n.message || "แจ้งเตือน"}
+                      </h3>
+                    )}
+                    
+                    {/* แสดง message สำหรับ rating_received */}
+                    {isRatingReceived && (
+                      <p className="text-sm text-green-600 mt-1">
+                        {n.message}
+                      </p>
+                    )}
+                    
+                    {/* แสดง rating component สำหรับ purchase_success ที่ requiresRating */}
                     {post && canRate && !ratedPosts[post._id] ? (
                       <StarRating
                         postId={post._id}
@@ -260,6 +293,10 @@ const NotificationModal = ({ onClose, anchorRef }) => {
                             [post._id]: true,
                           }));
                           requestAnimationFrame(updatePosition);
+                          // แจ้งให้ parent component refresh unread count
+                          if (onNotificationUpdate) {
+                            onNotificationUpdate();
+                          }
                         }}
                       />
                     ) : post && canRate && ratedPosts[post._id] ? (

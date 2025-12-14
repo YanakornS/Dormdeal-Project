@@ -33,4 +33,14 @@ router.put("/photo",
   userController.updatePhotoByEmail
 );
 
+// ดึงข้อมูล reputation จาก blockchain
+router.get("/:id/reputation",
+  /**
+   * #swagger.tags = ['User']
+   * #swagger.summary = 'ดึงข้อมูล reputation จาก blockchain'
+   * #swagger.path = '/user/{id}/reputation'
+   */
+  userController.getUserReputation
+);
+
 module.exports = router;

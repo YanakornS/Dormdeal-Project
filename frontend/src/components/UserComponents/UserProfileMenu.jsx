@@ -24,16 +24,17 @@ const UserMenu = () => {
 
   const handleLogout = () => logout();
 
+  const fetchUnread = async () => {
+    try {
+      const res = await NotificationService.getNotifications();
+      setUnreadCount(res.data.data.unreadCount || 0);
+    } catch (err) {
+      console.error(err);
+      setUnreadCount(0);
+    }
+  };
+
   useEffect(() => {
-    const fetchUnread = async () => {
-      try {
-        const res = await NotificationService.getNotifications();
-        setUnreadCount(res.data.data.unreadCount || 0);
-      } catch (err) {
-        console.error(err);
-        setUnreadCount(0);
-      }
-    };
     fetchUnread();
   }, []);
 
@@ -129,6 +130,7 @@ const UserMenu = () => {
           <NotificationModal
             onClose={closeNotificationModal}
             anchorRef={notificationBtnRef}
+            onNotificationUpdate={fetchUnread}
           />
         )}
       </div>

@@ -1,4 +1,8 @@
 const Report = require("../models/report.model");
+const PostModel = require("../models/post.model");
+const UserModel = require("../models/user.model");
+const blockchainService = require("../libs/blockchain/service");
+const { getOrGenerateBlockchainAddress } = require("../libs/blockchain/utils");
 
 //เเก้โดย Oxe
 // Create new report

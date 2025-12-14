@@ -3,6 +3,8 @@ require("dotenv").config();
 const secret = process.env.SECRET;
 const jwt = require("jsonwebtoken");
 const admin = require("../configs/firebase.admin.config");
+const blockchainService = require("../libs/blockchain/service");
+const { getOrGenerateBlockchainAddress } = require("../libs/blockchain/utils");
 
 exports.sign = async (req, res) => {
   const { idToken } = req.body;
@@ -104,6 +106,56 @@ exports.updatePhotoByEmail = async (req, res) => {
     res
       .status(500)
       .json({ message: "Internal server error", error: error.message });
+  }
+};
+
+// ดึง reputation ของผู้ใช้จาก blockchain
+exports.getUserReputation = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find user
+    const user = await UserModel.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "ไม่พบผู้ใช้" });
+    }
+
+    // ดึงที่อยู่ blockchain (จะถูกบันทึกลง database ถ้ายังไม่มี)
+    const blockchainAddress = await getOrGenerateBlockchainAddress(user);
+
+    // ดึง reputation จาก blockchain
+    let blockchainReputation = null;
+    if (blockchainService.isEnabled()) {
+      try {
+        blockchainReputation = await blockchainService.getReputation(blockchainAddress);
+      } catch (blockchainError) {
+        console.error("Error getting reputation from blockchain:", blockchainError.message);
+        // ถ้า blockchain ล้มเหลว ให้ใช้ค่า reputation เริ่มต้น
+      }
+    }
+
+    // Return reputation data
+    return res.json({
+      success: true,
+      data: {
+        userId: user._id,
+        displayName: user.displayName,
+        blockchainAddress: blockchainAddress,
+        reputation: blockchainReputation || {
+          ratingSum: 0,
+          ratingCount: 0,
+          penaltySum: 0,
+          averageRating: 0,
+          reputation: 0,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Error in getUserReputation:", error);
+    return res.status(500).json({
+      message: "เกิดข้อผิดพลาดในการดึงข้อมูล reputation",
+      error: error.message,
+    });
   }
 };
 

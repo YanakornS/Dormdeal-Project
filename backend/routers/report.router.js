@@ -53,5 +53,4 @@ router.delete("/:id",
   reportController.deleteReport
 );
 
-
 module.exports = router;

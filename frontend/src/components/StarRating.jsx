@@ -4,7 +4,6 @@ import Swal from "sweetalert2";
 
 const StarRating = ({ postId, initialRating = 0, onRated }) => {
   const [selectedRating, setSelectedRating] = useState(initialRating);
-  const [loading, setLoading] = useState(false);
   const [rated, setRated] = useState(false);
 
   const handleConfirm = async () => {
@@ -17,7 +16,16 @@ const StarRating = ({ postId, initialRating = 0, onRated }) => {
     }
 
     try {
-      setLoading(true);
+      Swal.fire({
+        title: "กำลังบันทึก...",
+        text: "กำลังบันทึกคะแนนโปรดรอสักครู่",
+        icon: "info",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
       await PostService.rateSeller(postId, { rating: selectedRating });
       setRated(true);
 
@@ -42,8 +50,6 @@ const StarRating = ({ postId, initialRating = 0, onRated }) => {
         title: "ไม่สามารถให้คะแนนได้",
         text: err.response?.data?.message || "กรุณาลองใหม่",
       });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -69,15 +75,15 @@ const StarRating = ({ postId, initialRating = 0, onRated }) => {
 
       <button
         data-test="rating-confirm-button"
-        disabled={!selectedRating || loading}
+        disabled={!selectedRating}
         onClick={handleConfirm}
         className={`px-3 py-1 rounded text-white transition ${
-          selectedRating && !loading
+          selectedRating
             ? "bg-blue-500 hover:bg-blue-600"
             : "bg-gray-500 cursor-not-allowed"
         }`}
       >
-        {loading ? "กำลังบันทึก..." : "ยืนยัน"}
+        ยืนยัน
       </button>
     </div>
   );

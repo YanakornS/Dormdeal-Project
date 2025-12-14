@@ -17,6 +17,9 @@ const updateUserPhoto = async (email, photoURL) => {
   return await api.put(`${API_URL}/photo`, { email, photoURL });
 };
 
+const getUserReputation = async (userId) => {
+  return await api.get(`${API_URL}/${userId}/reputation`);
+};
 
 
 const UserService = {
@@ -24,6 +27,7 @@ const UserService = {
   addUser,
   addModUser,
   updateUserPhoto,
+  getUserReputation,
 };
 
 export default UserService;

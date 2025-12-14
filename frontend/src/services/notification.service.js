@@ -9,11 +9,11 @@ const getNotifications = async (page = 1, limit = 20) => {
 };
 
 const markNotificationAsRead = async (notificationId) => {
-  return await api.put(`${API_URL}/${notificationId}/read`);
+  return await api.put(`${API_URL}/${notificationId}/read`, {});
 };
 
 const markAllAsRead = async () => {
-  return await api.put(`${API_URL}/read-all`);
+  return await api.put(`${API_URL}/read-all`, {});
 };
 const checkUserRating = async (postId) => {
   return await api.get(`${API_URL}/check/${postId}`);

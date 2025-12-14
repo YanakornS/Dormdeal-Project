@@ -4,6 +4,8 @@ const UserModel = require("../models/user.model");
 const NotificationModel = require("../models/notification.model")
 const MessageModel = require("../models/message.model")
 const RatingModel = require("../models/rating.model");
+const blockchainService = require("../libs/blockchain/service");
+const { getOrGenerateBlockchainAddress } = require("../libs/blockchain/utils");
 
 //createPost
 exports.createPost = async (req, res) => {
@@ -527,19 +529,72 @@ exports.rateSeller = async (req, res) => {
   });
 }
 
-    // ตรวจสอบว่าได้ให้คะแนนแล้วหรือยัง
-    const existingRating = await RatingModel.findOne({
-      post: postId,
-      rater: buyerId
-    });
-
-    if (existingRating) {
-      return res.status(400).json({ 
-        message: "คุณได้ให้คะแนนสินค้าชิ้นนี้แล้ว" 
+    // ดึงข้อมูลผู้ขายและผู้ให้ rating เพื่อตรวจสอบ blockchain address
+    const seller = await UserModel.findById(post.owner._id);
+    if (!seller) {
+      return res.status(404).json({ 
+        message: "ไม่พบข้อมูลผู้ขาย" 
       });
     }
 
-    // บันทึกคะแนน
+    const rater = await UserModel.findById(buyerId);
+    if (!rater) {
+      return res.status(404).json({ 
+        message: "ไม่พบข้อมูลผู้ให้คะแนน" 
+      });
+    }
+
+    // Generate blockchain addresses สำหรับ seller และ rater (บันทึกอัตโนมัติถ้ายังไม่มี)
+    const sellerBlockchainAddress = await getOrGenerateBlockchainAddress(seller);
+    const raterBlockchainAddress = await getOrGenerateBlockchainAddress(rater);
+
+    // ตรวจสอบว่าเคยให้ rating แล้วหรือยัง (ป้องกัน duplicate)
+    // เช็คจาก blockchain ก่อน (ถ้าเปิดใช้งาน) แล้ว fallback ไป database
+    let alreadyRated = false;
+    
+    if (blockchainService.isEnabled()) {
+      try {
+        const alreadyRatedOnBlockchain = await blockchainService.hasRated(
+          sellerBlockchainAddress,
+          postId
+        );
+
+        if (alreadyRatedOnBlockchain) {
+          return res.status(400).json({ 
+            message: "คุณได้ให้คะแนนสินค้าชิ้นนี้แล้วบน blockchain",
+            blockchain: {
+              address: sellerBlockchainAddress,
+              message: "Rating already exists on blockchain for this post"
+            }
+          });
+        }
+      } catch (blockchainError) {
+        console.error("Failed to check rating status on blockchain, checking database:", blockchainError.message);
+        // ถ้า blockchain ล้มเหลว ให้ fallback ไปเช็คจาก database
+        const existingRating = await RatingModel.findOne({
+          post: postId,
+          rater: buyerId
+        });
+        if (existingRating) {
+          return res.status(400).json({ 
+            message: "คุณได้ให้คะแนนสินค้าชิ้นนี้แล้ว"
+          });
+        }
+      }
+    } else {
+      // ถ้า blockchain ไม่เปิดใช้งาน เช็คจาก database
+      const existingRating = await RatingModel.findOne({
+        post: postId,
+        rater: buyerId
+      });
+      if (existingRating) {
+        return res.status(400).json({ 
+          message: "คุณได้ให้คะแนนสินค้าชิ้นนี้แล้ว"
+        });
+      }
+    }
+
+    // บันทึกคะแนนใน database ก่อน
     const newRating = new RatingModel({
       post: postId,
       seller: post.owner._id,
@@ -549,15 +604,52 @@ exports.rateSeller = async (req, res) => {
 
     await newRating.save();
 
-    // คำนวณคะแนนเฉลี่ยใหม่ของผู้ขาย
-    const sellerRatings = await RatingModel.find({ seller: post.owner._id });
-    const totalRating = sellerRatings.reduce((sum, r) => sum + r.rating, 0);
-    const averageRating = totalRating / sellerRatings.length;
+    // บันทึก rating บน blockchain (ถ้า blockchain service เปิดใช้งาน)
+    let blockchainResult = null;
+    if (blockchainService.isEnabled()) {
+      try {
+        blockchainResult = await blockchainService.logRating(
+          sellerBlockchainAddress,
+          postId,
+          numRating
+        );
+        console.log("Rating logged to blockchain:", blockchainResult.transactionHash);
+        console.log(`Seller: ${sellerBlockchainAddress}, Rater: ${raterBlockchainAddress}`);
+      } catch (blockchainError) {
+        console.error("Failed to log rating to blockchain (continuing anyway):", blockchainError.message);
+      }
+    }
+
+    // คำนวณคะแนนเฉลี่ยใหม่ของผู้ขาย (ใช้ blockchain reputation)
+    let finalRatingScore = 0;
+    let ratingCount = 0;
+
+    if (blockchainService.isEnabled()) {
+      try {
+        // ดึง reputation จาก blockchain (รวม penalty แล้ว)
+        const blockchainReputation = await blockchainService.getReputation(sellerBlockchainAddress);
+        finalRatingScore = blockchainReputation.reputation; // reputation = averageRating - penaltySum
+        ratingCount = blockchainReputation.ratingCount;
+      } catch (blockchainError) {
+        console.error("Failed to get reputation from blockchain, using database calculation:", blockchainError.message);
+        // ถ้า blockchain ล้มเหลว ให้ fallback ไปคำนวณจาก database
+        const sellerRatings = await RatingModel.find({ seller: post.owner._id });
+        const totalRating = sellerRatings.reduce((sum, r) => sum + r.rating, 0);
+        finalRatingScore = sellerRatings.length > 0 ? totalRating / sellerRatings.length : 0;
+        ratingCount = sellerRatings.length;
+      }
+    } else {
+      // ถ้า blockchain ไม่เปิดใช้งาน
+      const sellerRatings = await RatingModel.find({ seller: post.owner._id });
+      const totalRating = sellerRatings.reduce((sum, r) => sum + r.rating, 0);
+      finalRatingScore = sellerRatings.length > 0 ? totalRating / sellerRatings.length : 0;
+      ratingCount = sellerRatings.length;
+    }
 
     // อัปเดตคะแนนของผู้ขาย
     await UserModel.findByIdAndUpdate(post.owner._id, {
-      'rating.score': Math.round(averageRating * 10) / 10,
-      'rating.count': sellerRatings.length
+      'rating.score': Math.max(0, Math.round(finalRatingScore * 10) / 10), // Ensure non-negative
+      'rating.count': ratingCount
     });
 
     // สร้างแจ้งเตือนให้ผู้ขาย
@@ -572,6 +664,17 @@ exports.rateSeller = async (req, res) => {
 
     await sellerNotification.save();
 
+    // Mark notification ที่ requiresRating=true สำหรับโพสต์นี้เป็น read
+    await NotificationModel.updateMany(
+      { 
+        recipient: buyerId,
+        post: postId,
+        requiresRating: true,
+        isRead: false
+      },
+      { isRead: true }
+    );
+
     return res.json({
       message: "ให้คะแนนสำเร็จ",
       data: {
@@ -579,9 +682,13 @@ exports.rateSeller = async (req, res) => {
         productName: post.productName,
         givenRating: numRating,
         sellerNewRating: {
-          score: Math.round(averageRating * 10) / 10,
-          count: sellerRatings.length
-        }
+          score: Math.max(0, Math.round(finalRatingScore * 10) / 10),
+          count: ratingCount
+        },
+        blockchain: blockchainResult ? {
+          transactionHash: blockchainResult.transactionHash,
+          blockNumber: blockchainResult.blockNumber
+        } : null
       }
     });
   } catch (error) {

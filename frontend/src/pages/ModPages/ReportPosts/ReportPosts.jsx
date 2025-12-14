@@ -126,19 +126,21 @@ const ReportPosts = () => {
                       ดูรายงานปัญหา
                     </button>
                   </td>
-                  {selectedReport && selectedReport._id === report._id && (
-                    <ModalReportDetail
-                      report={selectedReport}
-                      onClose={() => setSelectedReport(null)}
-                      onReportHandled={handleReportHandled}
-                    />
-                  )}
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+
+      {/* Render modal outside table to avoid hydration error */}
+      {selectedReport && (
+        <ModalReportDetail
+          report={selectedReport}
+          onClose={() => setSelectedReport(null)}
+          onReportHandled={handleReportHandled}
+        />
+      )}
 
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 mt-6">
